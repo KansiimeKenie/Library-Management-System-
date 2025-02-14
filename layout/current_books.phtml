@@ -1,0 +1,158 @@
+<div class="main-content">
+
+
+    <div class="page-content">
+        <div class="container-fluid">
+
+            <!-- start page title -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                        <h4 class="mb-sm-0">Current Available Books</h4>
+
+                        <div class="page-title-right">
+                            <ol class="breadcrumb m-0">
+                                <li class="breadcrumb-item"><a href="javascript: void(0);">Home</a></li>
+                                <li class="breadcrumb-item active">Current Books</li>
+                            </ol>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+
+                        <div class="card-body">
+                            <div class="listjs-table" id="customerList">
+                                <div class="row g-4 mb-3">
+                                    <div class="col-sm">
+                                        <div class="d-flex justify-content-sm-end">
+                                            <div class="search-box ms-2">
+                                                <a href="" type="button" class="btn btn-success add-btn"><i class="ri-add-line align-bottom me-1"></i> Filter Books</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="table-responsive mt-3 mb-1">
+                                    <table id="myTable" class="table table-bordered table-striped">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th scope="col">
+                                                    S/No.
+                                                </th>
+                                                <th class="sort" data-sort="title">Book Title</th>
+                                                <th class="sort" data-sort="description">Category</th>
+                                                <th class="sort" data-sort="date">Aurthor</th>
+                                                <th class="sort" data-sort="date">ISBN</th>
+                                                <th class="sort" data-sort="date">No. Of Copies Available</th>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody class="list form-check-all">
+
+                                            <?php
+                                            $sn = 0;
+                                            foreach ($db->get('current_books') as $value):
+                                                $book_details = $db->where("id", $value->book_id)->getOne("books");
+
+
+                                                $sn++;
+                                            ?>
+                                                <tr>
+                                                    <th scope="row">
+                                                        <?= $sn ?>
+                                                    </th>
+                                                    <td><?= $book_details->title ?></td>
+                                                    <td class="title"><?= $db->where("id", $book_details->category_id)->getOne("categories")->name ?></td>
+                                                    <td class="description"><?= $book_details->author ?></td>
+                                                    <td><?= $book_details->isbn ?></td>
+                                                    <td><?= $value->no_of_copies ?></td>
+
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+
+                                </div>
+
+
+                            </div>
+                        </div><!-- end card -->
+                    </div>
+                    <!-- end col -->
+                </div>
+                <!-- end col -->
+            </div>
+            <!-- end row -->
+
+
+
+        </div>
+    </div>
+    <!-- Modal fadeInUp -->
+    <div id="register" class="modal fade fadeInUp" tabindex="-1" aria-labelledby="fadeInUpModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="fadeInUpModalLabel">Add New Book</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="add_book">
+                        <div class="row gy-4">
+
+                            <div class="col-xxl-3 col-md-12">
+                                <div>
+                                    <label for="basiInput" class="form-label">Book Category</label>
+                                    <select name="category_id" class="form-control">
+                                        <option value="">--Select Category--</option>
+                                        <?php foreach ($db->get("categories") as $value) { ?>
+                                            <option value="<?= $value->id ?>"><?= $value->name ?></option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
+                            </div>
+                            <!--end col-->
+                            <div class="col-xxl-3 col-md-12">
+                                <div>
+                                    <label for="labelInput" class="form-label">Book Title </label>
+                                    <input type="text" name="title" class="form-control">
+                                </div>
+                            </div>
+                            <!--end col-->
+                            <div class="col-xxl-3 col-md-12">
+                                <div>
+                                    <label for="placeholderInput" class="form-label">Book Aurthor</label>
+                                    <input type="text" class="form-control" name="aurthor" placeholder="Book Aurthor">
+                                </div>
+                            </div>
+                            <div class="col-xxl-3 col-md-6">
+                                <div>
+                                    <label for="placeholderInput" class="form-label">ISBN</label>
+                                    <input type="text" class="form-control" name="isbn" placeholder="ISBN">
+                                </div>
+                            </div>
+                            <div class="col-xxl-3 col-md-6">
+                                <div>
+                                    <label for="placeholderInput" class="form-label">No. Of Copies Available</label>
+                                    <input type="text" class="form-control" name="no_of_copies" placeholder="No. Of Book Copies Available">
+                                </div>
+                            </div>
+                            <!--end col-->
+
+
+                        </div>
+                        <hr>
+                        <div class="modal-footer mt-4">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary ">Add New Book</button>
+                        </div>
+                </div>
+                </form>
+
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->

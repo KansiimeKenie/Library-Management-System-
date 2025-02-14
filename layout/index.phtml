@@ -1,0 +1,557 @@
+<?php
+$last7days = [];
+
+for ($i = 7; $i >= 1; $i--) {
+    $last7days[] = date('Y-m-d', strtotime("-$i days"));
+}
+
+
+$today = getCurrentDateOnly();
+
+$total_borrowed_per_day = [];
+
+foreach ($last7days as $day) {
+    $result = $db
+        ->where('aprove_status', 1)
+        ->where('date_approved', $day)
+        ->getOne('borrow_requests', ['SUM(no_of_copies) as total_borrowed']);
+
+
+    $total_borrowed_per_day[$day] = $result->total_borrowed ?? 0;
+}
+
+$most_borrowed = $db->where('aprove_status', 1)->get('borrow_requests', 10, ['book_id', 'SUM(no_of_copies) as total_borrowed']);
+if ($the_ken['user']['user_type'] == 'stud') {
+    $most_borrowed = $db->where('aprove_status', 1)->where('student_id', $the_ken['user']['id'])
+        ->get('borrow_requests', 10, ['book_id', 'SUM(no_of_copies) as total_borrowed']);
+}
+$most_borrowing_students = $db
+    ->where('aprove_status', 1)
+    ->groupBy('student_id')
+    ->orderBy('total_borrowed', 'DESC')
+    ->get('borrow_requests', 10, ['student_id', 'SUM(no_of_copies) as total_borrowed']);
+
+
+?>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- ============================================================== -->
+<!-- Start right Content here -->
+<!-- ============================================================== -->
+<div class="main-content">
+
+    <div class="page-content">
+        <div class="container-fluid">
+
+            <!-- start page title -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                        <h4 class="mb-sm-0">Dashboard</h4>
+
+                        <div class="page-title-right">
+                            <ol class="breadcrumb m-0">
+                                <li class="breadcrumb-item"><a href="javascript: void(0);">Home</a></li>
+                                <li class="breadcrumb-item active">Dashboard</li>
+                            </ol>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <!-- end page title -->
+
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="d-flex flex-column h-100">
+                        <div class="row">
+                            <?php if ($the_ken['user']['user_type'] != 'stud') { ?>
+                                <div class="col-xl-6 col-md-6">
+                                    <div class="card card-animate overflow-hidden">
+                                        <div class="position-absolute start-0" style="z-index: 0;">
+                                            <svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" width="200" height="120">
+                                                <style>
+                                                    .s0 {
+                                                        opacity: .05;
+                                                        fill: var(--vz-success)
+                                                    }
+                                                </style>
+                                                <path id="Shape 8" class="s0" d="m189.5-25.8c0 0 20.1 46.2-26.7 71.4 0 0-60 15.4-62.3 65.3-2.2 49.8-50.6 59.3-57.8 61.5-7.2 2.3-60.8 0-60.8 0l-11.9-199.4z" />
+                                            </svg>
+                                        </div>
+                                        <div class="card-body" style="z-index:1 ;">
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-grow-1 overflow-hidden">
+                                                    <p class="text-uppercase fw-medium text-muted text-truncate mb-3">Total Book Categories</p>
+                                                    <h4 class="fs-22 fw-semibold ff-secondary mb-0"><span class="counter-value" data-target="<?= count($db->get("categories")) ?>">0</span></h4>
+                                                </div>
+                                                <div class="flex-shrink-0">
+                                                    <i class="fas fa-layer-group fa-3x text-primary"></i>
+                                                </div>
+                                            </div>
+                                        </div><!-- end card body -->
+                                    </div><!-- end card -->
+                                </div><!--end col-->
+                                <div class="col-xl-6 col-md-6">
+                                    <!-- card -->
+                                    <div class="card card-animate overflow-hidden">
+                                        <div class="position-absolute start-0" style="z-index: 0;">
+                                            <svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" width="200" height="120">
+                                                <style>
+                                                    .s0 {
+                                                        opacity: .05;
+                                                        fill: var(--vz-success)
+                                                    }
+                                                </style>
+                                                <path id="Shape 8" class="s0" d="m189.5-25.8c0 0 20.1 46.2-26.7 71.4 0 0-60 15.4-62.3 65.3-2.2 49.8-50.6 59.3-57.8 61.5-7.2 2.3-60.8 0-60.8 0l-11.9-199.4z" />
+                                            </svg>
+                                        </div>
+                                        <div class="card-body" style="z-index:1 ;">
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-grow-1 overflow-hidden">
+                                                    <p class="text-uppercase fw-medium text-muted text-truncate mb-3">Total Books</p>
+                                                    <h4 class="fs-22 fw-semibold ff-secondary mb-0"><span class="counter-value" data-target="<?= count($db->get("books")) ?>">0</span></h4>
+                                                </div>
+                                                <div class="flex-shrink-0">
+                                                    <i class="fas fa-book fa-3x text-primary"></i>
+                                                </div>
+                                            </div>
+                                        </div><!-- end card body -->
+                                    </div><!-- end card -->
+                                </div><!-- end col -->
+                                <div class="col-xl-6 col-md-6">
+                                    <!-- card -->
+                                    <div class="card card-animate overflow-hidden">
+                                        <div class="position-absolute start-0" style="z-index: 0;">
+                                            <svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" width="200" height="120">
+                                                <style>
+                                                    .s0 {
+                                                        opacity: .05;
+                                                        fill: var(--vz-success)
+                                                    }
+                                                </style>
+                                                <path id="Shape 8" class="s0" d="m189.5-25.8c0 0 20.1 46.2-26.7 71.4 0 0-60 15.4-62.3 65.3-2.2 49.8-50.6 59.3-57.8 61.5-7.2 2.3-60.8 0-60.8 0l-11.9-199.4z" />
+                                            </svg>
+                                        </div>
+                                        <div class="card-body" style="z-index:1 ;">
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-grow-1 overflow-hidden">
+                                                    <p class="text-uppercase fw-medium text-muted text-truncate mb-3">Total Books Borrowed/In Circulation</p>
+                                                    <h4 class="fs-22 fw-semibold ff-secondary mb-0"><span class="counter-value" data-target="<?= $db->where('aprove_status', 1)->where('return_status IS NULL')->getValue('borrow_requests', 'SUM(no_of_copies)') ?>">0</span></h4>
+                                                </div>
+                                                <div class="flex-shrink-0">
+                                                    <i class="fas fa-book-reader fa-3x text-warning"></i>
+                                                </div>
+                                            </div>
+                                        </div><!-- end card body -->
+                                    </div><!-- end card -->
+                                </div><!-- end col -->
+                                <div class="col-xl-6 col-md-6">
+                                    <!-- card -->
+                                    <div class="card card-animate overflow-hidden">
+                                        <div class="position-absolute start-0" style="z-index: 0;">
+                                            <svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" width="200" height="120">
+                                                <style>
+                                                    .s0 {
+                                                        opacity: .05;
+                                                        fill: var(--vz-success)
+                                                    }
+                                                </style>
+                                                <path id="Shape 8" class="s0" d="m189.5-25.8c0 0 20.1 46.2-26.7 71.4 0 0-60 15.4-62.3 65.3-2.2 49.8-50.6 59.3-57.8 61.5-7.2 2.3-60.8 0-60.8 0l-11.9-199.4z" />
+                                            </svg>
+                                        </div>
+                                        <div class="card-body" style="z-index:1 ;">
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-grow-1 overflow-hidden">
+                                                    <p class="text-uppercase fw-medium text-muted text-truncate mb-3"> Total Overdue Books</p>
+                                                    <h4 class="fs-22 fw-semibold ff-secondary mb-0"><span class="counter-value" data-target="<?= $db->where('return_date', $today, '<')->where('aprove_status', 1)->getValue('borrow_requests', 'SUM(no_of_copies)')  ?>">0</span></h4>
+                                                </div>
+                                                <div class="flex-shrink-0">
+                                                    <i class="fas fa-calendar-times fa-3x text-danger"></i>
+                                                </div>
+                                            </div>
+                                        </div><!-- end card body -->
+                                    </div><!-- end card -->
+                                </div><!-- end col -->
+                                <div class="col-xl-6 col-md-6">
+                                    <div class="card card-animate overflow-hidden">
+                                        <div class="position-absolute start-0" style="z-index: 0;">
+                                            <svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" width="200" height="120">
+                                                <style>
+                                                    .s0 {
+                                                        opacity: .05;
+                                                        fill: var(--vz-success)
+                                                    }
+                                                </style>
+                                                <path id="Shape 8" class="s0" d="m189.5-25.8c0 0 20.1 46.2-26.7 71.4 0 0-60 15.4-62.3 65.3-2.2 49.8-50.6 59.3-57.8 61.5-7.2 2.3-60.8 0-60.8 0l-11.9-199.4z" />
+                                            </svg>
+                                        </div>
+                                        <div class="card-body" style="z-index:1 ;">
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-grow-1 overflow-hidden">
+                                                    <p class="text-uppercase fw-medium text-muted text-truncate mb-3"> Total Available Book Copies</p>
+                                                    <h4 class="fs-22 fw-semibold ff-secondary mb-0"><span class="counter-value" data-target="<?= $db->getValue('current_books', 'SUM(no_of_copies)') ?>">0</span></h4>
+                                                </div>
+                                                <div class="flex-shrink-0">
+                                                    <i class="fas fa-book-open fa-3x text-success"></i>
+                                                </div>
+                                            </div>
+                                        </div><!-- end card body -->
+                                    </div><!-- end card -->
+                                </div><!--end col-->
+                                <div class="col-xl-6 col-md-6">
+                                    <!-- card -->
+                                    <div class="card card-animate overflow-hidden">
+                                        <div class="position-absolute start-0" style="z-index: 0;">
+                                            <svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" width="200" height="120">
+                                                <style>
+                                                    .s0 {
+                                                        opacity: .05;
+                                                        fill: var(--vz-success)
+                                                    }
+                                                </style>
+                                                <path id="Shape 8" class="s0" d="m189.5-25.8c0 0 20.1 46.2-26.7 71.4 0 0-60 15.4-62.3 65.3-2.2 49.8-50.6 59.3-57.8 61.5-7.2 2.3-60.8 0-60.8 0l-11.9-199.4z" />
+                                            </svg>
+                                        </div>
+                                        <div class="card-body" style="z-index:1 ;">
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-grow-1 overflow-hidden">
+                                                    <p class="text-uppercase fw-medium text-muted text-truncate mb-3">Total Librarians</p>
+                                                    <h4 class="fs-22 fw-semibold ff-secondary mb-0"><span class="counter-value" data-target="1">0</span></h4>
+                                                </div>
+                                                <div class="flex-shrink-0">
+                                                    <i class="fas fa-user-tie fa-3x text-primary"></i>
+                                                </div>
+                                            </div>
+                                        </div><!-- end card body -->
+                                    </div><!-- end card -->
+                                </div><!-- end col -->
+                            <?php } else { ?>
+                                <div class="col-xl-6 col-md-6">
+                                    <div class="card card-animate overflow-hidden">
+                                        <div class="position-absolute start-0" style="z-index: 0;">
+                                            <svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" width="200" height="120">
+                                                <style>
+                                                    .s0 {
+                                                        opacity: .05;
+                                                        fill: var(--vz-success)
+                                                    }
+                                                </style>
+                                                <path id="Shape 8" class="s0" d="m189.5-25.8c0 0 20.1 46.2-26.7 71.4 0 0-60 15.4-62.3 65.3-2.2 49.8-50.6 59.3-57.8 61.5-7.2 2.3-60.8 0-60.8 0l-11.9-199.4z" />
+                                            </svg>
+                                        </div>
+                                        <div class="card-body" style="z-index:1 ;">
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-grow-1 overflow-hidden">
+                                                    <p class="text-uppercase fw-medium text-muted text-truncate mb-3">Total Books Borrowed</p>
+                                                    <h4 class="fs-22 fw-semibold ff-secondary mb-0"><span class="counter-value" data-target="<?= $db->where('aprove_status', 1)->where('student_id', $the_ken['user']['id'])->getValue('borrow_requests', 'SUM(no_of_copies)') ?>">0</span></h4>
+                                                </div>
+                                                <div class="flex-shrink-0">
+                                                    <i class="fas fa-layer-group fa-3x text-primary"></i>
+                                                </div>
+                                            </div>
+                                        </div><!-- end card body -->
+                                    </div><!-- end card -->
+                                </div><!--end col-->
+                                <div class="col-xl-6 col-md-6">
+                                    <div class="card card-animate overflow-hidden">
+                                        <div class="position-absolute start-0" style="z-index: 0;">
+                                            <svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" width="200" height="120">
+                                                <style>
+                                                    .s0 {
+                                                        opacity: .05;
+                                                        fill: var(--vz-success)
+                                                    }
+                                                </style>
+                                                <path id="Shape 8" class="s0" d="m189.5-25.8c0 0 20.1 46.2-26.7 71.4 0 0-60 15.4-62.3 65.3-2.2 49.8-50.6 59.3-57.8 61.5-7.2 2.3-60.8 0-60.8 0l-11.9-199.4z" />
+                                            </svg>
+                                        </div>
+                                        <div class="card-body" style="z-index:1 ;">
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-grow-1 overflow-hidden">
+                                                    <p class="text-uppercase fw-medium text-muted text-truncate mb-3">Total Books Returned</p>
+                                                    <h4 class="fs-22 fw-semibold ff-secondary mb-0"><span class="counter-value" data-target="<?= $db->where('return_status', 1)->where('student_id', $the_ken['user']['id'])->getValue('borrow_requests', 'SUM(no_of_copies)') ?>">0</span></h4>
+                                                </div>
+                                                <div class="flex-shrink-0">
+                                                    <i class="fas fa-layer-group fa-3x text-primary"></i>
+                                                </div>
+                                            </div>
+                                        </div><!-- end card body -->
+                                    </div><!-- end card -->
+                                </div><!--end col-->
+                                <div class="col-xl-6 col-md-6">
+                                    <div class="card card-animate overflow-hidden">
+                                        <div class="position-absolute start-0" style="z-index: 0;">
+                                            <svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" width="200" height="120">
+                                                <style>
+                                                    .s0 {
+                                                        opacity: .05;
+                                                        fill: var(--vz-success)
+                                                    }
+                                                </style>
+                                                <path id="Shape 8" class="s0" d="m189.5-25.8c0 0 20.1 46.2-26.7 71.4 0 0-60 15.4-62.3 65.3-2.2 49.8-50.6 59.3-57.8 61.5-7.2 2.3-60.8 0-60.8 0l-11.9-199.4z" />
+                                            </svg>
+                                        </div>
+                                        <div class="card-body" style="z-index:1 ;">
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-grow-1 overflow-hidden">
+                                                    <p class="text-uppercase fw-medium text-muted text-truncate mb-3">Total Overdue Books</p>
+                                                    <h4 class="fs-22 fw-semibold ff-secondary mb-0"><span class="counter-value" data-target="<?= $db->where('return_date', $today, '<')->where('aprove_status', 1)->where('student_id', $the_ken['user']['id'])->getValue('borrow_requests', 'SUM(no_of_copies)') ?>">0</span></h4>
+                                                </div>
+                                                <div class="flex-shrink-0">
+                                                    <i class="fas fa-calendar-times fa-3x text-danger"></i>
+                                                </div>
+                                            </div>
+                                        </div><!-- end card body -->
+                                    </div><!-- end card -->
+                                </div><!--end col-->
+                                <div class="col-xl-6 col-md-6">
+                                    <div class="card card-animate overflow-hidden">
+                                        <div class="position-absolute start-0" style="z-index: 0;">
+                                            <svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" width="200" height="120">
+                                                <style>
+                                                    .s0 {
+                                                        opacity: .05;
+                                                        fill: var(--vz-success)
+                                                    }
+                                                </style>
+                                                <path id="Shape 8" class="s0" d="m189.5-25.8c0 0 20.1 46.2-26.7 71.4 0 0-60 15.4-62.3 65.3-2.2 49.8-50.6 59.3-57.8 61.5-7.2 2.3-60.8 0-60.8 0l-11.9-199.4z" />
+                                            </svg>
+                                        </div>
+                                        <div class="card-body" style="z-index:1 ;">
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-grow-1 overflow-hidden">
+                                                    <p class="text-uppercase fw-medium text-muted text-truncate mb-3">Total Damaged Books</p>
+                                                    <h4 class="fs-22 fw-semibold ff-secondary mb-0"><span class="counter-value" data-target="<?= count($db->orderBy('id', 'DESC')->where('return_status', 1)->where('student_id', $the_ken['user']['id'])->get('borrow_requests')) ?>">0</span></h4>
+                                                </div>
+                                                <div class="flex-shrink-0">
+                                                    <i class="fas fa-layer-group fa-3x text-primary"></i>
+                                                </div>
+                                            </div>
+                                        </div><!-- end card body -->
+                                    </div><!-- end card -->
+                                </div><!--end col-->
+
+                            <?php } ?>
+                        </div><!--end row-->
+                    </div>
+                </div><!--end col-->
+
+            </div><!--end row-->
+            <?php if ($the_ken['user']['user_type'] != 'stud') { ?>
+                <div class="row">
+
+                    <div class="col-xxl-8">
+                        <div class="card card-height-100">
+                            <div class="card-header border-0 align-items-center d-flex">
+                                <h4 class="card-title mb-0 flex-grow-1">Last 7 days Borrowed Books</h4>
+
+                            </div><!-- end card header -->
+
+
+                            <div class="card-body p-0 pb-2">
+                                <div class="w-100">
+                                    <div class="col-md-12">
+                                        <div class="chart-frame">
+                                            <canvas id="studentsPerClassChart" width="300px" height="400px"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div><!-- end card body -->
+                        </div><!-- end card -->
+                    </div><!-- end col -->
+
+                    <div class="col-xxl-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="d-flex align-items-center">
+                                    <h6 class="card-title mb-0 flex-grow-1">Popular Borrowing Students</h6>
+                                    <div class="flex-shrink-0">
+                                        <a href="apps-job-candidate-lists.html" class="link-primary">View All <i class="ri-arrow-right-line"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row g-0">
+                                <div class="col-lg-6">
+                                    <div class="card-body border-end">
+                                        <div class="search-box">
+                                            <input type="text" class="form-control bg-light border-light" autocomplete="off" id="searchList" placeholder="Search candidate...">
+                                            <i class="ri-search-line search-icon"></i>
+                                        </div>
+                                        <div data-simplebar style="max-height: 190px" class="px-3 mx-n3">
+                                            <ul class="list-unstyled mb-0 pt-2" id="candidate-list">
+                                                <?php foreach ($most_borrowing_students as $student):
+                                                    $student_details = $db->where('id', $student->student_id)->getOne('users'); ?>
+                                                    <li>
+                                                        <a href="javascript:void(0);" class="d-flex align-items-center py-2">
+                                                            <div class="flex-shrink-0 me-2">
+                                                                <div class="avatar-xs">
+                                                                    <img src="<?= $the_ken['config']['site_url'] ?>/layout/assets/images/users/avatar-10.jpg" alt="" class="img-fluid rounded-circle candidate-img">
+                                                                </div>
+                                                            </div>
+                                                            <div class="flex-grow-1">
+                                                                <h5 class="fs-13 mb-1 text-truncate"><span class="candidate-name"><?= $student_details->firstname . ' ' . $student_details->lastname ?></span> <span class="text-muted fw-normal">(<?= $student->total_borrowed . ' Book Copies' ?>)</span></h5>
+
+                                                            </div>
+                                                        </a>
+                                                    </li>
+                                                <?php endforeach; ?>
+
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="card-body text-center">
+                                        <?php
+                                        $the_most_borrowing_student = $db
+                                            ->where('aprove_status', 1)
+                                            ->groupBy('student_id')
+                                            ->orderBy('total_borrowed', 'DESC')
+                                            ->get('borrow_requests', 1, ['student_id', 'SUM(no_of_copies) as total_borrowed'])
+                                        ?>
+                                        <div class="avatar-md mb-3 mx-auto">
+                                            <img src="<?= $the_ken['config']['site_url'] ?>/layout/assets/images/users/avatar-10.jpg" alt="" id="candidate-img" class="img-thumbnail rounded-circle shadow-none">
+                                        </div>
+                                        <?php foreach ($the_most_borrowing_student as $student):
+                                            $student_details = $db->where('id', $student->student_id)->getOne('users'); ?>
+
+                                            <h5 id="candidate-name" class="mb-0"><?= $student_details->firstname . ' ' . $student_details->lastname ?></h5>
+                                            <p id="candidate-position" class="text-muted">Top Most Borrowing Student</p>
+                                            <p id="candidate-position" class="text-muted">(<?= $student->total_borrowed . ' Book Copies' ?>)</p>
+
+
+                                            <div>
+                                                <button type="button" class="btn btn-success custom-toggle w-100" data-bs-toggle="button" aria-pressed="false">
+                                                    <span class="icon-on"><i class="ri-add-line align-bottom me-1"></i>View Borrowing History</span>
+
+                                                </button>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div><!-- end col -->
+
+                </div><!--end row-->
+
+            <?php } ?>
+            <div class="row">
+                <div class="col-xxl-8">
+                    <div class="card">
+                        <div class="card-header align-items-center d-flex">
+                            <h4 class="card-title mb-0 flex-grow-1">Top 10 Most Borrowed Books</h4>
+                            <div class="flex-shrink-0">
+                                <button type="button" class="btn btn-soft-info btn-sm">
+                                    <i class="ri-file-list-3-line align-bottom"></i>View All
+                                </button>
+                            </div>
+                        </div><!-- end card header -->
+
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table id="myTable" class="table table-bordered table-striped">
+                                    <thead class="text-muted table-light">
+                                        <tr>
+                                            <th scope="col">S/No.</th>
+                                            <th scope="col">Book Title</th>
+                                            <th scope="col">Aurthor</th>
+                                            <th scope="col">ISBN</th>
+                                            <th scope="col">Total Copies Borrowed</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="list form-check-all">
+
+                                        <?php
+                                        $sn = 0;
+
+                                        foreach ($most_borrowed as $value):
+                                            if (!empty($value->book_id)) {
+                                                $book_details = $db->where("id", $value->book_id)->getOne("books");
+
+                                                $sn++;
+                                        ?>
+                                                <tr>
+                                                    <th scope="row">
+                                                        <?= $sn ?>
+                                                    </th>
+                                                    <td><?= $book_details->title ?></td>
+                                                    <td><?= $book_details->author ?></td>
+                                                    <td><?= $book_details->isbn ?></td>
+                                                    <td><?= $value->total_borrowed ?></td>
+
+
+                                                </tr>
+                                        <?php
+                                            }
+                                        endforeach;
+                                        ?>
+                                    </tbody>
+
+                                </table><!-- end table -->
+                            </div>
+                        </div>
+                    </div> <!-- .card-->
+                </div> <!-- .col-->
+                <div class="col-xxl-4">
+                    <!-- card -->
+                    <div class="card card-height-100">
+
+
+
+                    </div>
+                    <!-- end card -->
+                </div>
+                <!-- end col -->
+            </div> <!-- end row-->
+        </div>
+        <!-- container-fluid -->
+    </div>
+    <!-- End Page-content -->
+    <script type="text/javascript">
+        var ctx = document.getElementById('studentsPerClassChart').getContext('2d');
+        var studentsPerClassChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: <?= json_encode($last7days) ?>, // Array of class labels
+                datasets: [{
+                    label: 'Total Students',
+                    data: <?= json_encode($total_borrowed_per_day) ?>, // Array of total students per class
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)', // Blue color for bars
+                    borderColor: 'rgba(54, 162, 235, 1)', // Border color for bars
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true, // Enable responsiveness
+                maintainAspectRatio: false, // Maintain aspect ratio
+                plugins: {
+                    legend: {
+                        display: false // Hide legend
+                    },
+                    title: {
+                        display: true,
+                        text: 'Total Borrowed Books per day' // Chart title
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Days' // X-axis label
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Total Books' // Y-axis label
+                        },
+                        ticks: {
+                            beginAtZero: true // Start Y-axis at 0
+                        }
+                    }
+                }
+            }
+        });
+    </script>

@@ -1,0 +1,209 @@
+<!-- auth-page wrapper -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.15.5/dist/sweetalert2.min.css">
+<div class="auth-page-wrapper auth-bg-cover d-flex justify-content-center align-items-center ">
+    <div class="bg-overlay"></div>
+    <!-- auth-page content -->
+    <div class="auth-page-content overflow-hidden pt-lg-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card overflow-hidden">
+                        <div class="row g-0">
+                            <div class="col-lg-6">
+                                <div class="p-lg-5 p-4 auth-one-bg h-100">
+                                    <div class="bg-overlay"></div>
+                                    <div class="position-relative h-100 d-flex flex-column">
+                                        <div class="mb-4">
+                                            <a href="<?= $the_ken['config']['site_url'] ?>" class="d-block">
+                                                <img width="100px" height="100px" src="<?= $the_ken['config']['site_url'] . $the_ken['config']['logo'] ?>" alt="" height="18">
+                                            </a>
+                                        </div>
+                                        <div class="mt-auto">
+                                            <div class="mb-3">
+                                                <i class="ri-double-quotes-l display-4 text-success"></i>
+                                            </div>
+
+                                            <div id="qoutescarouselIndicators" class="carousel slide" data-bs-ride="carousel">
+                                                <div class="carousel-indicators">
+                                                    <button type="button" data-bs-target="#qoutescarouselIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                                                    <button type="button" data-bs-target="#qoutescarouselIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                                                    <button type="button" data-bs-target="#qoutescarouselIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                                                </div>
+                                                <div class="carousel-inner text-center text-white-50 pb-5">
+                                                    <div class="carousel-item active">
+                                                        <p class="fs-15 fst-italic">" Great! Clean code, clean design, easy for customization. Thanks very much! "</p>
+                                                    </div>
+                                                    <div class="carousel-item">
+                                                        <p class="fs-15 fst-italic">" The theme is really great with an amazing customer support."</p>
+                                                    </div>
+                                                    <div class="carousel-item">
+                                                        <p class="fs-15 fst-italic">" Great! Clean code, clean design, easy for customization. Thanks very much! "</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- end carousel -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- end col -->
+
+                            <div class="col-lg-6">
+                                <div class="p-lg-5 p-4">
+                                    <div>
+                                        <h5 class="text-primary">Welcome Back !</h5>
+                                        <p class="text-muted">Sign in to continue to <?= $the_ken['config']['site_name'] ?>.</p>
+                                    </div>
+
+                                    <div class="mt-4">
+                                        <form id="login">
+
+                                            <div class="mb-3">
+                                                <label for="username" class="form-label">Email</label>
+                                                <input type="email" class="form-control" name="email" placeholder="Enter Email">
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <div class="float-end">
+                                                    <a href="admin.php?page=forgot_pwd" class="text-muted">Forgot password?</a>
+                                                </div>
+                                                <label class="form-label" for="password-input">Password</label>
+                                                <div class="position-relative auth-pass-inputgroup mb-3">
+                                                    <input type="password" class="form-control pe-5 password-input" placeholder="Enter password" name="password">
+                                                    <button class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted password-addon" type="button" id="password-addon"><i class="ri-eye-fill align-middle"></i></button>
+                                                </div>
+                                            </div>
+                                            <!-- Radio Buttons for Admin or Alumni centered -->
+                                            <!--     <div class="form-group">
+        <label><strong>Select Role</strong></label>
+        <div class="d-flex justify-content-center">
+            <div class="form-check mr-3">
+                <input class="form-check-input" type="radio" name="role" id="adminRole" value="admin" checked>
+                <label class="form-check-label" for="adminRole">Admin</label>
+            </div>
+            <div style="margin-left: 20px; " class="form-check">
+                <input class="form-check-input" type="radio" name="role" id="alumniRole" value="alumni">
+                <label class="form-check-label" for="alumniRole">Alumni</label>
+            </div>
+        </div>
+    </div> -->
+
+                                            <div class="mt-4">
+                                                <button class="btn btn-success w-100 button" type="submit">Login</button>
+                                            </div>
+
+
+                                        </form>
+                                    </div>
+
+                                    <div class="mt-5 text-center">
+                                        <p class="mb-0">Don't have an account ? <a href="index.php?page=register" class="fw-semibold text-primary text-decoration-underline"> Register Here</a> </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- end col -->
+                        </div>
+                        <!-- end row -->
+                    </div>
+                    <!-- end card -->
+                </div>
+                <!-- end col -->
+
+            </div>
+            <!-- end row -->
+        </div>
+        <!-- end container -->
+        <!-- footer -->
+        <footer class="footer">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="text-center">
+                            <p class="mb-0">&copy;
+                                <script>
+                                    document.write(new Date().getFullYear())
+                                </script> <?= $the_ken['config']['site_name'] ?>. Crafted with <i class="mdi mdi-heart text-danger"></i> By<a href=""> <?= $the_ken['config']['site_name'] ?></a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- end Footer -->
+    </div>
+    <!-- end auth page content -->
+
+
+</div>
+<!-- end auth-page-wrapper -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/js/iziToast.min.js"></script>
+
+<!-- Sweet Alerts js -->
+<script src="<?= $the_ken['config']['site_url'] ?>admin/layout/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+
+
+<!-- SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Include Bootstrap JS -->
+
+<script>
+    $('#login').on('submit', function(e) {
+        e.preventDefault();
+        $.ajax({
+            url: request() + '?f=auth&s=login',
+            method: 'POST',
+            contentType: false,
+            processData: false,
+            data: new FormData(this),
+            beforeSend: function() {
+                $('.button').html('<i class="fas fa-spinner fa-spin"></i> Processing...');
+                $('.button').addClass('disabled');
+            },
+            success: function(response) {
+                console.log(response);
+                $('.button').html('Login');
+                $('.button').removeClass('disabled');
+
+                if (response.status == 200) {
+                    Swal.fire({
+                        title: "🎉 Success!",
+                        text: response.message,
+                        icon: "success",
+                        timer: 2500,
+                        showConfirmButton: false,
+                        toast: true,
+                        position: "top-end",
+                        background: "#d1e7dd", // Light green background
+                        iconColor: "#198754", // Bootstrap success color
+                        showClass: {
+                            popup: 'animate__animated animate__fadeInDown'
+                        },
+                        hideClass: {
+                            popup: 'animate__animated animate__fadeOutUp'
+                        }
+                    }).then(() => {
+                        window.location.href = response.url;
+                    });
+                } else {
+                    Swal.fire({
+                        title: "⚠️ Oops!",
+                        text: response.message,
+                        icon: "error",
+                        confirmButtonColor: "#dc3545", // Bootstrap danger color
+
+                        showClass: {
+                            popup: 'animate__animated animate__shakeX'
+                        },
+                        hideClass: {
+                            popup: 'animate__animated animate__fadeOut'
+                        }
+                    });
+                }
+            }
+        });
+    });
+</script>
+</body>
+
+</html>

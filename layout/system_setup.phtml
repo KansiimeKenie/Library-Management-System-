@@ -1,0 +1,209 @@
+   <div class="main-content">
+
+                <div class="page-content">
+                    <div class="container-fluid">
+
+                        <!-- start page title -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                                    <h4 class="mb-sm-0">General System Setup</h4>
+
+                                    <div class="page-title-right">
+                                        <ol class="breadcrumb m-0">
+                                            <li class="breadcrumb-item"><a href="javascript: void(0);">Home</a></li>
+                                            <li class="breadcrumb-item active">System Setup</li>
+                                        </ol>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <!-- end page title -->
+
+                        <div class="row">
+                          <div class="col-xxl-6">
+                            <div class="card">
+                                <div class="card-header align-items-center d-flex">
+                                    <h4 class="card-title mb-0 flex-grow-1">General Setup Form</h4>
+                                    <div class="flex-shrink-0">
+                                        <div class="form-check form-switch form-switch-right form-switch-md">
+                                            
+                                        </div>
+                                    </div>
+                                </div><!-- end card header -->
+                                <div class="card-body">
+                        
+                                    <div class="live-preview">
+                                        <form id="general">
+                                            <div class="row mb-3">
+                                                <div class="col-lg-3">
+                                                    <label for="nameInput" class="form-label">Name</label>
+                                                </div>
+                                                <div class="col-lg-9">
+                                                    <input type="hidden" name="types[]" value="site_name">
+                                    <input type="text" name="site_name" class="form-control" value="<?=$the_ken['config']['site_name']?>">
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-lg-3">
+                                                    <label for="websiteUrl" class="form-label">System Logo</label>
+                                                </div>
+                                                <div class="col-lg-9">
+                                                      <input type="hidden" name="images[]" value="logo">
+                                    <input type="file" name="logo" class="form-control">
+                                    <div class="file-preview box sm"></div>
+                                    <small>Will be used in front end</small>
+                                    <img src="<?= $the_ken['config']['site_url'].$the_ken['config']['logo'] ?>" height="40" onerror = "this.onerror=null;this.src='<?= $the_ken['config']['site_url'] ?>layout/assets/images/logo.png'">
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-lg-3">
+                                                    <label for="websiteUrl" class="form-label">System Icon</label>
+                                                </div>
+                                                <div class="col-lg-9">
+                                                     <input type="hidden" name="images[]" value="favicon">
+                                    <input type="file" name="favicon" class="form-control">
+                                    <div class="file-preview box sm"></div>
+                                    <small>Will be used in Browser</small>
+                                    <img src="<?= $the_ken['config']['site_url'].$the_ken['config']['favicon'] ?>" height="40" onerror = "this.onerror=null;this.src='<?= $the_ken['config']['site_url'] ?>layout/assets/images/favicon.png'">
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-lg-3">
+                                                    <label for="dateInput" class="form-label">Phone No.</label>
+                                                </div>
+                                                <div class="col-lg-9">
+                                                     <input type="hidden" name="types[]" value="phone">
+                                    <input type="text" name="phone" class="form-control" value="<?=$the_ken['config']['phone']?>">
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-lg-3">
+                                                    <label for="timeInput" class="form-label">Email</label>
+                                                </div>
+                                                <div class="col-lg-9">
+                                                    <input type="hidden" name="types[]" value="email">
+                                    <input type="text" name="email" class="form-control" value="<?=$the_ken['config']['email']?>">
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-lg-3">
+                                                    <label for="leaveemails" class="form-label">Address</label>
+                                                </div>
+                                                <div class="col-lg-9">
+                                                     <input type="hidden" name="types[]" value="address">
+                                    <input type="text" name="address" class="form-control" value="<?=$the_ken['config']['address']?>">
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-lg-3">
+                                                    <label for="contactNumber" class="form-label">Meta Description</label>
+                                                </div>
+                                                <div class="col-lg-9">
+                                                    <input type="hidden" name="types[]" value="meta_description">
+                                    <textarea type="text" name="meta_description" rows="3" class="form-control"><?=$the_ken['config']['meta_description']?></textarea>
+                                    <small>For Search Engine Optimization</small>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-lg-3">
+                                                    <label for="meassageInput" class="form-label">Facebook Link</label>
+                                                </div>
+                                                <div class="col-lg-9">
+                                                    <input type="hidden" name="types[]" value="facebook">
+                                                    <input type="text" name="facebook" class="form-control" value="<?=$the_ken['config']['facebook']?>">
+                                                </div>
+                                            </div>
+                                             <div class="row mb-3">
+                                                <div class="col-lg-3">
+                                                    <label for="meassageInput" class="form-label">Twitter Link</label>
+                                                </div>
+                                                <div class="col-lg-9">
+                                                    <input type="hidden" name="types[]" value="twitter">
+                                    <input type="text" name="twitter" class="form-control" value="<?=$the_ken['config']['twitter']?>">
+                                                </div>
+                                            </div>
+                                             <div class="row mb-3">
+                                                <div class="col-lg-3">
+                                                    <label for="meassageInput" class="form-label">Linkedin Link</label>
+                                                </div>
+                                                <div class="col-lg-9">
+                                                   <input type="hidden" name="types[]" value="linkedin">
+                                    <input type="text" name="linkedin" class="form-control" value="<?=$the_ken['config']['linkedin']?>">
+                                                </div>
+                                            </div>
+                                             <div class="row mb-3">
+                                                <div class="col-lg-3">
+                                                    <label for="meassageInput" class="form-label">Working Hours</label>
+                                                </div>
+                                                <div class="col-lg-9">
+                                                   <input type="hidden" name="types[]" value="working_hours">
+                                    <input type="text" name="working_hours" class="form-control" value="<?=$the_ken['config']['working_hours']?>">
+                                                </div>
+                                            </div>
+                                            <div class="text-center">
+                                                <button type="submit" class="btn btn-primary">Update Settings</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                              </div><!--end row-->
+                        
+                   
+              
+              
+                    </div>
+                    <!-- container-fluid -->
+                </div>
+                <!-- End Page-content -->
+                          </div><!--end row-->
+                        
+                   
+              
+              
+                    </div>
+                    <!-- container-fluid -->
+                </div>
+                <!-- End Page-content -->
+
+    <script>
+
+        $('#general').on('submit',function(e){
+         
+            e.preventDefault();
+            $.ajax({
+                url: request()+'?f=web-setup&s=update',
+                method: 'POST',
+                data: new FormData(this),
+                contentType: false,
+                processData: false,
+                cache: false,
+                success: function(response){
+                    console.log(response);
+                     if (response.status == 200) {
+                    Swal.fire({
+                            title: "Good job!",
+                            text: response.message,
+                            icon: "success",
+                            showConfirmButton: true,
+                        });
+                        setTimeout(function () {
+                            window.location.reload()
+                        }, 2e3);
+
+                } else {
+                    Swal.fire({
+                        title: "Oops!",
+                        text: response.message,
+                        icon: "error",
+                        cancelButtonClass: "btn btn-danger ml-2 mt-2",
+                        confirmButtonColor: "#6c757d"
+                    });
+                }
+                }
+            });
+        });
+    </script>
+
+
+              

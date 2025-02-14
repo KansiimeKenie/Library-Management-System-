@@ -1,0 +1,160 @@
+<?php
+$all_requests = $db->orderBy('id', 'DESC')->where('aprove_status', 1)->where('return_status IS NULL')->get('borrow_requests');
+if ($the_ken['user']['user_type'] == 'stud') {
+    $all_requests = $db->orderBy('id', 'DESC')->where('student_id', $the_ken['user']['id'])->where('aprove_status', 1)->where('return_status IS NULL')->get('borrow_requests');
+}
+?>
+<div class="main-content">
+
+
+    <div class="page-content">
+        <div class="container-fluid">
+
+            <!-- start page title -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                        <h4 class="mb-sm-0">All Borrow Books</h4>
+
+                        <div class="page-title-right">
+                            <ol class="breadcrumb m-0">
+                                <li class="breadcrumb-item"><a href="javascript: void(0);">Home</a></li>
+                                <li class="breadcrumb-item active">Borrowed Books</li>
+                            </ol>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+
+                        <div class="card-body">
+                            <div class="listjs-table" id="customerList">
+                                <div class="row g-4 mb-3">
+
+                                    <div class="col-sm">
+                                        <div class="d-flex justify-content-sm-end">
+                                            <div class="search-box ms-2">
+                                                <a href="" type="button" class="btn btn-success add-btn"><i class="ri-add-line align-bottom me-1"></i> Filter </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="table-responsive mt-3 mb-1">
+                                    <table id="myTable" class="table table-bordered table-striped">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th scope="col">
+                                                    S/No.
+                                                </th>
+                                                <th class="sort" data-sort="title">Student Name</th>
+                                                <th class="sort" data-sort="description">Class</th>
+                                                <th class="sort" data-sort="date">Borrowed Book</th>
+                                                <th class="sort" data-sort="date">Copies</th>
+                                                <th class="sort" data-sort="date">Return Status</th>
+                                                <th class="sort" data-sort="date">Return Date</th>
+                                                <th class="sort" data-sort="date">Remaining Days</th>
+                                                <th class="sort" data-sort="action">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="list form-check-all">
+
+                                            <?php
+                                            $sn = 0;
+                                            foreach ($all_requests as $value):
+                                                $book_details = $db->where("id", $value->book_id)->getOne("books");
+                                                $student_details = $db->where('id', $value->student_id)->getOne('users');
+
+                                                $sn++;
+                                            ?>
+                                                <tr>
+                                                    <th scope="row">
+                                                        <?= $sn ?>
+                                                    </th>
+                                                    <td><?= $student_details->firstname . ' ' . $student_details->lastname ?></td>
+                                                    <td><?= $db->where('id', $student_details->class_id)->getOne('classes')->abbrev ?></td>
+                                                    <td><?= $book_details->title . ' ' . $book_details->author ?></td>
+                                                    <td><?= $value->no_of_copies ?></td>
+                                                    <td><span class="badge bg-info">Pending</span></td>
+                                                    <td class="date"><?= date('d/m/Y', strtotime($value->return_date)) ?></td>
+                                                    <td><?php
+                                                        $days = getBorrowedBookRemainingDays(date('y-m-d', strtotime($value->return_date)));
+                                                        if ($days <  1) {
+                                                            echo "Over due";
+                                                        } else {
+                                                            echo $days . ' Days';
+                                                        }
+
+                                                        ?></td>
+
+                                                    <td>
+                                                        <a title='View Details' href="index.php?page=req_details&id=<?= $value->id ?>" class="btn btn-sm btn-success " href=""><i class="fas fa-eye"></i> </a>
+                                                    </td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+
+                                </div>
+
+                            </div>
+                        </div><!-- end card -->
+                    </div>
+                    <!-- end col -->
+                </div>
+                <!-- end col -->
+            </div>
+            <!-- end row -->
+
+
+
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        function remImage(id) {
+            // Show SweetAlert confirmation dialog
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This action cannot be undone!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // If confirmed, proceed with AJAX request
+                    $.ajax({
+                        url: request() + '?f=gallery&s=remove',
+                        method: 'POST',
+                        data: {
+                            id: id
+                        },
+                        success: function(data) {
+                            console.log(data);
+                            if (data.status == 200) {
+                                iziToast.success({
+                                    title: 'Info',
+                                    message: data.message,
+                                    position: 'topRight'
+                                });
+                                setTimeout(function() {
+                                    location.reload();
+                                }, 1000);
+                            } else {
+                                iziToast.error({
+                                    title: 'Alert',
+                                    message: data.message,
+                                    position: 'topRight'
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    </script>
