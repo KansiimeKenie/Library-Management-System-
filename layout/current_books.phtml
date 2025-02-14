@@ -1,3 +1,11 @@
+<?php
+$current_books = $db->get('books');
+$page_title = 'All Current Library Books';
+if (isset($_GET['id']) && !empty($_GET['id'])) {
+    $current_books = $db->orderBy('id', 'DESC')->where('category_id', __secure(($_GET['id'])))->get('books');
+    $page_title = 'All ' . $db->where('id', __secure(($_GET['id'])))->getOne('categories')->name . ' Books';
+}
+?>
 <div class="main-content">
 
 
@@ -30,7 +38,7 @@
                                     <div class="col-sm">
                                         <div class="d-flex justify-content-sm-end">
                                             <div class="search-box ms-2">
-                                                <a href="" type="button" class="btn btn-success add-btn"><i class="ri-add-line align-bottom me-1"></i> Filter Books</a>
+                                                <a data-bs-toggle="modal" data-bs-target="#filter_" type="button" class="btn btn-primary add-btn"><i class="ri-filter-line align-bottom me-1"></i> Filter By Category</a>
                                             </div>
                                         </div>
                                     </div>
@@ -55,8 +63,8 @@
 
                                             <?php
                                             $sn = 0;
-                                            foreach ($db->get('current_books') as $value):
-                                                $book_details = $db->where("id", $value->book_id)->getOne("books");
+                                            foreach ($current_books as $value):
+                                                $current_bk_details = $db->where("book_id", $value->id)->getOne("current_books");
 
 
                                                 $sn++;
@@ -65,11 +73,11 @@
                                                     <th scope="row">
                                                         <?= $sn ?>
                                                     </th>
-                                                    <td><?= $book_details->title ?></td>
-                                                    <td class="title"><?= $db->where("id", $book_details->category_id)->getOne("categories")->name ?></td>
-                                                    <td class="description"><?= $book_details->author ?></td>
-                                                    <td><?= $book_details->isbn ?></td>
-                                                    <td><?= $value->no_of_copies ?></td>
+                                                    <td><?= $value->title ?></td>
+                                                    <td class="title"><?= $db->where("id", $value->category_id)->getOne("categories")->name ?></td>
+                                                    <td class="description"><?= $value->author ?></td>
+                                                    <td><?= $value->isbn ?></td>
+                                                    <td><?= $current_bk_details->no_of_copies ?></td>
 
                                                 </tr>
                                             <?php endforeach; ?>
@@ -92,6 +100,8 @@
 
         </div>
     </div>
+
+
     <!-- Modal fadeInUp -->
     <div id="register" class="modal fade fadeInUp" tabindex="-1" aria-labelledby="fadeInUpModalLabel" aria-hidden="true" style="display: none;">
         <div class="modal-dialog modal-dialog-centered">

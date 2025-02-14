@@ -132,7 +132,7 @@ if ($f == "books") {
 			if (update_data("books", $book_data, "WHERE id = '" . $book_id . "'")) {
 				$data = array(
 					'status'	=>	200,
-					'message'	=>	'Book registered successfully!',
+					'message'	=>	'Book Updated successfully!',
 
 				);
 			} else {
@@ -242,6 +242,7 @@ if ($f == "books") {
 	}
 	if ($s == 'filter_by_category') {
 		$id = __secure($_POST['id']);
+		$url_page = __secure($_POST['page']);
 		if (empty($id)) {
 			$data = array(
 				'status'	=>	201,
@@ -251,7 +252,7 @@ if ($f == "books") {
 			$data = array(
 				'status'	=>	200,
 				'message'	=>	'Books Filterd, Redirecting .....',
-				'url' => 'index.php?page=all_books&id=' . $id
+				'url' => 'index.php?page=' . $url_page . '&id=' . $id
 			);
 		}
 	}

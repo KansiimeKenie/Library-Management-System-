@@ -224,6 +224,42 @@ $page_loaded = load_page("$page");
         </div><!-- /.modal -->
         <!--End pagewrapper-->
     <?php endif; ?>
+    <!-- Add new Borrow request Modal -->
+    <div id="filter_" class="modal fade fadeInUp" tabindex="-1" aria-labelledby="fadeInUpModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="fadeInUpModalLabel">Filter Books By Category</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="filter_book">
+                        <input type="text" value="<?= $page ?>" name="page" hidden />
+                        <div class="row gy-4">
+
+                            <div class="col-xxl-3 col-md-12">
+                                <div>
+                                    <label for="basiInput" class="form-label">Book Category</label>
+                                    <select name="id" class="form-control selectpicker" data-live-search="true">
+                                        <option value="">--Select Category--</option>
+                                        <?php foreach ($db->get("categories") as $value) { ?>
+                                            <option value="<?= $value->id ?>"><?= $value->name  ?></option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="modal-footer mt-4">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary ">Filter Books</button>
+                        </div>
+                </div>
+                </form>
+
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
 
     <!-- JAVASCRIPT -->
     <script src="<?= $the_ken['config']['site_url'] ?>/layout/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -350,6 +386,41 @@ $page_loaded = load_page("$page");
             e.preventDefault();
             $.ajax({
                 url: request() + '?f=books&s=new_book',
+                method: 'POST',
+                data: new FormData(this),
+                contentType: false,
+                processData: false,
+                cache: false,
+                success: function(response) {
+                    console.log(response);
+                    if (response.status == 200) {
+                        Swal.fire({
+                            title: "Good job!",
+                            text: response.message,
+                            icon: "success",
+                            showConfirmButton: true,
+                        });
+                        setTimeout(function() {
+                            window.location.href = response.url;
+                        }, 2e3);
+
+                    } else {
+                        Swal.fire({
+                            title: "Oops!",
+                            text: response.message,
+                            icon: "error",
+                            cancelButtonClass: "btn btn-danger ml-2 mt-2",
+                            confirmButtonColor: "#6c757d"
+                        });
+                    }
+                }
+            });
+        });
+        $('#filter_book').on('submit', function(e) {
+
+            e.preventDefault();
+            $.ajax({
+                url: request() + '?f=books&s=filter_by_category',
                 method: 'POST',
                 data: new FormData(this),
                 contentType: false,

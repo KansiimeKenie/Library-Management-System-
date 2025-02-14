@@ -10,10 +10,10 @@ if ($f == "damages") {
 				'status'	=>	201,
 				'message'	=>	'Please Select Book'
 			);
-		} elseif (empty($no_of_copies)) {
+		} elseif (empty($no_of_copies) || !is_numeric($no_of_copies) || $no_of_copies <= 0) {
 			$data = array(
-				'status'	=>	201,
-				'message'	=>	'Please insert No. of Book Copies Damaged!'
+				'status'    => 201,
+				'message'   => 'Please insert a valid number of book copies damaged (must be a positive number)'
 			);
 		} else {
 			//update inventory
@@ -54,11 +54,16 @@ if ($f == "damages") {
 				'status'	=>	201,
 				'message'	=>	'Please insert No. of Book Copies Damaged'
 			);
+		} elseif (empty($no_of_copies) || !is_numeric($no_of_copies) || $no_of_copies <= 0) {
+			$data = array(
+				'status'    => 201,
+				'message'   => 'Please insert a valid number of book copies damaged (must be a positive number)'
+			);
 		} else {
 			//update inventory
 			$existing_inventory = $db->where("id", $book_id)->getOne("current_books");
 			$existing_inventory_copies = (empty($existing_inventory) ? 0 : $existing_inventory->no_of_copies);
-			$updated_no_copies =  ($existing_inventory_copies - $initial_copies) + $no_of_copies;
+			$updated_no_copies =  ($existing_inventory_copies + $initial_copies) - $no_of_copies;
 			$book_data = [
 				"no_of_copies" => $no_of_copies,
 				"description" => $description,
@@ -88,7 +93,7 @@ if ($f == "damages") {
 		$book_id = __secure($_POST['book_id']);
 		$damaged_copies = __secure($_POST['no_of_copies']);
 		$current_books_details = $db->where("book_id", $book_id)->getOne("current_books");
-		$updated_no_copies = (empty($current_books_details) ? 0 : $current_books_details->no_of_copies) - $damaged_copies;
+		$updated_no_copies = (empty($current_books_details) ? 0 : $current_books_details->no_of_copies) + $damaged_copies;
 		$current_book_data = [
 			"book_id" => $book_id,
 			"no_of_copies" => $updated_no_copies,

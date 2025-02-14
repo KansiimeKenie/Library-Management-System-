@@ -139,35 +139,15 @@ function getCurrentDate()
     return $date;
 }
 
-function share_file($name, $destination, $resize = false, $height = 0, $width = 0)
+function share_file($name, $destination)
 {
     global $the_ken, $sqlConnect;
     $ext = pathinfo($_FILES[$name]['name'], PATHINFO_EXTENSION);
     $filename = md5(time() . $_FILES[$name]['name']) . '.' . $ext;
-    $file = $_FILES[$name]['tmp_name'];
-    if ($resize) {
-        $source_properties = getimagesize($file);
-        $image_type = $source_properties[2];
-        if ($image_type == IMAGETYPE_JPEG) {
-            $image_resource_id = imagecreatefromjpeg($file);
-        } elseif ($image_type == IMAGETYPE_GIF) {
-            $image_resource_id = imagecreatefromgif($file);
-        } elseif ($image_type == IMAGETYPE_PNG) {
-            $image_resource_id = imagecreatefrompng($file);
-        }
 
-        $target_layer = imagecreatetruecolor($width, $height);
-        imagecopyresampled($target_layer, $image_resource_id, 0, 0, 0, 0, $width, $height, $source_properties[0], $source_properties[1]);
-        imagejpeg($target_layer, $destination . $filename);
-
+    if (move_uploaded_file($_FILES[$name]['tmp_name'], $destination . $filename)) {
         return $destination . $filename;
-    } else {
-
-        if (move_uploaded_file($_FILES[$name]['tmp_name'], $destination . $filename)) {
-            return $destination . $filename;
-        }
     }
-
     return '';
 }
 

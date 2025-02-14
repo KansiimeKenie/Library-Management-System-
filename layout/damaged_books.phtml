@@ -81,7 +81,7 @@
                                                     <td class="description"><?= $book_details->isbn ?></td>
                                                     <td><?= $value->no_of_copies ?></td>
                                                     <td class="date"><?= date('d/m/Y', strtotime($value->date_created)) ?></td>
-                                                    <td><?= $value->created_by ?></td>
+                                                    <td><?= $db->where('id', $value->created_by)->getOne('users')->firstname ?></td>
 
 
                                                     <td>
@@ -128,7 +128,7 @@
                             <div class="col-xxl-3 col-md-12">
                                 <div>
                                     <label for="basiInput" class="form-label">Select Book</label>
-                                    <select name="book_id" class="form-control">
+                                    <select name="book_id" class="form-control selectpicker" data-live-search="true">
                                         <option value="">--Select Book--</option>
                                         <?php foreach ($db->get("books") as $value) { ?>
                                             <option value="<?= $value->id ?>"><?= $value->title . '. By : ' . $value->author ?></option>

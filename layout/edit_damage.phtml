@@ -1,119 +1,118 @@
-   
-   <?php 
-   $damage_details = $db->where("id", __secure($_GET['id']))->getOne("damaged_books");
-   $book_details = $db->where("id", $damage_details->book_id)->getOne("books");
-   
-   ?>
+   <?php
+    $damage_details = $db->where("id", __secure($_GET['id']))->getOne("damaged_books");
+    $book_details = $db->where("id", $damage_details->book_id)->getOne("books");
+
+    ?>
    <div class="main-content">
 
 
-<div class="page-content">
-    <div class="container-fluid">
+       <div class="page-content">
+           <div class="container-fluid">
 
-        <!-- start page title -->
-        <div class="row">
-            <div class="col-12">
-                <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                    <h4 class="mb-sm-0">Edit Damaged Books</h4>
+               <!-- start page title -->
+               <div class="row">
+                   <div class="col-12">
+                       <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                           <h4 class="mb-sm-0">Edit Damaged Books</h4>
 
-                    <div class="page-title-right">
-                        <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item"><a href="javascript: void(0);">Home</a></li>
-                            <li class="breadcrumb-item active">Edit </li>
-                        </ol>
-                    </div>
+                           <div class="page-title-right">
+                               <ol class="breadcrumb m-0">
+                                   <li class="breadcrumb-item"><a href="javascript: void(0);">Home</a></li>
+                                   <li class="breadcrumb-item active">Edit </li>
+                               </ol>
+                           </div>
 
-                </div>
-            </div>
-        </div>
-   <div class="row">
-                        <div class="col-12">
-                            
-                            <div class="col-xxl-4">
-                                 <div class="card border-info shadow-lg">
-    <div class="card-header bg-info text-white">
-        <h6 class="card-title mb-0 d-flex justify-content-between align-items-center">
-           Edit Book Purchase - <?=  $book_details->title .' . By : '.$book_details->author ?>
-            
-        </h6>
-    </div>
-    <div class="card-body">
-        <form id="edit_book_purchase">
-            <input type="text" name="id" value="<?= $damage_details->id ?>" Hidden>
-            <input type="text" name="book_id" value="<?= $book_details->id ?>" Hidden>
-            <input type="text" name="initial_copies" value="<?= $damage_details->no_of_copies ?>" Hidden>
-        <div class="row">
+                       </div>
+                   </div>
+               </div>
+               <div class="row">
+                   <div class="col-12">
 
-            <div class="col-xxl-3 col-md-12">
-                                                
-                                            </div>
-                                            <!--end col-->
-                                      
-                                          
-                                             <div class="col-xxl-3 col-md-12">
-                                                <div>
-                                                    <label for="placeholderInput" class="form-label">No Of Copies Damaged</label>
-                                                    <input type="text" value="<?= $damage_details->no_of_copies ?>" class="form-control"  name="no_of_copies" placeholder="ISBN">
-                                                </div>
-                                            </div>
-                                             <div class="col-xxl-3 col-md-12 mt-3">
-                                                <div>
-                                                    <label for="placeholderInput" class="form-label">Damage Description</label>
-                                                    
-                                                    <textarea name="description" class="form-control"><?= $damage_details->description ?></textarea>
-                                                </div>
-                                            </div>
-                                       
-            
-        </div>
-        <hr>
+                       <div class="col-xxl-4">
+                           <div class="card border-info shadow-lg">
+                               <div class="card-header bg-info text-white">
+                                   <h6 class="card-title mb-0 d-flex justify-content-between align-items-center">
+                                       Edit Book Purchase - <?= $book_details->title . ' . By : ' . $book_details->author ?>
 
-      <div class="d-flex mt-3 align-items-center justify-content-center ">
-    <button type="submit" class="btn btn-warning m-1"><i class="fas fa-edit"></i> Edid Damaged Book Details</button>
-</div>
-</form>
-    </div>
-</div>
-</div><!-- end col -->
-    </div><!-- end row -->
-                        </div><!-- end col -->
-                    </div><!-- end row -->
-                     </div><!-- end col -->
-                    </div><!-- end row -->
-<script>
-   $('#edit_book_purchase').on('submit',function(e){
-      
-            e.preventDefault();
-            $.ajax({
-                url: request()+'?f=damages&s=edit_damaged_book',
-                method: 'POST',
-                data: new FormData(this),
-                contentType: false,
-                processData: false,
-                cache: false,
-                success: function(response){
-                    console.log(response);
-                     if (response.status == 200) {
-                    Swal.fire({
-                            title: "Good job!",
-                            text: response.message,
-                            icon: "success",
-                            showConfirmButton: true,
-                        });
-                        setTimeout(function () {
-                            window.location.reload()
-                        }, 2e3);
+                                   </h6>
+                               </div>
+                               <div class="card-body">
+                                   <form id="edit_book_purchase">
+                                       <input type="text" name="id" value="<?= $damage_details->id ?>" Hidden>
+                                       <input type="text" name="book_id" value="<?= $book_details->id ?>" Hidden>
+                                       <input type="text" name="initial_copies" value="<?= $damage_details->no_of_copies ?>" Hidden>
+                                       <div class="row">
 
-                } else {
-                    Swal.fire({
-                        title: "Oops!",
-                        text: response.message,
-                        icon: "error",
-                        cancelButtonClass: "btn btn-danger ml-2 mt-2",
-                        confirmButtonColor: "#6c757d"
-                    });
-                }
-                }
-            });
-        });
-</script>
+                                           <div class="col-xxl-3 col-md-12">
+
+                                           </div>
+                                           <!--end col-->
+
+
+                                           <div class="col-xxl-3 col-md-12">
+                                               <div>
+                                                   <label for="placeholderInput" class="form-label">No Of Copies Damaged</label>
+                                                   <input type="text" value="<?= $damage_details->no_of_copies ?>" class="form-control" name="no_of_copies" placeholder="No. Of Copies Damaged">
+                                               </div>
+                                           </div>
+                                           <div class="col-xxl-3 col-md-12 mt-3">
+                                               <div>
+                                                   <label for="placeholderInput" class="form-label">Damage Description</label>
+
+                                                   <textarea name="description" class="form-control"><?= $damage_details->description ?></textarea>
+                                               </div>
+                                           </div>
+
+
+                                       </div>
+                                       <hr>
+
+                                       <div class="d-flex mt-3 align-items-center justify-content-center ">
+                                           <button type="submit" class="btn btn-warning m-1"><i class="fas fa-edit"></i> Edid Damaged Book Details</button>
+                                       </div>
+                                   </form>
+                               </div>
+                           </div>
+                       </div><!-- end col -->
+                   </div><!-- end row -->
+               </div><!-- end col -->
+           </div><!-- end row -->
+       </div><!-- end col -->
+   </div><!-- end row -->
+   <script>
+       $('#edit_book_purchase').on('submit', function(e) {
+
+           e.preventDefault();
+           $.ajax({
+               url: request() + '?f=damages&s=edit_damaged_book',
+               method: 'POST',
+               data: new FormData(this),
+               contentType: false,
+               processData: false,
+               cache: false,
+               success: function(response) {
+                   console.log(response);
+                   if (response.status == 200) {
+                       Swal.fire({
+                           title: "Good job!",
+                           text: response.message,
+                           icon: "success",
+                           showConfirmButton: true,
+                       });
+                       setTimeout(function() {
+                           window.location.reload()
+                       }, 2e3);
+
+                   } else {
+                       Swal.fire({
+                           title: "Oops!",
+                           text: response.message,
+                           icon: "error",
+                           cancelButtonClass: "btn btn-danger ml-2 mt-2",
+                           confirmButtonColor: "#6c757d"
+                       });
+                   }
+               }
+           });
+       });
+   </script>

@@ -63,40 +63,56 @@ if ($f == "users") {
 			}
 		}
 	}
-	if ($s == "edit_class") {
-		$id = __secure($_POST['id']);
-		$name = __secure($_POST['name']);
-		$abbrev = __secure($_POST['abbrev']);
+	if ($s == "update_profile") {
+		$firstname = __secure($_POST['firstname']);
+		$lastname = __secure($_POST['lastname']);
+		$othername = __secure($_POST['othername']);
+		$email = __secure($_POST['email']);
+		$tel = __secure($_POST['tel']);
 
-		if (empty($name)) {
+
+		if (empty($firstname)) {
 			$data = array(
 				'status'	=>	201,
-				'message'	=>	'Please insert class Name'
+				'message'	=>	'Please insert First Name'
 			);
-		} elseif (empty($abbrev)) {
+		} elseif (empty($lastname)) {
 			$data = array(
 				'status'	=>	201,
-				'message'	=>	'Please insert class abbreviation!'
+				'message'	=>	'Please insert Last Name!'
+			);
+		} elseif (empty($email)) {
+			$data = array(
+				'status'	=>	201,
+				'message'	=>	'Please insert Email!'
+			);
+		} elseif (empty($tel)) {
+			$data = array(
+				'status'	=>	201,
+				'message'	=>	'Please insert Tel No.!'
 			);
 		} else {
 
-			$class_data = [
-				"name" => $name,
-				"abbrev" => $abbrev,
+			$user_data = [
+				"firstname" => $firstname,
+				"lastname" => $lastname,
+				"othername" => $othername,
+				"email" => $email,
+				"tel" => $tel,
 				"date_updated" => getCurrentDate(),
-				"updated_by" => 1,
+				"updated_by" => $the_ken['user']['id'],
 			];
 
-			if (update_data("classes", $class_data, "WHERE id = '" . $id . "'")) {
+			if (update_data("users", $user_data, "WHERE id = '" . $the_ken['user']['id'] . "'")) {
 				$data = array(
 					'status'	=>	200,
-					'message'	=>	'Class updated successfully!',
-
+					'message'	=>	'Profile Updated successfully!',
+					'url' => 'index.php?page=user_profile'
 				);
 			} else {
 				$data = array(
 					'status'	=>	201,
-					'message'	=>	'Class registration failed!'
+					'message'	=>	'User profile Update failed!'
 				);
 			}
 		}
@@ -113,6 +129,37 @@ if ($f == "users") {
 			$data = array(
 				'status'	=>	201,
 				'message'	=>	'Class delete failed!!'
+			);
+		}
+	}
+	if ($s == 'update_profile_pic') {
+		$image_url = '';
+		$allowTypes = array('image/bmp', 'image/jpeg', 'image/x-png', 'image/png', 'image/gif');
+		$upload_dir = "uploads/profile_pics/";
+
+		// Ensure upload directory exists
+		if (!file_exists($upload_dir)) {
+			mkdir($upload_dir, 0777, true);
+		}
+		if (!empty($_FILES['profile_picture'])) {
+			if (in_array($_FILES['profile_picture']['type'], $allowTypes)) {
+				$image_url = share_file('profile_picture', $upload_dir, true, 1080, 1920);
+				unlink($the_ken['user']['photo']);
+			}
+		}
+		$user_data = [
+			"photo" => $image_url,
+		];
+
+		if (update_data("users", $user_data, "WHERE id = '" . $the_ken['user']['id'] . "' ")) {
+			$data = array(
+				'status'	=>	200,
+				'message'	=>	'Profile Pic Uploaded Successfully'
+			);
+		} else {
+			$data = array(
+				'status'	=>	201,
+				'message'	=>	'Profile Pic Upload failed!!'
 			);
 		}
 	}

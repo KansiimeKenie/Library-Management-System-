@@ -82,4 +82,43 @@ if ($f == 'auth') {
 			}
 		}
 	}
+	if ($s == "change_pwd") {
+		$old_pwd = __secure($_POST['old_pwd']);
+		$new_pwd = __secure($_POST['new_pwd']);
+		$confirm_pwd = __secure($_POST['confirm_pwd']);
+		if (password_verify($old_pwd, $the_ken['user']['password'])) {
+			$user_data = [
+				"password" => password_hash($new_pwd, PASSWORD_DEFAULT),
+			];
+			if ($new_pwd != $confirm_pwd) {
+
+				$data = array(
+					'status'	=>	201,
+					'message'	=>	'Password Mismatch!'
+				);
+			} elseif (strlen($new_pwd) < 6) {
+				$data = [
+					'status'  => 201,
+					'message' => 'Password must be at least 6 characters long!'
+				];
+			} else if (update_data("users", $user_data, "WHERE id = '" . $the_ken['user']['id'] . "'")) {
+				$data = array(
+					'status'	=>	200,
+					'message'	=>	'Password changed successfully!',
+					'url' => 'index.php?page=user_profile'
+
+				);
+			} else {
+				$data = array(
+					'status'	=>	201,
+					'message'	=>	'Class registration failed!'
+				);
+			}
+		} else {
+			$data = array(
+				'status'	=>	201,
+				'message'	=>	'Please Enter Correct Password!'
+			);
+		}
+	}
 }

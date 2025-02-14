@@ -4,6 +4,8 @@ $bookings = ['requistions', 'borrowed_books', 'req_details'];
 $genal_settings = ['categories', 'system_setup', 'all_classes', 'edit_category', 'edit_class'];
 $users = ['all_libs', 'all_students', 'all_admins', 'student_profile'];
 $trans_log = ['trans_history', 'borrow_history'];
+$user_image = (empty($the_ken['user']['photo'])) ? "/layout/assets/images/users/avatar-10.jpg" : $the_ken['user']['photo'];
+
 
 
 ?>
@@ -358,7 +360,7 @@ $trans_log = ['trans_history', 'borrow_history'];
                 <div class="dropdown ms-sm-3 header-item topbar-user">
                     <button type="button" class="btn" id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="d-flex align-items-center">
-                            <img class="rounded-circle header-profile-user" src="<?= $the_ken['config']['site_url'] ?>/layout/assets/images/users/avatar-10.jpg" alt="Header Avatar">
+                            <img class="rounded-circle header-profile-user" src="<?= $the_ken['config']['site_url'] . $user_image ?>" alt="Header Avatar">
                             <span class="text-start ms-xl-2">
                                 <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text"><?= $the_ken['user']['firstname'] . ' ' . $the_ken['user']['lastname'] ?></span>
                                 <span class="d-none d-xl-block ms-1 fs-12 user-name-sub-text">
@@ -514,18 +516,12 @@ $trans_log = ['trans_history', 'borrow_history'];
                         <div class="collapse menu-dropdown" id="sidebarAdvanceUI">
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
-                                    <a href="advance-ui-sweetalerts.html" class="nav-link" data-key="t-sweet-alerts">Sweet
-                                        Alerts</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="advance-ui-nestable.html" class="nav-link" data-key="t-nestable-list">Nestable
-                                        List</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="advance-ui-scrollbar.html" class="nav-link" data-key="t-scrollbar">Scrollbar</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="advance-ui-animation.html" class="nav-link" data-key="t-animation">Animation</a>
+                                    <a href="#" class="nav-link" data-key="t-sweet-alerts">Damaged Books Report
+                                    </a>
+                                    <a href="#" class="nav-link" data-key="t-sweet-alerts">Purchases report
+                                    </a>
+                                    <a href="#" class="nav-link" data-key="t-sweet-alerts">Over Due Books
+                                    </a>
                                 </li>
 
                             </ul>
