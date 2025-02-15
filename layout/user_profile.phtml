@@ -1,11 +1,11 @@
 <?php
-$user_id = (empty($_GET['id']) ? $the_ken['user']['id'] : __secure($_GET['id']));
+$user_id = (empty($_GET['id']) ? $global_var['user']['id'] : __secure($_GET['id']));
 $user_details = $db->where("id", $user_id)->getOne("users");
 $user_type = "Student";
 if ($user_details->user_type == 'lib') {
     $user_type = "Librarian";
 }
-$user_image = (empty($user_details->photo)) ? "/layout/assets/images/users/avatar-10.jpg" : $the_ken['user']['photo'];
+$user_image = (empty($user_details->photo)) ? "/layout/assets/images/users/avatar-10.jpg" : $global_var['user']['photo'];
 
 ?>
 <!-- ============================================================== -->
@@ -25,7 +25,7 @@ $user_image = (empty($user_details->photo)) ? "/layout/assets/images/users/avata
                     <div class="col-auto">
                         <div class="avatar-lg">
 
-                            <img src="<?= $the_ken['config']['site_url'] . $user_image ?>" alt="user-img" class="img-thumbnail rounded-circle" />
+                            <img src="<?= $global_var['config']['site_url'] . $user_image ?>" alt="user-img" class="img-thumbnail rounded-circle" />
                         </div>
                     </div>
                     <!--end col-->
@@ -33,20 +33,7 @@ $user_image = (empty($user_details->photo)) ? "/layout/assets/images/users/avata
                         <!-- address here  -->
                     </div>
                     <!--end col-->
-                    <?php if (isset($_GET['id'])) { ?>
-                        <div class="col-12 col-lg-auto order-last order-lg-0">
-                            <div class="row text text-white-50 text-center">
-                                <div class="col-lg-12 col-8">
-                                    <div class="p-2">
-                                        <h4 class="text-white mb-1"><?= count($db->where('student_id', $user_details->id)->get("borrow_requests")) ?></h4>
-                                        <p class="fs-14 mb-0">Borrow Requests</p>
-                                    </div>
-                                </div>
 
-                            </div>
-                        </div>
-                    <?php } ?>
-                    <!--end col-->
 
                 </div>
                 <!--end row-->
@@ -159,12 +146,11 @@ $user_image = (empty($user_details->photo)) ? "/layout/assets/images/users/avata
 
                                                         <?php
 
-                                                        $all_requests = $db->orderBy('id', 'DESC')->where('student_id', $user_details->id)->where('aprove_status', 1)->where('return_status IS NULL')->get('borrow_requests');
+                                                        $all_requests = $db->get('users');
 
                                                         $sn = 0;
                                                         foreach ($all_requests as $value):
-                                                            $book_details = $db->where("id", $value->book_id)->getOne("books");
-                                                            $student_details = $db->where('id', $value->student_id)->getOne('users');
+
 
                                                             $sn++;
                                                         ?>
@@ -174,17 +160,12 @@ $user_image = (empty($user_details->photo)) ? "/layout/assets/images/users/avata
                                                                 </th>
 
 
-                                                                <td><?= $book_details->title . ' ' . $book_details->author ?></td>
-                                                                <td><?= $value->no_of_copies ?></td>
+                                                                <td><?= $book_details->firstname  ?></td>
+                                                                <td><?= $value->id ?></td>
                                                                 <td><span class="badge bg-info">Pending</span></td>
-                                                                <td class="date"><?= date('d/m/Y', strtotime($value->return_date)) ?></td>
+                                                                <td class="date"><?= date('d/m/Y', strtotime($value->date_created)) ?></td>
                                                                 <td><?php
-                                                                    $days = getBorrowedBookRemainingDays(date('y-m-d', strtotime($value->return_date)));
-                                                                    if ($days <  1) {
-                                                                        echo "Over due";
-                                                                    } else {
-                                                                        echo $days . ' Days';
-                                                                    }
+
 
                                                                     ?></td>
 

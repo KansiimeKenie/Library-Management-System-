@@ -1,3 +1,6 @@
+<?php
+$purchases = $db->orderBy('id', 'DESC')->get('purchases');
+?>
 <div class="main-content">
 
 
@@ -42,7 +45,7 @@
                                     <div class="col-sm">
                                         <div class="d-flex justify-content-sm-end">
                                             <div class="search-box ms-2">
-                                                <a href="" type="button" class="btn btn-success add-btn"><i class="ri-add-line align-bottom me-1"></i> Filter Books</a>
+                                                <a href="" type="button" class="btn btn-primary add-btn"><i class="ri-add-line align-bottom me-1"></i> Filter Books</a>
                                             </div>
                                         </div>
                                     </div>
@@ -68,7 +71,7 @@
 
                                             <?php
                                             $sn = 0;
-                                            foreach ($db->orderBy('id', 'DESC')->get('purchases') as $value):
+                                            foreach ($purchases as $value):
                                                 $book_details = $db->where("id", $value->book_id)->getOne("books");
 
 
@@ -182,7 +185,7 @@
                 if (result.isConfirmed) {
                     // If confirmed, proceed with AJAX request
                     $.ajax({
-                        url: request() + '?f=purchases&s=delete_purchase',
+                        url: request() + '?file=purchases&action=delete_purchase',
                         method: 'POST',
                         data: {
                             id: id,
@@ -216,7 +219,7 @@
 
             e.preventDefault();
             $.ajax({
-                url: request() + '?f=purchases&s=update_inventory',
+                url: request() + '?file=purchases&action=update_inventory',
                 method: 'POST',
                 data: new FormData(this),
                 contentType: false,

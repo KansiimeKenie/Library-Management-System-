@@ -1,6 +1,6 @@
 <?php
-if ($f == "books") {
-	if ($s == "new_book") {
+if ($file == "books") {
+	if ($action == "new_book") {
 		$title = __secure($_POST['title']);
 		$category_id = __secure($_POST['category_id']);
 		$isbn = __secure($_POST['isbn']);
@@ -73,7 +73,7 @@ if ($f == "books") {
 			}
 		}
 	}
-	if ($s == 'delete') {
+	if ($action == 'delete') {
 		$id = __secure($_POST['id']);
 		if ($db->where('id', $id)->delete('books') && $db->where('book_id', $id)->delete('current_books')) {
 			$data = array(
@@ -87,7 +87,7 @@ if ($f == "books") {
 			);
 		}
 	}
-	if ($s == "edit_book") {
+	if ($action == "edit_book") {
 		$book_id = __secure($_POST['book_id']);
 		$title = __secure($_POST['title']);
 		$category_id = __secure($_POST['category_id']);
@@ -145,7 +145,7 @@ if ($f == "books") {
 	}
 
 	//Book Categories 
-	if ($s == "new_category") {
+	if ($action == "new_category") {
 		$name = __secure($_POST['name']);
 		$description = __secure($_POST['description']);
 		if (empty($name)) {
@@ -185,7 +185,7 @@ if ($f == "books") {
 			}
 		}
 	}
-	if ($s == "edit_category") {
+	if ($action == "edit_category") {
 		$id = __secure($_POST['id']);
 		$name = __secure($_POST['name']);
 		$description = __secure($_POST['description']);
@@ -226,7 +226,7 @@ if ($f == "books") {
 			}
 		}
 	}
-	if ($s == 'delete_category') {
+	if ($action == 'delete_category') {
 		$id = __secure($_POST['id']);
 		if ($db->where('id', $id)->delete('categories')) {
 			$data = array(
@@ -240,7 +240,7 @@ if ($f == "books") {
 			);
 		}
 	}
-	if ($s == 'filter_by_category') {
+	if ($action == 'filter_by_category') {
 		$id = __secure($_POST['id']);
 		$url_page = __secure($_POST['page']);
 		if (empty($id)) {
@@ -253,6 +253,28 @@ if ($f == "books") {
 				'status'	=>	200,
 				'message'	=>	'Books Filterd, Redirecting .....',
 				'url' => 'index.php?page=' . $url_page . '&id=' . $id
+			);
+		}
+	}
+	if ($action == 'filter_by_dates') {
+		$start_date = __secure($_POST['start_date']);
+		$end_date = __secure($_POST['end_date']);
+		$url_page = __secure($_POST['page']);
+		if (empty($start_date)) {
+			$data = array(
+				'status'	=>	201,
+				'message'	=>	'Please select Start Date'
+			);
+		} elseif (empty($end_date)) {
+			$data = array(
+				'status'	=>	201,
+				'message'	=>	'Please select End Date'
+			);
+		} else {
+			$data = array(
+				'status'	=>	200,
+				'message'	=>	'Filterd, Redirecting .....',
+				'url' => 'index.php?page=' . $url_page . '&start_date=' . $start_date . '&end_date=' . $end_date
 			);
 		}
 	}

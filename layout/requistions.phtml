@@ -1,8 +1,23 @@
 <?php
-$all_requests = $db->orderBy('id', 'DESC')->get('borrow_requests');
-if ($the_ken['user']['user_type'] == 'stud') {
-    $all_requests = $db->orderBy('id', 'DESC')->where('student_id', $the_ken['user']['id'])->get('borrow_requests');
+$page_title = 'Today\'s Borrow Requesitions';
+$all_requests = $db->orderBy('id', 'DESC')->where('request_date', getCurrentDateOnly())->get('borrow_requests');
+if ($global_var['user']['user_type'] == 'stud') {
+    $all_requests = $db->orderBy('id', 'DESC')->where('request_date', getCurrentDateOnly())->where('student_id', $global_var['user']['id'])->get('borrow_requests');
 }
+if (isset($_GET['start_date']) && isset($_GET['end_date'])) {
+    $all_requests = $db->where('request_date', __secure($_GET['start_date']), '>=')
+        ->where('request_date', __secure($_GET['end_date']), '<=')
+        ->orderBy('id', 'DESC')
+        ->get('borrow_requests');
+    if ($global_var['user']['user_type'] == 'stud') {
+        $all_requests = $db->where('student_id', $global_var['user']['id'])->where('request_date', __secure($_GET['start_date']), '>=')
+            ->where('request_date', __secure($_GET['end_date']), '<=')
+            ->orderBy('id', 'DESC')
+            ->get('borrow_requests');
+    }
+    $page_title = 'Borrow Requesitions FROM ' . date('d/m/Y', strtotime($_GET['start_date'])) . ' TO ' . date('d/m/Y', strtotime($_GET['end_date']));
+}
+
 ?>
 <div class="main-content">
 
@@ -14,7 +29,7 @@ if ($the_ken['user']['user_type'] == 'stud') {
             <div class="row">
                 <div class="col-12">
                     <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                        <h4 class="mb-sm-0">All Borrow Reguisitions</h4>
+                        <h4 class="mb-sm-0"><?= $page_title ?></h4>
 
                         <div class="page-title-right">
                             <ol class="breadcrumb m-0">
@@ -34,7 +49,7 @@ if ($the_ken['user']['user_type'] == 'stud') {
                             <div class="listjs-table" id="customerList">
                                 <div class="row g-4 mb-3">
                                     <div class="col-sm-auto">
-                                        <?php if ($the_ken['user']['user_type'] == 'stud') { ?>
+                                        <?php if ($global_var['user']['user_type'] == 'stud') { ?>
                                             <div>
                                                 <a data-bs-toggle="modal" data-bs-target="#new_borrow_request" type="button" class="btn btn-success add-btn"><i class="ri-add-line align-bottom me-1"></i> Add New Borrow Request</a>
 
@@ -50,12 +65,12 @@ if ($the_ken['user']['user_type'] == 'stud') {
                                     <div class="col-sm">
                                         <div class="d-flex justify-content-sm-end">
                                             <div class="search-box ms-2">
-                                                <a href="" type="button" class="btn btn-success add-btn"><i class="ri-add-line align-bottom me-1"></i> Filter Requests</a>
+                                                <a data-bs-toggle="modal" data-bs-target="#filter_by_date" type="button" class="btn btn-primary add-btn"><i class="ri-filter-line align-bottom me-1"></i> Filter Requests By Date</a>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <?php if ($the_ken['user']['user_type'] != 'stud') { ?>
+                                <?php if ($global_var['user']['user_type'] != 'stud') { ?>
                                     <div class="table-responsive mt-3 mb-1">
                                         <table id="myTable" class="table table-bordered table-striped">
                                             <thead class="table-light">
@@ -64,7 +79,7 @@ if ($the_ken['user']['user_type'] == 'stud') {
                                                         S/No.
                                                     </th>
                                                     <th class="sort" data-sort="title">Student Name</th>
-                                                    <th class="sort" data-sort="description">Class/Course</th>
+                                                    <th class="sort" data-sort="description">Class</th>
                                                     <th class="sort" data-sort="date">Requested Book</th>
                                                     <th class="sort" data-sort="date">No._Of_Copes</th>
                                                     <th class="sort" data-sort="date">Status</th>
@@ -171,7 +186,3 @@ if ($the_ken['user']['user_type'] == 'stud') {
 
         </div>
     </div>
-
-    <script type="text/javascript">
-
-    </script>

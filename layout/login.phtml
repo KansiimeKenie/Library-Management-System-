@@ -14,8 +14,8 @@
                                     <div class="bg-overlay"></div>
                                     <div class="position-relative h-100 d-flex flex-column">
                                         <div class="mb-4">
-                                            <a href="<?= $the_ken['config']['site_url'] ?>" class="d-block">
-                                                <img width="100px" height="100px" src="<?= $the_ken['config']['site_url'] . $the_ken['config']['logo'] ?>" alt="" height="18">
+                                            <a href="<?= $global_var['config']['site_url'] ?>" class="d-block">
+                                                <img width="100px" height="100px" src="<?= $global_var['config']['site_url'] . $global_var['config']['logo'] ?>" alt="" height="18">
                                             </a>
                                         </div>
                                         <div class="mt-auto">
@@ -24,21 +24,12 @@
                                             </div>
 
                                             <div id="qoutescarouselIndicators" class="carousel slide" data-bs-ride="carousel">
-                                                <div class="carousel-indicators">
-                                                    <button type="button" data-bs-target="#qoutescarouselIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-                                                    <button type="button" data-bs-target="#qoutescarouselIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
-                                                    <button type="button" data-bs-target="#qoutescarouselIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
-                                                </div>
+
                                                 <div class="carousel-inner text-center text-white-50 pb-5">
                                                     <div class="carousel-item active">
-                                                        <p class="fs-15 fst-italic">" Great! Clean code, clean design, easy for customization. Thanks very much! "</p>
+                                                        <p class="fs-15 fst-italic">Welcome to Library Management System</p>
                                                     </div>
-                                                    <div class="carousel-item">
-                                                        <p class="fs-15 fst-italic">" The theme is really great with an amazing customer support."</p>
-                                                    </div>
-                                                    <div class="carousel-item">
-                                                        <p class="fs-15 fst-italic">" Great! Clean code, clean design, easy for customization. Thanks very much! "</p>
-                                                    </div>
+
                                                 </div>
                                             </div>
                                             <!-- end carousel -->
@@ -52,7 +43,7 @@
                                 <div class="p-lg-5 p-4">
                                     <div>
                                         <h5 class="text-primary">Welcome Back !</h5>
-                                        <p class="text-muted">Sign in to continue to <?= $the_ken['config']['site_name'] ?>.</p>
+                                        <p class="text-muted">Sign in to continue to <?= $global_var['config']['site_name'] ?>.</p>
                                     </div>
 
                                     <div class="mt-4">
@@ -73,20 +64,7 @@
                                                     <button class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted password-addon" type="button" id="password-addon"><i class="ri-eye-fill align-middle"></i></button>
                                                 </div>
                                             </div>
-                                            <!-- Radio Buttons for Admin or Alumni centered -->
-                                            <!--     <div class="form-group">
-        <label><strong>Select Role</strong></label>
-        <div class="d-flex justify-content-center">
-            <div class="form-check mr-3">
-                <input class="form-check-input" type="radio" name="role" id="adminRole" value="admin" checked>
-                <label class="form-check-label" for="adminRole">Admin</label>
-            </div>
-            <div style="margin-left: 20px; " class="form-check">
-                <input class="form-check-input" type="radio" name="role" id="alumniRole" value="alumni">
-                <label class="form-check-label" for="alumniRole">Alumni</label>
-            </div>
-        </div>
-    </div> -->
+
 
                                             <div class="mt-4">
                                                 <button class="btn btn-success w-100 button" type="submit">Login</button>
@@ -97,7 +75,7 @@
                                     </div>
 
                                     <div class="mt-5 text-center">
-                                        <p class="mb-0">Don't have an account ? <a href="index.php?page=register" class="fw-semibold text-primary text-decoration-underline"> Register Here</a> </p>
+                                        <p class="mb-0">Don't have a student account ? <a href="index.php?page=register" class="fw-semibold text-primary text-decoration-underline"> Register Here</a> </p>
                                     </div>
                                 </div>
                             </div>
@@ -122,7 +100,7 @@
                             <p class="mb-0">&copy;
                                 <script>
                                     document.write(new Date().getFullYear())
-                                </script> <?= $the_ken['config']['site_name'] ?>. Crafted with <i class="mdi mdi-heart text-danger"></i> By<a href=""> <?= $the_ken['config']['site_name'] ?></a>
+                                </script> <?= $global_var['config']['site_name'] ?>. Crafted with <i class="mdi mdi-heart text-danger"></i> By<a href=""> <?= $global_var['config']['site_name'] ?></a>
                             </p>
                         </div>
                     </div>
@@ -139,7 +117,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/js/iziToast.min.js"></script>
 
 <!-- Sweet Alerts js -->
-<script src="<?= $the_ken['config']['site_url'] ?>admin/layout/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+<script src="<?= $global_var['config']['site_url'] ?>admin/layout/assets/libs/sweetalert2/sweetalert2.min.js"></script>
 
 
 <!-- SweetAlert2 JS -->
@@ -151,7 +129,7 @@
     $('#login').on('submit', function(e) {
         e.preventDefault();
         $.ajax({
-            url: request() + '?f=auth&s=login',
+            url: request() + '?file=auth&action=login',
             method: 'POST',
             contentType: false,
             processData: false,
@@ -174,8 +152,7 @@
                         showConfirmButton: false,
                         toast: true,
                         position: "top-end",
-                        background: "#d1e7dd", // Light green background
-                        iconColor: "#198754", // Bootstrap success color
+
                         showClass: {
                             popup: 'animate__animated animate__fadeInDown'
                         },
@@ -190,7 +167,7 @@
                         title: "⚠️ Oops!",
                         text: response.message,
                         icon: "error",
-                        confirmButtonColor: "#dc3545", // Bootstrap danger color
+                        confirmButtonColor: "#dc3545",
 
                         showClass: {
                             popup: 'animate__animated animate__shakeX'

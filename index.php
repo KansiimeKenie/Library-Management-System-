@@ -1,14 +1,14 @@
 <?php
 require('init/functions.php');
 $page  = 'index';
-if (!$the_ken['loggedin']) {
+if (!$global_var['loggedin']) {
     $page = 'login';
 }
 
-if (!empty($_GET['page']) && $the_ken['loggedin']) {
+if (!empty($_GET['page']) && $global_var['loggedin']) {
     $page = __secure($_GET['page']);
 }
-if (!$the_ken['loggedin'] && isset($_GET['page'])) {
+if (!$global_var['loggedin'] && isset($_GET['page'])) {
     if ($_GET['page'] == 'login' || $_GET['page'] == 'register' || $_GET['page'] == 'forgot-password') {
         $page = __secure($_GET['page']);
     }
@@ -25,31 +25,31 @@ $page_loaded = load_page("$page");
 <head>
 
     <meta charset="utf-8" />
-    <title><?= $the_ken['config']['site_name'] ?></title>
+    <title><?= $global_var['config']['site_name'] ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
     <meta content="Themesbrand" name="author" />
     <!-- App favicon -->
-    <link rel="shortcut icon" href="<?= $the_ken['config']['site_url'] . $the_ken['config']['favicon']  ?>">
+    <link rel="shortcut icon" href="<?= $global_var['config']['site_url'] . $global_var['config']['favicon']  ?>">
 
     <!-- jsvectormap css -->
-    <link href="<?= $the_ken['config']['site_url'] ?>/layout/assets/libs/jsvectormap/jsvectormap.min.css" rel="stylesheet" type="text/css" />
+    <link href="<?= $global_var['config']['site_url'] ?>/layout/assets/libs/jsvectormap/jsvectormap.min.css" rel="stylesheet" type="text/css" />
 
     <!-- gridjs css -->
-    <link rel="stylesheet" href="<?= $the_ken['config']['site_url'] ?>/layout/assets/libs/gridjs/theme/mermaid.min.css">
+    <link rel="stylesheet" href="<?= $global_var['config']['site_url'] ?>/layout/assets/libs/gridjs/theme/mermaid.min.css">
     <!-- jQuery (Required) -->
 
 
     <!-- Layout config Js -->
-    <script src="<?= $the_ken['config']['site_url'] ?>/layout/assets/js/layout.js"></script>
+    <script src="<?= $global_var['config']['site_url'] ?>/layout/assets/js/layout.js"></script>
     <!-- Bootstrap Css -->
-    <link href="<?= $the_ken['config']['site_url'] ?>/layout/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="<?= $global_var['config']['site_url'] ?>/layout/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <!-- Icons Css -->
-    <link href="<?= $the_ken['config']['site_url'] ?>/layout/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+    <link href="<?= $global_var['config']['site_url'] ?>/layout/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
     <!-- App Css-->
-    <link href="<?= $the_ken['config']['site_url'] ?>/layout/assets/css/app.min.css" rel="stylesheet" type="text/css" />
+    <link href="<?= $global_var['config']['site_url'] ?>/layout/assets/css/app.min.css" rel="stylesheet" type="text/css" />
     <!-- custom Css-->
-    <link href="<?= $the_ken['config']['site_url'] ?>/layout/assets/css/custom.min.css" rel="stylesheet" type="text/css" />
+    <link href="<?= $global_var['config']['site_url'] ?>/layout/assets/css/custom.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.15.5/dist/sweetalert2.min.css">
@@ -58,7 +58,7 @@ $page_loaded = load_page("$page");
     <!-- SweetAlert JavaScript -->
     <!-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.15.5/dist/sweetalert2.min.js"></script> -->
 
-    <link href="<?= $the_ken['config']['site_url'] ?>/layout/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css" />
+    <link href="<?= $global_var['config']['site_url'] ?>/layout/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css" />
 
     <!-- Bootstrap CSS -->
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css"> -->
@@ -70,7 +70,7 @@ $page_loaded = load_page("$page");
 
     <script type="text/javascript">
         function request() {
-            return "<?php echo $the_ken['config']['site_url'] . 'request.php'; ?>"
+            return "<?php echo $global_var['config']['site_url'] . 'request.php'; ?>"
         }
     </script>
 
@@ -260,59 +260,96 @@ $page_loaded = load_page("$page");
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
+    <!-- Add new Borrow request Modal -->
+    <div id="filter_by_date" class="modal fade fadeInUp" tabindex="-1" aria-labelledby="fadeInUpModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="fadeInUpModalLabel">Filter By Date</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="filter_by_dates">
+                        <input type="text" value="<?= $page ?>" name="page" hidden />
+                        <div class="row gy-4">
+
+                            <div class="col-xxl-3 col-md-6">
+                                <div>
+                                    <label for="basiInput" class="form-label">Start Date</label>
+                                    <input type="date" class="form-control" name="start_date" />
+                                </div>
+                            </div>
+                            <div class="col-xxl-3 col-md-6">
+                                <div>
+                                    <label for="basiInput" class="form-label">End Date</label>
+                                    <input type="date" class="form-control" name="end_date" />
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="modal-footer mt-4">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary ">Filter</button>
+                        </div>
+                </div>
+                </form>
+
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
 
     <!-- JAVASCRIPT -->
-    <script src="<?= $the_ken['config']['site_url'] ?>/layout/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="<?= $the_ken['config']['site_url'] ?>/layout/assets/libs/simplebar/simplebar.min.js"></script>
-    <script src="<?= $the_ken['config']['site_url'] ?>/layout/assets/libs/node-waves/waves.min.js"></script>
-    <script src="<?= $the_ken['config']['site_url'] ?>/layout/assets/libs/feather-icons/feather.min.js"></script>
-    <script src="<?= $the_ken['config']['site_url'] ?>/layout/assets/js/pages/plugins/lord-icon-2.1.0.js"></script>
-    <script src="<?= $the_ken['config']['site_url'] ?>/layout/assets/js/plugins.js"></script>
+    <script src="<?= $global_var['config']['site_url'] ?>/layout/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="<?= $global_var['config']['site_url'] ?>/layout/assets/libs/simplebar/simplebar.min.js"></script>
+    <script src="<?= $global_var['config']['site_url'] ?>/layout/assets/libs/node-waves/waves.min.js"></script>
+    <script src="<?= $global_var['config']['site_url'] ?>/layout/assets/libs/feather-icons/feather.min.js"></script>
+    <script src="<?= $global_var['config']['site_url'] ?>/layout/assets/js/pages/plugins/lord-icon-2.1.0.js"></script>
+    <script src="<?= $global_var['config']['site_url'] ?>/layout/assets/js/plugins.js"></script>
 
     <!-- apexcharts -->
-    <script src="<?= $the_ken['config']['site_url'] ?>/layout/assets/libs/apexcharts/apexcharts.min.js"></script>
+    <script src="<?= $global_var['config']['site_url'] ?>/layout/assets/libs/apexcharts/apexcharts.min.js"></script>
 
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
 
     <!-- Vector map-->
-    <script src="<?= $the_ken['config']['site_url'] ?>/layout/assets/libs/jsvectormap/jsvectormap.min.js"></script>
-    <script src="<?= $the_ken['config']['site_url'] ?>/layout/assets/libs/jsvectormap/maps/world-merc.js"></script>
+    <script src="<?= $global_var['config']['site_url'] ?>/layout/assets/libs/jsvectormap/jsvectormap.min.js"></script>
+    <script src="<?= $global_var['config']['site_url'] ?>/layout/assets/libs/jsvectormap/maps/world-merc.js"></script>
 
     <!-- gridjs js -->
-    <script src="<?= $the_ken['config']['site_url'] ?>/layout/assets/libs/gridjs/gridjs.umd.js"></script>
+    <script src="<?= $global_var['config']['site_url'] ?>/layout/assets/libs/gridjs/gridjs.umd.js"></script>
 
     <!-- Dashboard init -->
-    <script src="<?= $the_ken['config']['site_url'] ?>/layout/assets/js/pages/dashboard-job.init.js"></script>
+    <script src="<?= $global_var['config']['site_url'] ?>/layout/assets/js/pages/dashboard-job.init.js"></script>
 
     <!-- App js -->
-    <script src="<?= $the_ken['config']['site_url'] ?>/layout/assets/js/app.js"></script>
+    <script src="<?= $global_var['config']['site_url'] ?>/layout/assets/js/app.js"></script>
 
 
 
     <!-- Sweet Alerts js -->
-    <script src="<?= $the_ken['config']['site_url'] ?>/layout/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+    <script src="<?= $global_var['config']['site_url'] ?>/layout/assets/libs/sweetalert2/sweetalert2.min.js"></script>
 
 
 
 
 
     <!-- Dashboard init -->
-    <script src="<?= $the_ken['config']['site_url'] ?>admin/layout/assets/js/pages/dashboard-job.init.js"></script>
+    <script src="<?= $global_var['config']['site_url'] ?>admin/layout/assets/js/pages/dashboard-job.init.js"></script>
 
     <!-- App js -->
-    <script src="<?= $the_ken['config']['site_url'] ?>admin/layout/assets/js/app.js"></script>
+    <script src="<?= $global_var['config']['site_url'] ?>admin/layout/assets/js/app.js"></script>
 
 
     <!-- prismjs plugin -->
-    <script src="<?= $the_ken['config']['site_url'] ?>admin/layout/assets/libs/prismjs/prism.js"></script>
-    <script src="<?= $the_ken['config']['site_url'] ?>admin/layout/assets/libs/list.js/list.min.js"></script>
-    <script src="<?= $the_ken['config']['site_url'] ?>admin/layout/assets/libs/list.pagination.js/list.pagination.min.js"></script>
+    <script src="<?= $global_var['config']['site_url'] ?>admin/layout/assets/libs/prismjs/prism.js"></script>
+    <script src="<?= $global_var['config']['site_url'] ?>admin/layout/assets/libs/list.js/list.min.js"></script>
+    <script src="<?= $global_var['config']['site_url'] ?>admin/layout/assets/libs/list.pagination.js/list.pagination.min.js"></script>
 
     <!-- listjs init -->
-    <script src="<?= $the_ken['config']['site_url'] ?>admin/layout/assets/js/pages/listjs.init.js"></script>
+    <script src="<?= $global_var['config']['site_url'] ?>admin/layout/assets/js/pages/listjs.init.js"></script>
 
     <!-- Sweet Alerts js -->
-    <script src="<?= $the_ken['config']['site_url'] ?>admin/layout/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+    <script src="<?= $global_var['config']['site_url'] ?>admin/layout/assets/libs/sweetalert2/sweetalert2.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/js/iziToast.min.js"></script>
     <!-- Include Bootstrap JS -->
 
@@ -350,7 +387,7 @@ $page_loaded = load_page("$page");
 
             e.preventDefault();
             $.ajax({
-                url: request() + '?f=borrow&s=add_new_borrow_request',
+                url: request() + '?file=borrow&action=add_new_borrow_request',
                 method: 'POST',
                 data: new FormData(this),
                 contentType: false,
@@ -385,7 +422,7 @@ $page_loaded = load_page("$page");
 
             e.preventDefault();
             $.ajax({
-                url: request() + '?f=books&s=new_book',
+                url: request() + '?file=books&action=new_book',
                 method: 'POST',
                 data: new FormData(this),
                 contentType: false,
@@ -420,7 +457,42 @@ $page_loaded = load_page("$page");
 
             e.preventDefault();
             $.ajax({
-                url: request() + '?f=books&s=filter_by_category',
+                url: request() + '?file=books&action=filter_by_category',
+                method: 'POST',
+                data: new FormData(this),
+                contentType: false,
+                processData: false,
+                cache: false,
+                success: function(response) {
+                    console.log(response);
+                    if (response.status == 200) {
+                        Swal.fire({
+                            title: "Good job!",
+                            text: response.message,
+                            icon: "success",
+                            showConfirmButton: true,
+                        });
+                        setTimeout(function() {
+                            window.location.href = response.url;
+                        }, 2e3);
+
+                    } else {
+                        Swal.fire({
+                            title: "Oops!",
+                            text: response.message,
+                            icon: "error",
+                            cancelButtonClass: "btn btn-danger ml-2 mt-2",
+                            confirmButtonColor: "#6c757d"
+                        });
+                    }
+                }
+            });
+        });
+        $('#filter_by_dates').on('submit', function(e) {
+
+            e.preventDefault();
+            $.ajax({
+                url: request() + '?file=books&action=filter_by_dates',
                 method: 'POST',
                 data: new FormData(this),
                 contentType: false,

@@ -70,17 +70,17 @@
                                        <hr>
 
                                        <div class="d-flex mt-3">
-                                           <?php if ($the_ken['user']['user_type'] != 'stud') {
+                                           <?php if ($global_var['user']['user_type'] != 'stud') {
                                                 if ($req_details->aprove_status != 1) { ?>
                                                    <button class="btn btn-success m-1 approve"><i class="fas fa-check"></i> Approve</button>
-                                                   <button class="btn btn-danger m-1"><i class="fas fa-times"></i> Reject</button>
+                                                   <button class="btn btn-danger m-1 reject"><i class="fas fa-times"></i> Reject</button>
                                                <?php } else { ?>
                                                    <button data-bs-toggle="modal" data-bs-target="#confirm_return" class="btn btn-success m-1"><i class="fas fa-check"></i> Confirm Return</button>
                                                <?php }
                                             } else {
                                                 if ($req_details->aprove_status != 1) { ?>
-                                                   <button class="btn btn-warning m-1"><i class="fas fa-edit"></i> Edit</button>
-                                                   <button class="btn btn-secondary m-1"><i class="fas fa-trash"></i> Delete</button>
+                                                   <a href="index.php?page=edit_requistion&id=<?= $req_details->id ?>" class="btn btn-warning m-1"><i class="fas fa-edit"></i> Edit</a>
+                                                   <button class="btn btn-secondary m-1 delete"><i class="fas fa-trash"></i> Delete</button>
                                            <?php  }
                                             } ?>
                                        </div>
@@ -165,7 +165,7 @@
                    if (result.isConfirmed) {
                        // AJAX Request
                        $.ajax({
-                           url: request() + '?f=borrow&s=approve_borrow_request',
+                           url: request() + '?file=borrow&action=approve_borrow_request',
                            type: 'POST',
                            data: {
                                id: req_id,
@@ -203,7 +203,7 @@
 
            e.preventDefault();
            $.ajax({
-               url: request() + '?f=borrow&s=confirm_return',
+               url: request() + '?file=borrow&action=confirm_return',
                method: 'POST',
                data: new FormData(this),
                contentType: false,
@@ -234,4 +234,106 @@
                }
            });
        });
+       $(document).ready(function() {
+           // Approve Button Click
+           $(document).on("click", ".delete", function() {
+               var el = this;
+               var req_id = '<?= __secure($_GET['id']) ?>';
+
+               Swal.fire({
+                   title: 'Are you sure?',
+                   text: "You want to delete this borrow Request?",
+                   icon: 'warning',
+                   showCancelButton: true,
+                   confirmButtonColor: '#3085d6',
+                   cancelButtonColor: '#d33',
+                   confirmButtonText: 'Yes, approve it!'
+               }).then((result) => {
+                   if (result.isConfirmed) {
+                       // AJAX Request
+                       $.ajax({
+                           url: request() + '?file=borrow&action=delete_request',
+                           type: 'POST',
+                           data: {
+                               id: req_id,
+
+                           },
+                           success: function(response) {
+                               console.log(response);
+                               if (response.status == 200) {
+                                   Swal.fire({
+                                       title: "Good job!",
+                                       text: response.message,
+                                       icon: "success",
+                                       showConfirmButton: false,
+                                   });
+                                   setTimeout(function() {
+                                       window.location.href = response.url;
+                                   }, 2e3);
+                               } else {
+                                   Swal.fire({
+                                       title: "Oops!",
+                                       text: response.message,
+                                       icon: "error",
+                                       cancelButtonClass: "btn btn-danger ml-2 mt-2",
+                                       confirmButtonColor: "#6c757d"
+                                   });
+                               }
+                           }
+                       });
+                   }
+               });
+           })
+       })
+       $(document).ready(function() {
+           // Approve Button Click
+           $(document).on("click", ".reject", function() {
+               var el = this;
+               var req_id = '<?= __secure($_GET['id']) ?>';
+               Swal.fire({
+                   title: 'Are you sure?',
+                   text: "You want to Reject this borrow Request?",
+                   icon: 'warning',
+                   showCancelButton: true,
+                   confirmButtonColor: '#3085d6',
+                   cancelButtonColor: '#d33',
+                   confirmButtonText: 'Yes, Reject it!'
+               }).then((result) => {
+                   if (result.isConfirmed) {
+                       // AJAX Request
+                       $.ajax({
+                           url: request() + '?file=borrow&action=reject_borrow_request',
+                           type: 'POST',
+                           data: {
+                               id: req_id,
+                               no_of_copies: no_of_copies,
+                               book_id: book_id
+                           },
+                           success: function(response) {
+                               console.log(response);
+                               if (response.status == 200) {
+                                   Swal.fire({
+                                       title: "Good job!",
+                                       text: response.message,
+                                       icon: "success",
+                                       showConfirmButton: false,
+                                   });
+                                   setTimeout(function() {
+                                       window.location.href = response.url;
+                                   }, 2e3);
+                               } else {
+                                   Swal.fire({
+                                       title: "Oops!",
+                                       text: response.message,
+                                       icon: "error",
+                                       cancelButtonClass: "btn btn-danger ml-2 mt-2",
+                                       confirmButtonColor: "#6c757d"
+                                   });
+                               }
+                           }
+                       });
+                   }
+               });
+           })
+       })
    </script>

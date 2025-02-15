@@ -156,7 +156,7 @@
                 if (result.isConfirmed) {
                     // If confirmed, proceed with AJAX request
                     $.ajax({
-                        url: request() + '?f=classes&s=delete_class',
+                        url: request() + '?file=classes&action=delete_class',
                         method: 'POST',
                         data: {
                             id: id
@@ -189,7 +189,7 @@
 
             e.preventDefault();
             $.ajax({
-                url: request() + '?f=classes&s=add_new_class',
+                url: request() + '?file=classes&action=add_new_class',
                 method: 'POST',
                 data: new FormData(this),
                 contentType: false,

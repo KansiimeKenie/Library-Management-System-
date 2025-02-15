@@ -83,7 +83,7 @@
 
            e.preventDefault();
            $.ajax({
-               url: request() + '?f=classes&s=edit_class',
+               url: request() + '?file=classes&action=edit_class',
                method: 'POST',
                data: new FormData(this),
                contentType: false,
@@ -129,7 +129,7 @@
                if (result.isConfirmed) {
                    // If confirmed, proceed with AJAX request
                    $.ajax({
-                       url: request() + '?f=books&s=delete_category',
+                       url: request() + '?file=books&action=delete_category',
                        method: 'POST',
                        data: {
                            id: id,

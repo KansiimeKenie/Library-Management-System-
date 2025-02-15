@@ -1,4 +1,18 @@
+<?php
+$most_borrowed_books = $db
+    ->where('aprove_status', 1)
+    ->groupBy('student_id')
+    ->orderBy('total_borrowed', 'DESC')
+    ->get('borrow_requests', null, ['student_id', 'SUM(no_of_copies) as total_borrowed']);
+
+
+$page_title = 'Most Borrowing Students';
+
+?>
+
+
 <div class="main-content">
+
 
     <div class="page-content">
         <div class="container-fluid">
@@ -7,12 +21,12 @@
             <div class="row">
                 <div class="col-12">
                     <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                        <h4 class="mb-sm-0">All Book Categories</h4>
+                        <h4 class="mb-sm-0"><?= $page_title ?></h4>
 
                         <div class="page-title-right">
                             <ol class="breadcrumb m-0">
                                 <li class="breadcrumb-item"><a href="javascript: void(0);">Home</a></li>
-                                <li class="breadcrumb-item active">Settings</li>
+                                <li class="breadcrumb-item active">Most Borrowed</li>
                             </ol>
                         </div>
 
@@ -26,9 +40,10 @@
                         <div class="card-body">
                             <div class="listjs-table" id="customerList">
                                 <div class="row g-4 mb-3">
+
                                     <div class="col-sm-auto">
                                         <div>
-                                            <a data-bs-toggle="modal" data-bs-target="#register" type="button" class="btn btn-success add-btn"><i class="ri-add-line align-bottom me-1"></i> Add New Category</a>
+
 
                                         </div>
                                     </div>
@@ -37,24 +52,28 @@
 
                                 <div class="table-responsive mt-3 mb-1">
                                     <table id="myTable" class="table table-bordered table-striped">
-                                        <thead class="">
+                                        <thead class="table-light">
                                             <tr>
                                                 <th scope="col">
                                                     S/No.
                                                 </th>
-                                                <th class="sort" data-sort="title">Category Name</th>
-                                                <th class="sort" data-sort="description">Description</th>
-                                                <th class="sort" data-sort="date">Registered On</th>
-                                                <th class="sort" data-sort="date">Registered By</th>
-                                                <th class="sort" data-sort="action">Action</th>
+                                                <th>Image</th>
+                                                <th class="sort" data-sort="title">Student Name</th>
+                                                <th class="sort" data-sort="title">Class</th>
+
+
+                                                <th class="sort" data-sort="date">Copies Borrowed</th>
+
                                             </tr>
                                         </thead>
                                         <tbody class="list form-check-all">
 
                                             <?php
                                             $sn = 0;
-                                            foreach ($db->orderBy('id', 'DESC')->get('categories') as $value):
-                                                // $db->where("id", $value->category_id)->getOne("categories")->name
+                                            foreach ($most_borrowed_books as $value):
+                                                $student_details = $db->where("id", $value->student_id)->getOne("users");
+                                                $user_image = (empty($student_details->photo)) ? '/layout/assets/images/users/avatar-10.jpg' : $student_details->photo;
+
 
                                                 $sn++;
                                             ?>
@@ -62,31 +81,23 @@
                                                     <th scope="row">
                                                         <?= $sn ?>
                                                     </th>
-                                                    <td><?= $value->name ?></td>
-                                                    <td><?= $value->description ?></td>
-                                                    <td class="date"><?= date('d/m/Y', strtotime($value->date_created)) ?></td>
-                                                    <td><?= $db->where('id', $value->created_by)->getOne('users')->firstname ?></td>
-
-
                                                     <td>
-                                                        <div class="d-flex gap-2">
-                                                            <a title="Edit Category" class="btn btn-sm btn-primary " href="index.php?page=edit_category&id=<?= $value->id ?>"><i class="fas fa-pencil"></i> </a>
 
-                                                            <button title="Delete Category" onclick="remImage('<?= $value->id ?>')" class="btn btn-sm btn-danger remove-item-btn"><i class="fas fa-trash"></i> </button>
-
+                                                        <div class="avatar-xs">
+                                                            <img src="<?= $global_var['config']['site_url'] . $user_image ?>" alt="" class="img-fluid rounded-circle candidate-img">
                                                         </div>
+
                                                     </td>
+                                                    <td><?= $student_details->firstname . ' ' . $student_details->lastname  ?></td>
+                                                    <td><?= $db->where('id', $student_details->class_id)->getOne('classes')->abbrev ?></td>
+
+                                                    <td><?= $value->total_borrowed ?></td>
+
                                                 </tr>
                                             <?php endforeach; ?>
                                         </tbody>
                                     </table>
-                                    <div class="noresult" style="display: none">
-                                        <div class="text-center">
-                                            <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon>
-                                            <h5 class="mt-2">Sorry! No Result Found</h5>
-                                            <p class="text-muted mb-0">We've searched more than 150+ Orders We did not find any orders for you search.</p>
-                                        </div>
-                                    </div>
+
                                 </div>
                             </div>
                         </div><!-- end card -->
@@ -101,52 +112,10 @@
 
         </div>
     </div>
-    <!-- Modal fadeInUp -->
-    <div id="register" class="modal fade fadeInUp" tabindex="-1" aria-labelledby="fadeInUpModalLabel" aria-hidden="true" style="display: none;">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="fadeInUpModalLabel">Add New Category</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="add_book">
-                        <div class="row gy-4">
 
-                            <!--end col-->
-                            <div class="col-xxl-3 col-md-12">
-                                <div>
-                                    <label for="labelInput" class="form-label">Category Name </label>
-                                    <input type="text" name="name" class="form-control">
-                                </div>
-                            </div>
-                            <!--end col-->
-
-                            <div class="col-xxl-3 col-md-12">
-                                <div>
-                                    <label for="placeholderInput" class="form-label">Description</label>
-                                    <textarea placeholder="Enter Description here.." class="form-control" name="description"></textarea>
-
-                                </div>
-                            </div>
-
-
-
-                        </div>
-                        <hr>
-                        <div class="modal-footer mt-4">
-                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary ">Add New Category</button>
-                        </div>
-                </div>
-                </form>
-
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
 
     <script type="text/javascript">
-        function remImage(id) {
+        function deleteItem(id) {
             // Show SweetAlert confirmation dialog
             Swal.fire({
                 title: 'Are you sure?',
@@ -160,7 +129,7 @@
                 if (result.isConfirmed) {
                     // If confirmed, proceed with AJAX request
                     $.ajax({
-                        url: request() + '?file=books&action=delete_category',
+                        url: request() + '?file=books&action=delete',
                         method: 'POST',
                         data: {
                             id: id
@@ -188,12 +157,11 @@
                 }
             });
         }
-
-        $('#add_book').on('submit', function(e) {
+        $('#filter_book').on('submit', function(e) {
 
             e.preventDefault();
             $.ajax({
-                url: request() + '?file=books&action=new_category',
+                url: request() + '?file=books&action=filter_by_category',
                 method: 'POST',
                 data: new FormData(this),
                 contentType: false,
@@ -209,7 +177,7 @@
                             showConfirmButton: true,
                         });
                         setTimeout(function() {
-                            window.reload
+                            window.location.href = response.url;
                         }, 2e3);
 
                     } else {

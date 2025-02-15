@@ -1,5 +1,5 @@
         <?php
-        $user_image = (empty($the_ken['user']['photo'])) ? "/layout/assets/images/users/avatar-10.jpg" : $the_ken['user']['photo'];
+        $user_image = (empty($global_var['user']['photo'])) ? "/layout/assets/images/users/avatar-10.jpg" : $global_var['user']['photo'];
 
         ?>
         <!-- ============================================================== -->
@@ -33,7 +33,7 @@
                                     <div class="text-center">
                                         <div class="profile-user position-relative d-inline-block mx-auto mb-4">
                                             <!-- Profile Image -->
-                                            <img id="profile-pic" src="<?= $the_ken['config']['site_url'] . $user_image ?>"
+                                            <img id="profile-pic" src="<?= $global_var['config']['site_url'] . $user_image ?>"
                                                 class="rounded-circle avatar-xl img-thumbnail user-profile-image"
                                                 alt="user-profile-image">
 
@@ -47,11 +47,11 @@
                                                 </label>
                                             </div>
                                         </div>
-                                        <h5 class="fs-16 mb-1"><?= $the_ken['user']['firstname'] . ' ' . $the_ken['user']['lastname'] ?></h5>
+                                        <h5 class="fs-16 mb-1"><?= $global_var['user']['firstname'] . ' ' . $global_var['user']['lastname'] ?></h5>
                                         <p class="text-muted mb-0"> <?php
-                                                                    if ($the_ken['user']['user_type'] == 'stud') {
+                                                                    if ($global_var['user']['user_type'] == 'stud') {
                                                                         echo "Student";
-                                                                    } elseif ($the_ken['user']['user_type'] == 'lib') {
+                                                                    } elseif ($global_var['user']['user_type'] == 'lib') {
                                                                         echo "Librarian";
                                                                     } else {
                                                                         echo "Admin";
@@ -91,34 +91,34 @@
                                                     <div class="col-lg-4">
                                                         <div class="mb-3">
                                                             <label for="firstnameInput" class="form-label">First Name</label>
-                                                            <input type="text" class="form-control" name="firstname" placeholder="Enter your firstname" value="<?= $the_ken['user']['firstname'] ?>">
+                                                            <input type="text" class="form-control" name="firstname" placeholder="Enter your firstname" value="<?= $global_var['user']['firstname'] ?>">
                                                         </div>
                                                     </div>
                                                     <!--end col-->
                                                     <div class="col-lg-4">
                                                         <div class="mb-3">
                                                             <label for="lastnameInput" class="form-label">Last Name</label>
-                                                            <input type="text" class="form-control" name="lastname" placeholder="Enter your lastname" value="<?= $the_ken['user']['lastname'] ?>">
+                                                            <input type="text" class="form-control" name="lastname" placeholder="Enter your lastname" value="<?= $global_var['user']['lastname'] ?>">
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-4">
                                                         <div class="mb-3">
                                                             <label for="lastnameInput" class="form-label">Other Name</label>
-                                                            <input type="text" class="form-control" name="othername" placeholder="Enter your Othername" value="<?= $the_ken['user']['othername'] ?>">
+                                                            <input type="text" class="form-control" name="othername" placeholder="Enter your Othername" value="<?= $global_var['user']['othername'] ?>">
                                                         </div>
                                                     </div>
                                                     <!--end col-->
                                                     <div class="col-lg-6">
                                                         <div class="mb-3">
                                                             <label for="phonenumberInput" class="form-label">Phone Number</label>
-                                                            <input type="text" class="form-control" name="tel" id="phonenumberInput" placeholder="Enter your phone number" value="<?= $the_ken['user']['tel'] ?>">
+                                                            <input type="text" class="form-control" name="tel" id="phonenumberInput" placeholder="Enter your phone number" value="<?= $global_var['user']['tel'] ?>">
                                                         </div>
                                                     </div>
                                                     <!--end col-->
                                                     <div class="col-lg-6">
                                                         <div class="mb-3">
                                                             <label for="emailInput" class="form-label">Email Address</label>
-                                                            <input type="email" class="form-control" name="email" id="emailInput" placeholder="Enter your email" value="<?= $the_ken['user']['email'] ?>">
+                                                            <input type="email" class="form-control" name="email" id="emailInput" placeholder="Enter your email" value="<?= $global_var['user']['email'] ?>">
                                                         </div>
                                                     </div>
 
@@ -198,7 +198,7 @@
 
                 e.preventDefault();
                 $.ajax({
-                    url: request() + '?f=auth&s=change_pwd',
+                    url: request() + '?file=auth&action=change_pwd',
                     method: 'POST',
                     data: new FormData(this),
                     contentType: false,
@@ -233,7 +233,7 @@
 
                 e.preventDefault();
                 $.ajax({
-                    url: request() + '?f=users&s=update_profile',
+                    url: request() + '?file=users&action=update_profile',
                     method: 'POST',
                     data: new FormData(this),
                     contentType: false,
@@ -282,7 +282,7 @@
                         formData.append("profile_picture", file);
 
                         $.ajax({
-                            url: request() + '?f=users&s=update_profile_pic', // Adjust your backend route
+                            url: request() + '?file=users&action=update_profile_pic', // Adjust your backend route
                             method: "POST",
                             data: formData,
                             contentType: false,

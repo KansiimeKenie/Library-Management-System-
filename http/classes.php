@@ -1,7 +1,7 @@
 <?php
-if ($f == "classes") {
+if ($file == "classes") {
 
-	if ($s == "add_new_class") {
+	if ($action == "add_new_class") {
 		$name = __secure($_POST['name']);
 		$abbrev = __secure($_POST['abbrev']);
 
@@ -38,7 +38,7 @@ if ($f == "classes") {
 			}
 		}
 	}
-	if ($s == "edit_class") {
+	if ($action == "edit_class") {
 		$id = __secure($_POST['id']);
 		$name = __secure($_POST['name']);
 		$abbrev = __secure($_POST['abbrev']);
@@ -77,7 +77,7 @@ if ($f == "classes") {
 		}
 	}
 
-	if ($s == 'delete_class') {
+	if ($action == 'delete_class') {
 		$id = __secure($_POST['id']);
 		if ($db->where('id', $id)->delete('classes')) {
 			$data = array(

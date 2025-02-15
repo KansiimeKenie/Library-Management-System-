@@ -84,7 +84,7 @@
 
            e.preventDefault();
            $.ajax({
-               url: request() + '?f=damages&s=edit_damaged_book',
+               url: request() + '?file=damages&action=edit_damaged_book',
                method: 'POST',
                data: new FormData(this),
                contentType: false,

@@ -46,11 +46,23 @@
                                        <strong>Return Date:</strong> <?= date('d/m/Y', strtotime($req_details->return_date)); ?>
                                    </p>
                                    <hr>
-                                   <?php if ($req_details->return_status == 1) { ?>
+                                   <?php if ($req_details->aprove_status == 1) { ?>
+                                       <p><strong>Approval Status:</strong>
+                                           <span class="badge bg-success">Approved</span><br><br>
+                                           <strong>Approved On : </strong><?= date('y-m-d', strtotime($req_details->date_approved)) ?>
+                                       </p>
+
+
+                                       <p>
+                                       <?php } else { ?>
+                                           <strong>Approval Status:</strong><span class="badge bg-info">Pending</span>
+                                       <?php } ?>
+                                       <hr>
+                                       <hr>
+                                       <?php if ($req_details->return_status == 1) { ?>
                                        <p><strong>Return Status:</strong>
                                            <span class="badge bg-success">Returned</span><br><br>
-                                           <strong>Return On : </strong>
-                                           <?= getBorrowedBookRemainingDays(date('y-m-d', strtotime($req_details->return_date))) . ' Days' ?>
+                                           <strong>Return On : </strong><?= date('y-m-d', strtotime($req_details->returned_on)) ?>
                                        </p>
                                        <p><strong>Comment :</strong><?= $req_details->comment; ?></p>
 
@@ -62,13 +74,15 @@
                                        <hr>
 
                                        <div class="d-flex mt-3">
-                                           <?php if ($the_ken['user']['user_type'] != 'stud') {
+                                           <?php if ($global_var['user']['user_type'] != 'stud') {
                                                 if ($req_details->aprove_status != 1) { ?>
                                                    <button class="btn btn-success m-1 approve"><i class="fas fa-check"></i> Approve</button>
                                                    <button class="btn btn-danger m-1"><i class="fas fa-times"></i> Reject</button>
-                                               <?php } else { ?>
-                                                   <button data-bs-toggle="modal" data-bs-target="#confirm_return" class="btn btn-success m-1"><i class="fas fa-check"></i> Confirm Return</button>
-                                               <?php }
+                                                   <?php } else {
+                                                    if (empty($req_details->return_status)) { ?>
+                                                       <button data-bs-toggle="modal" data-bs-target="#confirm_return" class="btn btn-success m-1"><i class="fas fa-check"></i> Confirm Return</button>
+                                                   <?php }
+                                                }
                                             } else {
                                                 if ($req_details->aprove_status != 1) { ?>
                                                    <button class="btn btn-warning m-1"><i class="fas fa-edit"></i> Edit</button>
@@ -157,7 +171,7 @@
                    if (result.isConfirmed) {
                        // AJAX Request
                        $.ajax({
-                           url: request() + '?f=borrow&s=approve_borrow_request',
+                           url: request() + '?file=borrow&action=approve_borrow_request',
                            type: 'POST',
                            data: {
                                id: req_id,
@@ -195,7 +209,7 @@
 
            e.preventDefault();
            $.ajax({
-               url: request() + '?f=borrow&s=confirm_return',
+               url: request() + '?file=borrow&action=confirm_return',
                method: 'POST',
                data: new FormData(this),
                contentType: false,

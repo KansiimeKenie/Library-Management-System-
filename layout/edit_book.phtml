@@ -93,7 +93,7 @@
 
            e.preventDefault();
            $.ajax({
-               url: request() + '?f=books&s=edit_book',
+               url: request() + '?file=books&action=edit_book',
                method: 'POST',
                data: new FormData(this),
                contentType: false,

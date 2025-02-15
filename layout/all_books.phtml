@@ -37,7 +37,7 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                             <div class="listjs-table" id="customerList">
                                 <div class="row g-4 mb-3">
                                     <div class="col-sm-auto">
-                                        <?php if ($the_ken['user']['user_type'] != 'stud') { ?>
+                                        <?php if ($global_var['user']['user_type'] != 'stud') { ?>
                                             <div>
                                                 <a data-bs-toggle="modal" data-bs-target="#register" type="button" class="btn btn-success add-btn"><i class="ri-add-line align-bottom me-1"></i> Add New Book</a>
 
@@ -70,7 +70,7 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                                                 <th class="sort" data-sort="description">Category</th>
                                                 <th class="sort" data-sort="date">Aurthor</th>
                                                 <th class="sort" data-sort="date">ISBN</th>
-                                                <?php if ($the_ken['user']['user_type'] != 'stud') { ?>
+                                                <?php if ($global_var['user']['user_type'] != 'stud') { ?>
                                                     <th class="sort" data-sort="date">Registered On</th>
                                                     <th class="sort" data-sort="date">Registered By</th>
                                                     <th class="sort" data-sort="action">Action</th>
@@ -96,7 +96,7 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                                                     <td class="title"><?= $db->where("id", $value->category_id)->getOne("categories")->name ?></td>
                                                     <td class="description"><?= $value->author ?></td>
                                                     <td><?= $value->isbn ?></td>
-                                                    <?php if ($the_ken['user']['user_type'] != 'stud') { ?>
+                                                    <?php if ($global_var['user']['user_type'] != 'stud') { ?>
                                                         <td class="date"><?= date('d/m/Y', strtotime($value->date_created)) ?></td>
 
                                                         <td><?= $db->where('id', $value->created_by)->getOne('users')->firstname ?></td>
@@ -147,7 +147,7 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                 if (result.isConfirmed) {
                     // If confirmed, proceed with AJAX request
                     $.ajax({
-                        url: request() + '?f=books&s=delete',
+                        url: request() + '?file=books&action=delete',
                         method: 'POST',
                         data: {
                             id: id
@@ -179,7 +179,7 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
 
             e.preventDefault();
             $.ajax({
-                url: request() + '?f=books&s=filter_by_category',
+                url: request() + '?file=books&action=filter_by_category',
                 method: 'POST',
                 data: new FormData(this),
                 contentType: false,

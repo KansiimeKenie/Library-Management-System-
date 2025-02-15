@@ -1,17 +1,17 @@
 <?php
 require('init/functions.php');
 date_default_timezone_set('Africa/Kampala');
-$f = @$_GET['f'];
-$s = @$_GET['s'];
+$file = @$_GET['file'];
+$action = @$_GET['action'];
 
-$f = __secure($f);
-$s = __secure($s);
+$file = __secure($file);
+$action = __secure($action);
 
 
 $data = array();
 
-if (file_exists('http/' . $f . '.php')) {
-    include_once 'http/' . $f . '.php';
+if (file_exists('http/' . $file . '.php')) {
+    include_once 'http/' . $file . '.php';
 } else {
     $data = array(
         'status' => 404,

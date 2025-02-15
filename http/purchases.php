@@ -1,7 +1,7 @@
 <?php
-if ($f == "purchases") {
+if ($file == "purchases") {
 	// INVENTORY PURCHASES / INVENTORY UPDATING 
-	if ($s == "update_inventory") {
+	if ($action == "update_inventory") {
 		$book_id = __secure($_POST['book_id']);
 		$no_of_copies = __secure($_POST['no_of_copies']);
 		if (empty($book_id)) {
@@ -41,7 +41,7 @@ if ($f == "purchases") {
 			}
 		}
 	}
-	if ($s == "edit_book_purchase") {
+	if ($action == "edit_book_purchase") {
 		$purchase_id = __secure($_POST['id']);
 		$initial_copies = __secure($_POST['initial_copies']);
 		$book_id = __secure($_POST['book_id']);
@@ -84,7 +84,7 @@ if ($f == "purchases") {
 			}
 		}
 	}
-	if ($s == 'delete_purchase') {
+	if ($action == 'delete_purchase') {
 		$purchase_id = __secure($_POST['id']);
 		$book_id = __secure($_POST['book_id']);
 		$purchased_copies = __secure($_POST['no_of_copies']);

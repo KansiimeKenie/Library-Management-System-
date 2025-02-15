@@ -186,7 +186,7 @@
                 if (result.isConfirmed) {
                     // If confirmed, proceed with AJAX request
                     $.ajax({
-                        url: request() + '?f=damages&s=delete_damage',
+                        url: request() + '?file=damages&action=delete_damage',
                         method: 'POST',
                         data: {
                             id: id,
@@ -220,7 +220,7 @@
 
             e.preventDefault();
             $.ajax({
-                url: request() + '?f=damages&s=add_new_damage',
+                url: request() + '?file=damages&action=add_new_damage',
                 method: 'POST',
                 data: new FormData(this),
                 contentType: false,

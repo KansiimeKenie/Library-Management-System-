@@ -1,7 +1,7 @@
 <?php
 if ($f == "damages") {
 
-	if ($s == "add_new_damage") {
+	if ($action == "add_new_damage") {
 		$book_id = __secure($_POST['book_id']);
 		$description = __secure($_POST['description']);
 		$no_of_copies = __secure($_POST['no_of_copies']);
@@ -43,7 +43,7 @@ if ($f == "damages") {
 			}
 		}
 	}
-	if ($s == "edit_damaged_book") {
+	if ($action == "edit_damaged_book") {
 		$id = __secure($_POST['id']);
 		$initial_copies = __secure($_POST['initial_copies']);
 		$book_id = __secure($_POST['book_id']);
@@ -88,7 +88,7 @@ if ($f == "damages") {
 			}
 		}
 	}
-	if ($s == 'delete_damage') {
+	if ($action == 'delete_damage') {
 		$id = __secure($_POST['id']);
 		$book_id = __secure($_POST['book_id']);
 		$damaged_copies = __secure($_POST['no_of_copies']);

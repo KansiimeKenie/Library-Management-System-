@@ -15,8 +15,8 @@
                                         <div class="bg-overlay"></div>
                                         <div class="position-relative h-100 d-flex flex-column">
                                             <div class="mb-4">
-                                                <a href="<?= $the_ken['config']['site_url'] ?>" class="d-block">
-                                                    <img width="200px" height="150px" src="<?= $the_ken['config']['site_url'] . $the_ken['config']['logo'] ?>" alt="" height="18">
+                                                <a href="<?= $global_var['config']['site_url'] ?>" class="d-block">
+                                                    <img width="200px" height="150px" src="<?= $global_var['config']['site_url'] . $global_var['config']['logo'] ?>" alt="" height="18">
                                                 </a>
                                             </div>
                                             <div class="mt-auto">
@@ -25,21 +25,12 @@
                                                 </div>
 
                                                 <div id="qoutescarouselIndicators" class="carousel slide" data-bs-ride="carousel">
-                                                    <div class="carousel-indicators">
-                                                        <button type="button" data-bs-target="#qoutescarouselIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-                                                        <button type="button" data-bs-target="#qoutescarouselIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
-                                                        <button type="button" data-bs-target="#qoutescarouselIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
-                                                    </div>
+
                                                     <div class="carousel-inner text-center text-white-50 pb-5">
                                                         <div class="carousel-item active">
-                                                            <p class="fs-15 fst-italic">" Great! Clean code, clean design, easy for customization. Thanks very much! "</p>
+                                                            <p class="fs-15 fst-italic">Welcome to Library Managment System</p>
                                                         </div>
-                                                        <div class="carousel-item">
-                                                            <p class="fs-15 fst-italic">" The theme is really great with an amazing customer support."</p>
-                                                        </div>
-                                                        <div class="carousel-item">
-                                                            <p class="fs-15 fst-italic">" Great! Clean code, clean design, easy for customization. Thanks very much! "</p>
-                                                        </div>
+
                                                     </div>
                                                 </div>
                                                 <!-- end carousel -->
@@ -53,7 +44,7 @@
                                     <div class="p-lg-5 p-4">
                                         <div>
                                             <h5 class="text-primary">Create your Student Account</h5>
-                                            <p class="text-muted">Get your account now on <?= $the_ken['config']['site_name'] ?></p>
+                                            <p class="text-muted">Get your account now on <?= $global_var['config']['site_name'] ?></p>
                                         </div>
 
                                         <div class="mt-4">
@@ -128,7 +119,7 @@
                                         </div>
 
                                         <div class="mt-2 text-center">
-                                            <p class="mb-0">Already have an account ? <a href="<?= seo("admin.php?page=login") ?> " class="fw-semibold text-primary text-decoration-underline"> Login</a> </p>
+                                            <p class="mb-0">Already have an account ? <a href="index.php?page=login" class="fw-semibold text-primary text-decoration-underline"> Login</a> </p>
                                         </div>
                                     </div>
                                 </div>
@@ -151,7 +142,7 @@
             $('#register').on('submit', function(e) {
                 e.preventDefault();
                 $.ajax({
-                    url: request() + '?f=auth&s=register',
+                    url: request() + '?file=auth&action=register',
                     method: 'POST',
                     contentType: false,
                     processData: false,

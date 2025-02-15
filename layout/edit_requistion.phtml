@@ -1,7 +1,7 @@
    <?php
-    $category_details = $db->where("id", __secure($_GET['id']))->getOne("categories");
-
-
+    $req_details = $db->where("id", __secure($_GET['id']))->getOne("borrow_requests");
+    $book_details = $db->where("id", $req_details->book_id)->getOne("books");
+    $student_details = $db->where('id', $req_details->student_id)->getOne('users');
     ?>
    <div class="main-content">
 
@@ -13,7 +13,7 @@
                <div class="row">
                    <div class="col-12">
                        <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                           <h4 class="mb-sm-0">Edit Category</h4>
+                           <h4 class="mb-sm-0">Edit Borrow Requisition</h4>
 
                            <div class="page-title-right">
                                <ol class="breadcrumb m-0">
@@ -32,42 +32,57 @@
                            <div class="card border-info shadow-lg">
                                <div class="card-header bg-info text-white">
                                    <h6 class="card-title mb-0 d-flex justify-content-between align-items-center">
-                                       Edit Category - <?= $category_details->name ?>
+                                       Edit Borrow Request
 
                                    </h6>
                                </div>
                                <div class="card-body">
-                                   <form id="edit_book_purchase">
-                                       <input type="text" name="id" value="<?= $category_details->id ?>" Hidden>
+                                   <form id="edit_class">
+                                       <input type="text" name="id" value="<?= $req_details->id ?>" Hidden>
 
-                                       <div class="row">
+
+                                       <div class="row gy-4">
 
                                            <div class="col-xxl-3 col-md-12">
-
+                                               <div>
+                                                   <label for="basiInput" class="form-label">Book</label>
+                                                   <select name="book_id" class="form-control selectpicker " data-live-search="true">
+                                                       <option value="<?= $book_details->id ?>"><?= $book_details->title . ' : By ' . $book_details->author ?></option>
+                                                       <?php foreach ($db->get("books") as $value) { ?>
+                                                           <option value="<?= $value->id ?>"><?= $value->title . ' : By ' . $value->author ?></option>
+                                                       <?php } ?>
+                                                   </select>
+                                               </div>
                                            </div>
                                            <!--end col-->
-
-
                                            <div class="col-xxl-3 col-md-12">
                                                <div>
-                                                   <label for="placeholderInput" class="form-label">Category Name</label>
-                                                   <input type="text" value="<?= $category_details->name ?>" class="form-control" name="name" placeholder="">
-                                               </div>
-                                           </div>
-                                           <div class="col-xxl-3 col-md-12 mt-3">
-                                               <div>
-                                                   <label for="placeholderInput" class="form-label">Category Description</label>
+                                                   <label for="placeholderInput" class="form-label">Reason</label>
+                                                   <textarea placeholder="Enter Borrowing reason here.." class="form-control" name="reason"><?= $req_details->reason ?></textarea>
 
-                                                   <textarea name="description" class="form-control"><?= $category_details->description ?></textarea>
                                                </div>
                                            </div>
+
+                                           <div class="col-xxl-3 col-md-6">
+                                               <div>
+                                                   <label for="placeholderInput" class="form-label">No. Of Copies to be Borrowed</label>
+                                                   <input type="text" class="form-control" name="no_of_copies" value="<?= $req_details->no_of_copies ?>" placeholder="No. Of Book Copies Available">
+                                               </div>
+                                           </div>
+                                           <div class="col-xxl-3 col-md-6">
+                                               <div>
+                                                   <label for="placeholderInput" class="form-label">Return date</label>
+                                                   <input type="date" value="<?= $req_details->return_date ?>" class="form-control" name="return_date">
+                                               </div>
+                                           </div>
+                                           <!--end col-->
 
 
                                        </div>
                                        <hr>
 
                                        <div class="d-flex mt-3 align-items-center justify-content-center ">
-                                           <button type="submit" class="btn btn-warning m-1"><i class="fas fa-edit"></i> Edit Category Details</button>
+                                           <button type="submit" class="btn btn-primary m-1"><i class="fas fa-edit"></i> Edit Request Details</button>
                                        </div>
                                    </form>
                                </div>
@@ -79,11 +94,11 @@
        </div><!-- end col -->
    </div><!-- end row -->
    <script>
-       $('#edit_book_purchase').on('submit', function(e) {
+       $('#edit_class').on('submit', function(e) {
 
            e.preventDefault();
            $.ajax({
-               url: request() + '?file=books&action=edit_category',
+               url: request() + '?file=borrow&action=edit_request',
                method: 'POST',
                data: new FormData(this),
                contentType: false,

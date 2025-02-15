@@ -3,9 +3,15 @@ $manage_books_array = ['all_books', 'edit_book', 'current_books', 'inventory_upd
 $bookings = ['requistions', 'borrowed_books', 'req_details'];
 $genal_settings = ['categories', 'system_setup', 'all_classes', 'edit_category', 'edit_class'];
 $users = ['all_libs', 'all_students', 'all_admins', 'student_profile'];
-$trans_log = ['trans_history', 'borrow_history'];
-$user_image = (empty($the_ken['user']['photo'])) ? "/layout/assets/images/users/avatar-10.jpg" : $the_ken['user']['photo'];
-
+$borrow_history = ['trans_history', 'borrow_history'];
+$report_pages = ['most_borrowing_students', 'most_borrowed_books'];
+$user_image = (empty($global_var['user']['photo'])) ? "/layout/assets/images/users/avatar-10.jpg" : $global_var['user']['photo'];
+$pending_requests = count(
+    $db->orderBy('id', 'DESC')
+        ->where('request_date', getCurrentDateOnly())
+        ->where('aprove_status IS NULL')
+        ->get('borrow_requests')
+);
 
 
 ?>
@@ -15,21 +21,21 @@ $user_image = (empty($the_ken['user']['photo'])) ? "/layout/assets/images/users/
             <div class="d-flex">
                 <!-- LOGO -->
                 <div class="navbar-brand-box horizontal-logo">
-                    <a href="<?= $the_ken['config']['site_url'] ?>" class="logo logo-dark">
+                    <a href="<?= $global_var['config']['site_url'] ?>" class="logo logo-dark">
                         <span class="logo-sm">
-                            <img src="<?= $the_ken['config']['site_url'] . $the_ken['config']['logo'] ?>" alt="" height="22">
+                            <img src="<?= $global_var['config']['site_url'] . $global_var['config']['logo'] ?>" alt="" height="22">
                         </span>
                         <span class="logo-lg">
-                            <img src="<?= $the_ken['config']['site_url'] . $the_ken['config']['logo']  ?>" alt="" height="17">
+                            <img src="<?= $global_var['config']['site_url'] . $global_var['config']['logo']  ?>" alt="" height="17">
                         </span>
                     </a>
 
-                    <a href="<?= $the_ken['config']['site_url'] ?>" class="logo logo-light">
+                    <a href="<?= $global_var['config']['site_url'] ?>" class="logo logo-light">
                         <span class="logo-sm">
-                            <img src="<?= $the_ken['config']['site_url'] . $the_ken['config']['logo']  ?>" alt="" height="22">
+                            <img src="<?= $global_var['config']['site_url'] . $global_var['config']['logo']  ?>" alt="" height="22">
                         </span>
                         <span class="logo-lg">
-                            <img src="<?= $the_ken['config']['site_url'] . $the_ken['config']['logo'] ?>" alt="" height="17">
+                            <img src="<?= $global_var['config']['site_url'] . $global_var['config']['logo'] ?>" alt="" height="17">
                         </span>
                     </a>
                 </div>
@@ -94,10 +100,10 @@ $user_image = (empty($the_ken['user']['photo'])) ? "/layout/assets/images/users/
                 </div>
 
                 <div class="dropdown topbar-head-dropdown ms-1 header-item" id="notificationDropdown">
-                    <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle" id="page-header-notifications-dropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false">
+                    <!-- <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle" id="page-header-notifications-dropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false">
                         <i class='bx bx-bell fs-22'></i>
                         <span class="position-absolute topbar-badge fs-10 translate-middle badge rounded-pill bg-danger">3<span class="visually-hidden">unread messages</span></span>
-                    </button>
+                    </button> -->
                     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0" aria-labelledby="page-header-notifications-dropdown">
 
                         <div class="dropdown-head bg-primary bg-pattern rounded-top">
@@ -166,7 +172,7 @@ $user_image = (empty($the_ken['user']['photo'])) ? "/layout/assets/images/users/
 
                                     <div class="text-reset notification-item d-block dropdown-item position-relative">
                                         <div class="d-flex">
-                                            <img src="<?= $the_ken['config']['site_url'] ?>/layout/assets/images/users/avatar-2.jpg" class="me-3 rounded-circle avatar-xs flex-shrink-0" alt="user-pic">
+                                            <img src="<?= $global_var['config']['site_url'] ?>/layout/assets/images/users/avatar-2.jpg" class="me-3 rounded-circle avatar-xs flex-shrink-0" alt="user-pic">
                                             <div class="flex-grow-1">
                                                 <a href="#!" class="stretched-link">
                                                     <h6 class="mt-0 mb-1 fs-13 fw-semibold">Angela Bernier</h6>
@@ -215,7 +221,7 @@ $user_image = (empty($the_ken['user']['photo'])) ? "/layout/assets/images/users/
 
                                     <div class="text-reset notification-item d-block dropdown-item position-relative">
                                         <div class="d-flex">
-                                            <img src="<?= $the_ken['config']['site_url'] ?>/layout/assets/images/users/avatar-8.jpg" class="me-3 rounded-circle avatar-xs flex-shrink-0" alt="user-pic">
+                                            <img src="<?= $global_var['config']['site_url'] ?>/layout/assets/images/users/avatar-8.jpg" class="me-3 rounded-circle avatar-xs flex-shrink-0" alt="user-pic">
                                             <div class="flex-grow-1">
                                                 <a href="#!" class="stretched-link">
                                                     <h6 class="mt-0 mb-1 fs-13 fw-semibold">Maureen Gibson</h6>
@@ -248,7 +254,7 @@ $user_image = (empty($the_ken['user']['photo'])) ? "/layout/assets/images/users/
                                 <div data-simplebar style="max-height: 300px;" class="pe-2">
                                     <div class="text-reset notification-item d-block dropdown-item">
                                         <div class="d-flex">
-                                            <img src="<?= $the_ken['config']['site_url'] ?>/layout/assets/images/users/avatar-3.jpg" class="me-3 rounded-circle avatar-xs" alt="user-pic">
+                                            <img src="<?= $global_var['config']['site_url'] ?>/layout/assets/images/users/avatar-3.jpg" class="me-3 rounded-circle avatar-xs" alt="user-pic">
                                             <div class="flex-grow-1">
                                                 <a href="#!" class="stretched-link">
                                                     <h6 class="mt-0 mb-1 fs-13 fw-semibold">James Lemire</h6>
@@ -271,7 +277,7 @@ $user_image = (empty($the_ken['user']['photo'])) ? "/layout/assets/images/users/
 
                                     <div class="text-reset notification-item d-block dropdown-item">
                                         <div class="d-flex">
-                                            <img src="<?= $the_ken['config']['site_url'] ?>/layout/assets/images/users/avatar-2.jpg" class="me-3 rounded-circle avatar-xs" alt="user-pic">
+                                            <img src="<?= $global_var['config']['site_url'] ?>/layout/assets/images/users/avatar-2.jpg" class="me-3 rounded-circle avatar-xs" alt="user-pic">
                                             <div class="flex-grow-1">
                                                 <a href="#!" class="stretched-link">
                                                     <h6 class="mt-0 mb-1 fs-13 fw-semibold">Angela Bernier</h6>
@@ -295,7 +301,7 @@ $user_image = (empty($the_ken['user']['photo'])) ? "/layout/assets/images/users/
 
                                     <div class="text-reset notification-item d-block dropdown-item">
                                         <div class="d-flex">
-                                            <img src="<?= $the_ken['config']['site_url'] ?>/layout/assets/images/users/avatar-6.jpg" class="me-3 rounded-circle avatar-xs" alt="user-pic">
+                                            <img src="<?= $global_var['config']['site_url'] ?>/layout/assets/images/users/avatar-6.jpg" class="me-3 rounded-circle avatar-xs" alt="user-pic">
                                             <div class="flex-grow-1">
                                                 <a href="#!" class="stretched-link">
                                                     <h6 class="mt-0 mb-1 fs-13 fw-semibold">Kenneth Brown</h6>
@@ -319,7 +325,7 @@ $user_image = (empty($the_ken['user']['photo'])) ? "/layout/assets/images/users/
 
                                     <div class="text-reset notification-item d-block dropdown-item">
                                         <div class="d-flex">
-                                            <img src="<?= $the_ken['config']['site_url'] ?>/layout/assets/images/users/avatar-8.jpg" class="me-3 rounded-circle avatar-xs" alt="user-pic">
+                                            <img src="<?= $global_var['config']['site_url'] ?>/layout/assets/images/users/avatar-8.jpg" class="me-3 rounded-circle avatar-xs" alt="user-pic">
                                             <div class="flex-grow-1">
                                                 <a href="#!" class="stretched-link">
                                                     <h6 class="mt-0 mb-1 fs-13 fw-semibold">Maureen Gibson</h6>
@@ -360,14 +366,14 @@ $user_image = (empty($the_ken['user']['photo'])) ? "/layout/assets/images/users/
                 <div class="dropdown ms-sm-3 header-item topbar-user">
                     <button type="button" class="btn" id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="d-flex align-items-center">
-                            <img class="rounded-circle header-profile-user" src="<?= $the_ken['config']['site_url'] . $user_image ?>" alt="Header Avatar">
+                            <img class="rounded-circle header-profile-user" src="<?= $global_var['config']['site_url'] . $user_image ?>" alt="Header Avatar">
                             <span class="text-start ms-xl-2">
-                                <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text"><?= $the_ken['user']['firstname'] . ' ' . $the_ken['user']['lastname'] ?></span>
+                                <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text"><?= $global_var['user']['firstname'] . ' ' . $global_var['user']['lastname'] ?></span>
                                 <span class="d-none d-xl-block ms-1 fs-12 user-name-sub-text">
                                     <?php
-                                    if ($the_ken['user']['user_type'] == 'stud') {
+                                    if ($global_var['user']['user_type'] == 'stud') {
                                         echo "Student";
-                                    } elseif ($the_ken['user']['user_type'] == 'lib') {
+                                    } elseif ($global_var['user']['user_type'] == 'lib') {
                                         echo "Librarian";
                                     } else {
                                         echo "Admin";
@@ -379,14 +385,14 @@ $user_image = (empty($the_ken['user']['photo'])) ? "/layout/assets/images/users/
                     </button>
                     <div class="dropdown-menu dropdown-menu-end">
                         <!-- item-->
-                        <h6 class="dropdown-header">Welcome Anna!</h6>
+                        <h6 class="dropdown-header">Welcome <?= $global_var['user']['firstname'] ?>!</h6>
                         <a class="dropdown-item" href="index.php?page=user_profile"><i class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Profile</span></a>
-                        <a class="dropdown-item" href="apps-chat.html"><i class="mdi mdi-message-text-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Messages</span></a>
+                        <!-- <a class="dropdown-item" href="apps-chat.html"><i class="mdi mdi-message-text-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Messages</span></a> -->
 
-                        <a class="dropdown-item" href="pages-faqs.html"><i class="mdi mdi-lifebuoy text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Help</span></a>
+                        <!-- <a class="dropdown-item" href="pages-faqs.html"><i class="mdi mdi-lifebuoy text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Help</span></a> -->
                         <div class="dropdown-divider"></div>
 
-                        <a class="dropdown-item" href="pages-profile-settings.html"><span class="badge bg-success-subtle text-success mt-1 float-end"></span><i class="mdi mdi-cog-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Settings</span></a>
+                        <!-- <a class="dropdown-item" href="pages-profile-settings.html"><span class="badge bg-success-subtle text-success mt-1 float-end"></span><i class="mdi mdi-cog-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Settings</span></a> -->
 
                         <a class="dropdown-item" href="index.php?page=logout"><i class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-key="t-logout">Logout</span></a>
                     </div>
@@ -400,21 +406,21 @@ $user_image = (empty($the_ken['user']['photo'])) ? "/layout/assets/images/users/
     <!-- LOGO -->
     <div class="navbar-brand-box">
         <!-- Dark Logo-->
-        <a href="<?= $the_ken['config']['site_url'] ?>" class="logo logo-dark">
+        <a href="<?= $global_var['config']['site_url'] ?>" class="logo logo-dark">
             <span class="logo-sm">
-                <img src="<?= $the_ken['config']['site_url'] . $the_ken['config']['logo']  ?>" alt="" height="22">
+                <img src="<?= $global_var['config']['site_url'] . $global_var['config']['logo']  ?>" alt="" height="22">
             </span>
             <span class="logo-lg">
-                <img src="<?= $the_ken['config']['site_url'] . $the_ken['config']['logo']  ?>" alt="" height="17">
+                <img src="<?= $global_var['config']['site_url'] . $global_var['config']['logo']  ?>" alt="" height="17">
             </span>
         </a>
         <!-- Light Logo-->
-        <a href="<?= $the_ken['config']['site_url'] ?>" class="logo logo-light">
+        <a href="<?= $global_var['config']['site_url'] ?>" class="logo logo-light">
             <span class="logo-sm">
-                <img src="<?= $the_ken['config']['site_url'] . $the_ken['config']['logo']  ?>" alt="" height="22">
+                <img src="<?= $global_var['config']['site_url'] . $global_var['config']['logo']  ?>" alt="" height="22">
             </span>
             <span class="logo-lg mt-2">
-                <img width="100px" height="100px" src="<?= $the_ken['config']['site_url'] . $the_ken['config']['logo']  ?>" alt="" height="17">
+                <img width="100px" height="100px" src="<?= $global_var['config']['site_url'] . $global_var['config']['logo']  ?>" alt="" height="17">
             </span>
         </a>
         <button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover" id="vertical-hover">
@@ -443,7 +449,7 @@ $user_image = (empty($the_ken['user']['photo'])) ? "/layout/assets/images/users/
                         role="button"
                         aria-expanded="<?= (in_array($page, $manage_books_array) ? 'true' : '') ?>"
                         aria-controls="sidebarApps">
-                        <i class="ri-apps-2-line"></i> <span data-key="t-apps"><?= ($the_ken['user']['user_type'] != 'stud') ? 'Books Management' : 'Library Books' ?></span>
+                        <i class="ri-book-shelf-line"></i> <span data-key="t-apps"><?= ($global_var['user']['user_type'] != 'stud') ? 'Books Management' : 'Library Books' ?></span>
                     </a>
 
                     <div class="collapse menu-dropdown <?= (in_array($page, $manage_books_array) ? 'show' : '') ?>" id="sidebarApps">
@@ -452,7 +458,7 @@ $user_image = (empty($the_ken['user']['photo'])) ? "/layout/assets/images/users/
                             <li class="nav-item">
                                 <a href="index.php?page=all_books" class="nav-link <?= (($page == 'all_books') ? 'active' : '') ?>" data-key="t-chat">View All Books </a>
                             </li>
-                            <?php if ($the_ken['user']['user_type'] != 'stud') { ?>
+                            <?php if ($global_var['user']['user_type'] != 'stud') { ?>
                                 <li class="nav-item">
                                     <a data-bs-toggle="modal" data-bs-target="#register" class="nav-link"> <span data-key="t-file-manager">Add New Book</span></a>
                                 </li>
@@ -475,12 +481,21 @@ $user_image = (empty($the_ken['user']['photo'])) ? "/layout/assets/images/users/
 
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarLayouts1" data-bs-toggle="collapse" role="button" aria-expanded="<?= (in_array($page, $bookings) ? 'true' : '') ?>" aria-controls="sidebarLayouts">
-                        <i class="ri-layout-3-line"></i> <span data-key="t-layouts">Borrow Requests</span>
+                        <i class="ri-layout-3-line"></i> <span data-key="t-layouts">Borrow Requests
+                            <span class="topbar-badge fs-30 badge rounded-pill bg-secondary"><?= $pending_requests ?></span>
+                        </span>
                     </a>
                     <div class="collapse menu-dropdown <?= (in_array($page, $bookings) ? 'show' : '') ?>" id="sidebarLayouts1">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="index.php?page=requistions" class="nav-link <?= (($page == 'requistions') ? 'active' : '') ?>" data-key="t-horizontal">All Requests</a>
+                                <a href="index.php?page=requistions" class="nav-link <?= (($page == 'requistions') ? 'active' : '') ?>" data-key="t-horizontal">All Requests
+                                    <?php if ($global_var['user']['user_type'] == 'lib') { ?>
+                                        <span class="badge bg-light-subtle text-body fs-13">
+                                            <?= $pending_requests
+
+                                            ?> New</span>
+                                    <?php } ?>
+                                </a>
                             </li>
 
                             <li class="nav-item">
@@ -490,10 +505,10 @@ $user_image = (empty($the_ken['user']['photo'])) ? "/layout/assets/images/users/
                     </div>
                 </li> <!-- end Dashboard Menu -->
                 <li class="nav-item">
-                    <a class="nav-link menu-link" href="#sidebarLayouts" data-bs-toggle="collapse" role="button" aria-expanded="<?= (in_array($page, $trans_log) ? 'true' : '') ?>" aria-controls="sidebarLayouts">
-                        <i class="ri-layout-3-line"></i> <span data-key="t-layouts">Transaction Log</span>
+                    <a class="nav-link menu-link" href="#sidebarLayouts" data-bs-toggle="collapse" role="button" aria-expanded="<?= (in_array($page, $borrow_history) ? 'true' : '') ?>" aria-controls="sidebarLayouts">
+                        <i class="ri-folder-history-line"></i></i> <span data-key="t-layouts">Borrow History</span>
                     </a>
-                    <div class="collapse menu-dropdown <?= (in_array($page, $trans_log) ? 'show' : '') ?>" id="sidebarLayouts">
+                    <div class="collapse menu-dropdown <?= (in_array($page, $borrow_history) ? 'show' : '') ?>" id="sidebarLayouts">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
                                 <a href="index.php?page=trans_history" class="nav-link <?= (($page == 'trans_history') ? 'active' : '') ?>" data-key="t-horizontal">View Borrowing History</a>
@@ -504,21 +519,21 @@ $user_image = (empty($the_ken['user']['photo'])) ? "/layout/assets/images/users/
                     </div>
                 </li> <!-- end Dashboard Menu -->
 
-                <?php if ($the_ken['user']['user_type'] != 'stud') { ?>
+                <?php if ($global_var['user']['user_type'] != 'stud') { ?>
                     <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-components">Reports</span></li>
 
 
 
                     <li class="nav-item">
-                        <a class="nav-link menu-link" href="#sidebarAdvanceUI" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarAdvanceUI">
+                        <a class="nav-link menu-link" href="#sidebarAdvanceUI" data-bs-toggle="collapse" role="button" aria-expanded="<?= (in_array($page, $report_pages) ? 'true' : '') ?>" aria-controls="sidebarAdvanceUI">
                             <i class="ri-stack-line"></i> <span data-key="t-advance-ui">Generate reports</span>
                         </a>
-                        <div class="collapse menu-dropdown" id="sidebarAdvanceUI">
-                            <ul class="nav nav-sm flex-column">
+                        <div class="collapse menu-dropdown <?= (in_array($page, $report_pages) ? 'show' : '') ?>" id="sidebarAdvanceUI">
+                            <ul class="nav nav-sm flex-column ">
                                 <li class="nav-item">
-                                    <a href="#" class="nav-link" data-key="t-sweet-alerts">Damaged Books Report
+                                    <a href="index.php?page=most_borrowed_books" class="nav-link <?= ($page == 'most_borrowed_books') ? 'active' : '' ?>" data-key="t-sweet-alerts">View Most Borrowed Book
                                     </a>
-                                    <a href="#" class="nav-link" data-key="t-sweet-alerts">Purchases report
+                                    <a href="index.php?page=most_borrowing_students" class="nav-link <?= ($page == 'most_borrowing_students') ? 'active' : '' ?>" data-key="t-sweet-alerts">View Most Borrowing Students
                                     </a>
                                     <a href="#" class="nav-link" data-key="t-sweet-alerts">Over Due Books
                                     </a>
@@ -529,7 +544,7 @@ $user_image = (empty($the_ken['user']['photo'])) ? "/layout/assets/images/users/
                     </li>
                 <?php } ?>
 
-                <?php if ($the_ken['user']['user_type'] == 'admin') { ?>
+                <?php if ($global_var['user']['user_type'] == 'admin') { ?>
                     <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Settings</span></li>
 
                     <li class="nav-item">

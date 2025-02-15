@@ -1,9 +1,9 @@
 <?php
-if ($f == 'web-setup') {
+if ($file == 'web-setup') {
 	$data = array();
 	$targetDir = "uploads/system/";
 	$allowTypes = array('jpg', 'png', 'jpeg', 'gif');
-	if ($s == 'update') {
+	if ($action == 'update') {
 		$business_settings = array();
 		foreach ($_POST['images'] as $key => $type) {
 			if (isset($_FILES[$type]) && !empty($_FILES[$type])) {
