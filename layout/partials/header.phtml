@@ -482,7 +482,15 @@ $pending_requests = count(
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarLayouts1" data-bs-toggle="collapse" role="button" aria-expanded="<?= (in_array($page, $bookings) ? 'true' : '') ?>" aria-controls="sidebarLayouts">
                         <i class="ri-layout-3-line"></i> <span data-key="t-layouts">Borrow Requests
-                            <span class="topbar-badge fs-30 badge rounded-pill bg-secondary"><?= $pending_requests ?></span>
+                            <span class="topbar-badge fs-30 badge rounded-pill bg-secondary"><?= ($global_var['user']['user_type'] == 'stud') ?  count(
+                                                                                                    $db->orderBy('id', 'DESC')
+                                                                                                        ->where('student_id', $global_var['user']['id'])
+                                                                                                        ->where('aprove_status', 1)
+                                                                                                        ->where('return_status IS NULL')
+                                                                                                        ->get('borrow_requests')
+                                                                                                ) :
+
+                                                                                                    $pending_requests ?></span>
                         </span>
                     </a>
                     <div class="collapse menu-dropdown <?= (in_array($page, $bookings) ? 'show' : '') ?>" id="sidebarLayouts1">
@@ -500,6 +508,18 @@ $pending_requests = count(
 
                             <li class="nav-item">
                                 <a href="index.php?page=borrowed_books" class="nav-link <?= (($page == 'borrowed_books') ? 'active' : '') ?>" data-key="t-hovered">Current Borrowed Books</a>
+                                <?php if ($global_var['user']['user_type'] == 'stud') { ?>
+                                    <span class="topbar-badge fs-30 badge rounded-pill bg-secondary">
+                                        <?= count(
+                                            $db->orderBy('id', 'DESC')
+                                                ->where('student_id', $global_var['user']['id'])
+                                                ->where('aprove_status', 1)
+                                                ->where('return_status IS NULL')
+                                                ->get('borrow_requests')
+                                        );
+
+                                        ?><i> Borrowed </i></span>
+                                <?php } ?>
                             </li>
                         </ul>
                     </div>
@@ -535,7 +555,7 @@ $pending_requests = count(
                                     </a>
                                     <a href="index.php?page=most_borrowing_students" class="nav-link <?= ($page == 'most_borrowing_students') ? 'active' : '' ?>" data-key="t-sweet-alerts">View Most Borrowing Students
                                     </a>
-                                    <a href="#" class="nav-link" data-key="t-sweet-alerts">Over Due Books
+                                    <a href="#" class="nav-link d-none" data-key="t-sweet-alerts">Over Due Books
                                     </a>
                                 </li>
 
@@ -544,12 +564,12 @@ $pending_requests = count(
                     </li>
                 <?php } ?>
 
-                <?php if ($global_var['user']['user_type'] == 'admin') { ?>
-                    <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Settings</span></li>
+                <?php if ($global_var['user']['user_type'] != 'stud') { ?>
+                    <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages"><?= (($global_var['user']['user_type'] == 'admin') ? 'Settings' : 'Users') ?></span></li>
 
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#sidebarAuth" data-bs-toggle="collapse" role="button" aria-expanded="<?= (in_array($page, $users) ? 'true' : '') ?>" aria-controls="sidebarAuth">
-                            <i class="ri-account-circle-line"></i> <span data-key="t-authentication">Users</span>
+                            <i class="ri-account-circle-line"></i> <span data-key="t-authentication"><?= (($global_var['user']['user_type'] == 'admin') ? 'Users' : 'Students') ?></span>
                         </a>
                         <div class="collapse menu-dropdown <?= (in_array($page, $users) ? 'show' : '') ?>" id="sidebarAuth">
                             <ul class="nav nav-sm flex-column">
@@ -558,19 +578,22 @@ $pending_requests = count(
                                     <a href="index.php?page=all_students" class="nav-link <?= (($page == 'all_students') ? 'active' : '') ?>" data-key="t-basic">All Students
                                     </a>
                                 </li>
-                                <li class="nav-item">
-                                    <a href="index.php?page=all_libs" class="nav-link <?= (($page == 'all_libs') ? 'active' : '') ?>" data-key="t-cover"> All Librarians
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="index.php?page=all_admins" class="nav-link <?= (($page == 'all_admins') ? 'active' : '') ?>" data-key="t-cover">All Admins
-                                    </a>
-                                </li>
 
+                                <?php if ($global_var['user']['user_type'] == 'admin') { ?>
+                                    <li class="nav-item">
+                                        <a href="index.php?page=all_libs" class="nav-link <?= (($page == 'all_libs') ? 'active' : '') ?>" data-key="t-cover"> All Librarians
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="index.php?page=all_admins" class="nav-link <?= (($page == 'all_admins') ? 'active' : '') ?>" data-key="t-cover">All Admins
+                                        </a>
+                                    </li>
+                                <?php } ?>
                             </ul>
                         </div>
                     </li>
-
+                <?php }
+                if ($global_var['user']['user_type'] == 'admin') { ?>
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#settings" data-bs-toggle="collapse" role="button" aria-expanded="<?= (in_array($page, $genal_settings) ? 'true' : '') ?>" aria-controls="settings">
                             <i class="ri-pages-line"></i> <span data-key="t-pages">General Settings</span>
@@ -594,7 +617,7 @@ $pending_requests = count(
                             </ul>
                         </div>
                     </li>
-                <?php } ?>
+                <?php  } ?>
 
             </ul>
         </div>

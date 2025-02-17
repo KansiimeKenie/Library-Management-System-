@@ -105,8 +105,11 @@ if (isset($_GET['start_date']) && isset($_GET['end_date'])) {
                                                         <td><?= $db->where('id', $student_details->class_id)->getOne('classes')->abbrev ?></td>
                                                         <td><?= $book_details->title . '  - ' . $book_details->author ?></td>
                                                         <td><?= $value->no_of_copies ?></td>
-                                                        <td><?php if ($value->aprove_status == 1) {
+                                                        <td>
+                                                            <?php if ($value->aprove_status == 1) {
                                                                 echo '<span class="badge bg-success">Approved</span></td>';
+                                                            } else if ($value->aprove_status == 2) {
+                                                                echo '<span class="badge bg-danger">Rejected</span></td>';
                                                             } else {
                                                                 echo '<span class="badge bg-info">Pending</span></td>';
                                                             } ?>
@@ -153,11 +156,18 @@ if (isset($_GET['start_date']) && isset($_GET['end_date'])) {
 
                                                         <td><?= $book_details->title . '  - ' . $book_details->author ?></td>
                                                         <td><?= $value->no_of_copies ?></td>
-                                                        <td><?php if ($value->aprove_status == 1) {
+                                                        <td>
+
+
+                                                            <?php if ($value->aprove_status == 1) {
                                                                 echo '<span class="badge bg-success">Approved</span></td>';
+                                                            } else if ($value->aprove_status == 2) {
+                                                                echo '<span class="badge bg-danger">Rejected</span></td>';
                                                             } else {
                                                                 echo '<span class="badge bg-info">Pending</span></td>';
                                                             } ?>
+
+
                                                         <td class="date"><?= date('d/m/Y', strtotime($value->return_date)) ?></td>
 
                                                         <td>

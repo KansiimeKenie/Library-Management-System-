@@ -58,7 +58,7 @@ $user_image = (empty($user_details->photo)) ? "/layout/assets/images/users/avata
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link fs-14" data-bs-toggle="tab" href="#projects" role="tab">
-                                            <i class="ri-price-tag-line d-inline-block d-md-none"></i> <span class="d-none d-md-inline-block">Transaction History</span>
+                                            <i class="ri-price-tag-line d-inline-block d-md-none"></i> <span class="d-none d-md-inline-block">Borrow History</span>
                                         </a>
                                     </li>
                                 <?php } ?>
@@ -124,7 +124,7 @@ $user_image = (empty($user_details->photo)) ? "/layout/assets/images/users/avata
                             <div class="tab-pane fade" id="activities" role="tabpanel">
                                 <div class="card">
                                     <div class="card-body">
-                                        <h5 class="card-title mb-3">Current Borrowed Book</h5>
+                                        <h5 class="card-title mb-3">Current Borrowed Books</h5>
                                         <div class="acitivity-timeline">
                                             <div class="table-responsive mt-3 mb-1">
                                                 <table id="myTable" class="table table-bordered table-striped">
@@ -146,11 +146,12 @@ $user_image = (empty($user_details->photo)) ? "/layout/assets/images/users/avata
 
                                                         <?php
 
-                                                        $all_requests = $db->get('users');
+                                                        $all_requests = $db->where('aprove_status', 1)->where('return_status IS NULL')->where('student_id', $user_id)->get('borrow_requests');
 
                                                         $sn = 0;
                                                         foreach ($all_requests as $value):
 
+                                                            $book_details = $db->where("id", $value->book_id)->getOne("books");
 
                                                             $sn++;
                                                         ?>
@@ -160,12 +161,17 @@ $user_image = (empty($user_details->photo)) ? "/layout/assets/images/users/avata
                                                                 </th>
 
 
-                                                                <td><?= $book_details->firstname  ?></td>
-                                                                <td><?= $value->id ?></td>
+                                                                <td><?= $book_details->title  ?></td>
+                                                                <td><?= $value->no_of_copies ?></td>
                                                                 <td><span class="badge bg-info">Pending</span></td>
-                                                                <td class="date"><?= date('d/m/Y', strtotime($value->date_created)) ?></td>
+                                                                <td class="date"><?= date('d/m/Y', strtotime($value->return_date)) ?></td>
                                                                 <td><?php
-
+                                                                    $days = getBorrowedBookRemainingDays(date('y-m-d', strtotime($value->return_date)));
+                                                                    if ($days <  1) {
+                                                                        echo '<span class="badge bg-danger">Overdue by ' . abs($days) . ' days</span>';
+                                                                    } else {
+                                                                        echo $days . ' Days';
+                                                                    }
 
                                                                     ?></td>
 
@@ -188,77 +194,68 @@ $user_image = (empty($user_details->photo)) ? "/layout/assets/images/users/avata
                             <div class="tab-pane fade" id="projects" role="tabpanel">
                                 <div class="card">
                                     <div class="card-body">
-                                        <div class="row">
+                                        <h5 class="card-title mb-3">Borrow History</h5>
+                                        <div class="acitivity-timeline">
+                                            <div class="table-responsive mt-3 mb-1">
+                                                <table id="myTable" class="table table-bordered table-striped">
+                                                    <thead class="table-light">
+                                                        <tr>
+                                                            <th scope="col">
+                                                                S/No.
+                                                            </th>
+
+                                                            <th class="sort" data-sort="date">Borrowed Book</th>
+                                                            <th class="sort" data-sort="date">Copies</th>
+                                                            <th class="sort" data-sort="date">Borrow Date</th>
+                                                            <th class="sort" data-sort="date">Due Date</th>
+                                                            <th class="sort" data-sort="date">Return Date</th>
+                                                            <th class="sort" data-sort="date">Overdue Status</th>
+                                                            <th class="sort" data-sort="action">Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody class="list form-check-all">
+
+                                                        <?php
+
+                                                        $all_requests = $db->where('aprove_status', 1)->where('return_status IS NOT NULL')->where('student_id', $user_id)->get('borrow_requests');
+
+                                                        $sn = 0;
+                                                        foreach ($all_requests as $value):
+
+                                                            $book_details = $db->where("id", $value->book_id)->getOne("books");
+
+                                                            $sn++;
+                                                        ?>
+                                                            <tr>
+                                                                <th scope="row">
+                                                                    <?= $sn ?>
+                                                                </th>
 
 
+                                                                <td><?= $book_details->title  ?></td>
+
+                                                                <td><?= $value->no_of_copies ?></td>
+                                                                <td><?= date('d/m/Y', strtotime($value->date_approved)) ?></td>
+                                                                <td class="date"><?= date('d/m/Y', strtotime($value->return_date)) ?></td>
+                                                                <td><?= date('d/m/Y', strtotime($value->returned_on)) ?></td>
+
+                                                                <?php if ($value->returned_on > $value->return_date) {
+                                                                    echo ' <td><span class="badge bg-info">Yes</span></td>';
+                                                                } else {
+                                                                    echo ' <td><span class="badge bg-info">No</span></td>';
+                                                                } ?>
 
 
-                                            <?php
-                                            $sn = 0;
-                                            $all_requests = $db->orderBy('id', 'DESC')->where('student_id', $user_details->id)->where('return_status IS NOT NULL')->get('borrow_requests');
+                                                                <td>
+                                                                    <a title='View Details' href="index.php?page=borrow_history&id=<?= $value->id ?>" class="btn btn-sm btn-success " href=""><i class="fas fa-eye"></i> </a>
+                                                                </td>
+                                                            </tr>
+                                                        <?php endforeach; ?>
+                                                    </tbody>
+                                                </table>
 
-                                            foreach ($all_requests as $value):
-                                                $book_details = $db->where("id", $value->book_id)->getOne("books");
-                                                $student_details = $db->where('id', $value->student_id)->getOne('users');
-
-                                                $sn++;
-                                            ?>
-                                                <!--end col-->
-                                                <div class="col-xxl-3 col-sm-6">
-                                                    <div class="card profile-project-card shadow-none profile-project-success">
-                                                        <div class="card-body p-4">
-                                                            <div class="d-flex">
-                                                                <div class="flex-grow-1 text-muted overflow-hidden">
-                                                                    <h5 class="fs-14 text-truncate"><a href="#" class="text-body">ABC Project Customization</a></h5>
-                                                                    <p class="text-muted text-truncate mb-0">Last Update : <span class="fw-semibold text-body">2 month Ago</span></p>
-                                                                </div>
-                                                                <div class="flex-shrink-0 ms-2">
-                                                                    <div class="badge bg-primary-subtle text-primary fs-10"> Progress</div>
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="d-flex mt-4">
-                                                                <div class="flex-grow-1">
-                                                                    <div class="d-flex align-items-center gap-2">
-                                                                        <div>
-                                                                            <h5 class="fs-12 text-muted mb-0">Members :</h5>
-                                                                        </div>
-                                                                        <div class="avatar-group">
-                                                                            <div class="avatar-group-item">
-                                                                                <div class="avatar-xs">
-                                                                                    <img src="assets/images/users/avatar-8.jpg" alt="" class="rounded-circle img-fluid" />
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="avatar-group-item">
-                                                                                <div class="avatar-xs">
-                                                                                    <img src="assets/images/users/avatar-7.jpg" alt="" class="rounded-circle img-fluid" />
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="avatar-group-item">
-                                                                                <div class="avatar-xs">
-                                                                                    <img src="assets/images/users/avatar-6.jpg" alt="" class="rounded-circle img-fluid" />
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="avatar-group-item">
-                                                                                <div class="avatar-xs">
-                                                                                    <div class="avatar-title rounded-circle bg-primary">
-                                                                                        2+
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <!-- end card body -->
-                                                    </div>
-                                                    <!-- end card -->
-                                                </div>
-                                            <?php endforeach; ?>
-
+                                            </div>
                                         </div>
-                                        <!--end row-->
                                     </div>
                                     <!--end card-body-->
                                 </div>

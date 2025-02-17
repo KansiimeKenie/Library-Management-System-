@@ -28,7 +28,7 @@ if ($file == "borrow") {
 				'status'    => 201,
 				'message'   => 'You are only allowed to borrow One Book Copy!'
 			);
-		} elseif (exists("borrow_requests", "WHERE book_id = '" . $book_id . "' AND student_id = '" . $student_id . "'")) {
+		} elseif (exists("borrow_requests", "WHERE book_id = '" . $book_id . "' AND student_id = '" . $student_id . "' AND return_status != 1")) {
 			$data = array(
 				'status'	=>	201,
 				'message'	=>	'This Book is Already Requested'
@@ -136,12 +136,40 @@ if ($file == "borrow") {
 			);
 		}
 	}
+	if ($action == "reject_borrow_request") {
+		$req_id = __secure($_POST['id']);
+		$rejection_reason = __secure($_POST['rejection_reason']);
+		$new_data = [
+			"aprove_status" => 2,
+			"rejection_reason" => $rejection_reason,
+			"date_approved" => getCurrentDate()
+		];
+		if (empty($rejection_reason)) {
+			$data = array(
+				'status'	=>	201,
+				'message'	=>	'Please insert reason for rejecting!'
+			);
+		} elseif (update_data("borrow_requests", $new_data, "WHERE id = '" . $req_id . "'")) {
+			$data = array(
+				'status'	=>	200,
+				'message'	=>	'Borrow Request Rejected !',
+				'url' => 'index.php?page=requistions'
+			);
+		} else {
+			$data = array(
+				'status'	=>	201,
+				'message'	=>	'Borrow Request Approve failed!'
+			);
+		}
+	}
 	if ($action == "confirm_return") {
 		$req_id = __secure($_POST['id']);
 		$book_id = __secure($_POST['book_id']);
+		$student_id = __secure($_POST['student_id']);
 		$no_of_copies = __secure($_POST['return_copies']);
 		$return_date = __secure($_POST['return_date']);
 		$comment = __secure($_POST['comment']);
+		$damage_status = isset($_POST['damaged']) ? __secure($_POST['damaged']) : null;
 		$current_book_details = $db->where('book_id', $book_id)->getOne('current_books');
 		// var_dump($_POST);
 		// echo $current_book_details->no_of_copies;
@@ -155,8 +183,34 @@ if ($file == "borrow") {
 		$current_books_data = [
 			"no_of_copies" => $new_copies,
 		];
-
-		if ((update_data("borrow_requests", $new_data, "WHERE id = '" . $req_id . "'"))
+		if (empty($return_date)) {
+			$data = array(
+				'status'	=>	201,
+				'message'	=>	'Please Insert return date!'
+			);
+		} else
+		if (!empty($damage_status)) {
+			$damage_data = [
+				"book_id" => $book_id,
+				"student_id" => $student_id,
+				"no_of_copies" => $no_of_copies,
+				"description" => $comment,
+				"date_created" => getCurrentDate(),
+				"created_by" => $global_var['user']['id'],
+			];
+			if ((update_data("borrow_requests", $new_data, "WHERE id = '" . $req_id . "'")) && (save_data("damaged_books", $damage_data))) {
+				$data = array(
+					'status'	=>	200,
+					'message'	=>	'Return Confirmed successfully!',
+					'url' => 'index.php?page=borrowed_books'
+				);
+			} else {
+				$data = array(
+					'status'	=>	201,
+					'message'	=>	'Borrow Request Approve failed!'
+				);
+			}
+		} else if ((update_data("borrow_requests", $new_data, "WHERE id = '" . $req_id . "'"))
 			&& (update_data("current_books", $current_books_data, "WHERE book_id = '" . $book_id . "'"))
 		) {
 			$data = array(
@@ -173,10 +227,11 @@ if ($file == "borrow") {
 	}
 	if ($action == 'delete_borrow_request') {
 		$id = __secure($_POST['id']);
-		if ($db->where('id', $id)->delete('borrow_request')) {
+		if ($db->where('id', $id)->delete('borrow_requests')) {
 			$data = array(
 				'status'	=>	200,
-				'message'	=>	'Request Deleted Successfully'
+				'message'	=>	'Request Deleted Successfully',
+				'url' => 'index.php?page=requistions'
 			);
 		} else {
 			$data = array(

@@ -34,7 +34,7 @@ if ($global_var['user']['user_type'] == 'stud') {
                             <div class="listjs-table" id="customerList">
                                 <div class="row g-4 mb-3">
 
-                                    <div class="col-sm">
+                                    <div class="col-sm d-none">
                                         <div class="d-flex justify-content-sm-end">
                                             <div class="search-box ms-2">
                                                 <a href="" type="button" class="btn btn-success add-btn"><i class="ri-add-line align-bottom me-1"></i> Filter </a>
@@ -44,54 +44,111 @@ if ($global_var['user']['user_type'] == 'stud') {
                                 </div>
 
                                 <div class="table-responsive mt-3 mb-1">
-                                    <table id="myTable" class="table table-bordered table-striped">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th scope="col">
-                                                    S/No.
-                                                </th>
-                                                <th class="sort" data-sort="title">Student Name</th>
-                                                <th class="sort" data-sort="description">Class</th>
-                                                <th class="sort" data-sort="date">Borrowed Book</th>
-                                                <th class="sort" data-sort="date">Copies</th>
-                                                <th class="sort" data-sort="date">Return Status</th>
-                                                <th class="sort" data-sort="date">Returned On</th>
-
-                                                <th class="sort" data-sort="action">Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="list form-check-all">
-
-                                            <?php
-                                            $sn = 0;
-                                            foreach ($all_requests as $value):
-                                                $book_details = $db->where("id", $value->book_id)->getOne("books");
-                                                $student_details = $db->where('id', $value->student_id)->getOne('users');
-
-                                                $sn++;
-                                            ?>
+                                    <?php if ($global_var['user']['user_type'] != 'stud') { ?>
+                                        <table id="myTable" class="table table-bordered table-striped">
+                                            <thead class="table-light">
                                                 <tr>
-                                                    <th scope="row">
-                                                        <?= $sn ?>
+                                                    <th scope="col">
+                                                        S/No.
                                                     </th>
-                                                    <td><?= $student_details->firstname . ' ' . $student_details->lastname ?></td>
-                                                    <td><?= $db->where('id', $student_details->class_id)->getOne('classes')->abbrev ?></td>
-                                                    <td><?= $book_details->title . ' ' . $book_details->author ?></td>
-                                                    <td><?= $value->no_of_copies ?></td>
-                                                    <td><?php if ($value->return_status == 1) {
-                                                            echo '<span class="badge bg-success">Returned</span></td>';
-                                                        } else {
-                                                            echo '<span class="badge bg-info">Pending</span></td>';
-                                                        } ?></td>
-                                                    <td class="date"><?= date('d/m/Y', strtotime($value->return_date)) ?></td>
+                                                    <th class="sort" data-sort="title">Student Name</th>
+                                                    <th class="sort" data-sort="description">Class</th>
+                                                    <th class="sort" data-sort="date">Borrowed Book</th>
+                                                    <th class="sort" data-sort="date">Copies</th>
+                                                    <th class="sort" data-sort="date">Return Status</th>
+                                                    <th class="sort" data-sort="date">Returned On</th>
 
-                                                    <td>
-                                                        <a title='View Details' href="index.php?page=borrow_history&id=<?= $value->id ?>" class="btn btn-sm btn-success " href=""><i class="fas fa-eye"></i> </a>
-                                                    </td>
+                                                    <th class="sort" data-sort="action">Action</th>
                                                 </tr>
-                                            <?php endforeach; ?>
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody class="list form-check-all">
+
+                                                <?php
+                                                $sn = 0;
+                                                foreach ($all_requests as $value):
+                                                    $book_details = $db->where("id", $value->book_id)->getOne("books");
+                                                    $student_details = $db->where('id', $value->student_id)->getOne('users');
+
+                                                    $sn++;
+                                                ?>
+                                                    <tr>
+                                                        <th scope="row">
+                                                            <?= $sn ?>
+                                                        </th>
+                                                        <td><?= $student_details->firstname . ' ' . $student_details->lastname ?></td>
+                                                        <td><?= $db->where('id', $student_details->class_id)->getOne('classes')->abbrev ?></td>
+                                                        <td><?= $book_details->title . ' ' . $book_details->author ?></td>
+                                                        <td><?= $value->no_of_copies ?></td>
+                                                        <td><?php if ($value->return_status == 1) {
+                                                                echo '<span class="badge bg-success">Returned</span></td>';
+                                                            } else {
+                                                                echo '<span class="badge bg-info">Pending</span></td>';
+                                                            } ?></td>
+                                                        <td class="date"><?= date('d/m/Y', strtotime($value->returned_on)) ?></td>
+
+                                                        <td>
+                                                            <a title='View Details' href="index.php?page=borrow_history&id=<?= $value->id ?>" class="btn btn-sm btn-success " href=""><i class="fas fa-eye"></i> </a>
+                                                        </td>
+                                                    </tr>
+                                                <?php endforeach; ?>
+                                            </tbody>
+                                        </table>
+                                    <?php } else { ?>
+                                        <table id="myTable" class="table table-bordered table-striped">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th scope="col">
+                                                        S/No.
+                                                    </th>
+
+
+                                                    <th class="sort" data-sort="date">Borrowed Book</th>
+                                                    <th class="sort" data-sort="date">Copies</th>
+                                                    <th class="sort" data-sort="date">Borrow Date</th>
+                                                    <th class="sort" data-sort="date">Due Date</th>
+                                                    <th class="sort" data-sort="date">Return Date</th>
+                                                    <th class="sort" data-sort="date">Overdue Status</th>
+                                                    <th class="sort" data-sort="action">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="list form-check-all">
+
+                                                <?php
+                                                $sn = 0;
+                                                foreach ($all_requests as $value):
+                                                    $book_details = $db->where("id", $value->book_id)->getOne("books");
+                                                    $student_details = $db->where('id', $value->student_id)->getOne('users');
+
+                                                    $sn++;
+                                                ?>
+                                                    <tr>
+                                                        <th scope="row">
+                                                            <?= $sn ?>
+                                                        </th>
+
+
+                                                        <td><?= $book_details->title  ?></td>
+
+                                                        <td><?= $value->no_of_copies ?></td>
+                                                        <td><?= date('d/m/Y', strtotime($value->date_approved)) ?></td>
+                                                        <td class="date"><?= date('d/m/Y', strtotime($value->return_date)) ?></td>
+                                                        <td><?= date('d/m/Y', strtotime($value->returned_on)) ?></td>
+
+                                                        <?php if ($value->returned_on > $value->return_date) {
+                                                            echo ' <td><span class="badge bg-info">Yes</span></td>';
+                                                        } else {
+                                                            echo ' <td><span class="badge bg-info">Not</span></td>';
+                                                        } ?>
+
+
+                                                        <td>
+                                                            <a title='View Details' href="index.php?page=borrow_history&id=<?= $value->id ?>" class="btn btn-sm btn-success " href=""><i class="fas fa-eye"></i> </a>
+                                                        </td>
+                                                    </tr>
+                                                <?php endforeach; ?>
+                                            </tbody>
+                                        </table>
+                                    <?php } ?>
 
                                 </div>
 

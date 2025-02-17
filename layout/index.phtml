@@ -22,7 +22,7 @@ foreach ($last7days as $day) {
 
 $most_borrowed = $db->where('aprove_status', 1)->groupBy('book_id')->orderBy('total_borrowed', 'DESC')->get('borrow_requests', 10, ['book_id', 'SUM(no_of_copies) as total_borrowed']);
 if ($global_var['user']['user_type'] == 'stud') {
-    $most_borrowed = $db->where('aprove_status', 1)->where('student_id', $global_var['user']['id'])
+    $most_borrowed = $db->where('aprove_status', 1)->groupBy('book_id')->where('student_id', $global_var['user']['id'])
         ->get('borrow_requests', 10, ['book_id', 'SUM(no_of_copies) as total_borrowed']);
 }
 $most_borrowing_students = $db
@@ -215,11 +215,20 @@ $most_borrowing_students = $db
                                         <div class="card-body" style="z-index:1 ;">
                                             <div class="d-flex align-items-center">
                                                 <div class="flex-grow-1 overflow-hidden">
-                                                    <p class="text-uppercase fw-medium text-muted text-truncate mb-3">Total Librarians</p>
-                                                    <h4 class="fs-22 fw-semibold ff-secondary mb-0"><span class="counter-value" data-target="1">0</span></h4>
+                                                    <p class="text-uppercase fw-medium text-muted text-truncate mb-3">Total Damaged Books</p>
+                                                    <h4 class="fs-22 fw-semibold ff-secondary mb-0">
+                                                        <?php $total_damaged_books = 0;
+                                                        foreach ($db->get('damaged_books') as $damage) {
+
+                                                            $total_damaged_books +=  $damage->no_of_copies;
+                                                        }
+
+                                                        ?>
+                                                        <span class="counter-value" data-target="<?= $total_damaged_books ?>">0</span>
+                                                    </h4>
                                                 </div>
                                                 <div class="flex-shrink-0">
-                                                    <i class="fas fa-user-tie fa-3x text-primary"></i>
+                                                    <i class="fas fa-book fa-3x text-danger"></i>
                                                 </div>
                                             </div>
                                         </div><!-- end card body -->
@@ -321,7 +330,7 @@ $most_borrowing_students = $db
                                             <div class="d-flex align-items-center">
                                                 <div class="flex-grow-1 overflow-hidden">
                                                     <p class="text-uppercase fw-medium text-muted text-truncate mb-3">Total Damaged Books</p>
-                                                    <h4 class="fs-22 fw-semibold ff-secondary mb-0"><span class="counter-value" data-target="<?= count($db->orderBy('id', 'DESC')->where('return_status', 1)->where('student_id', $global_var['user']['id'])->get('borrow_requests')) ?>">0</span></h4>
+                                                    <h4 class="fs-22 fw-semibold ff-secondary mb-0"><span class="counter-value" data-target="<?= count($db->where('student_id', $global_var['user']['id'])->get('damaged_books')) ?>">0</span></h4>
                                                 </div>
                                                 <div class="flex-shrink-0">
                                                     <i class="fas fa-layer-group fa-3x text-primary"></i>
@@ -366,7 +375,7 @@ $most_borrowing_students = $db
                                 <div class="d-flex align-items-center">
                                     <h6 class="card-title mb-0 flex-grow-1">Popular Borrowing Students</h6>
                                     <div class="flex-shrink-0">
-                                        <a href="apps-job-candidate-lists.html" class="link-primary">View All <i class="ri-arrow-right-line"></i></a>
+                                        <a href="index.php?page=most_borrowing_students" class="link-primary">View All <i class="ri-arrow-right-line"></i></a>
                                     </div>
                                 </div>
                             </div>
@@ -382,7 +391,7 @@ $most_borrowing_students = $db
                                                 <?php foreach ($most_borrowing_students as $student):
                                                     $student_details = $db->where('id', $student->student_id)->getOne('users'); ?>
                                                     <li>
-                                                        <a href="javascript:void(0);" class="d-flex align-items-center py-2">
+                                                        <a href="index.php?page=user_profile&id=<?= $student->student_id ?>" class="d-flex align-items-center py-2">
                                                             <div class="flex-shrink-0 me-2">
                                                                 <div class="avatar-xs">
                                                                     <img src="<?= $global_var['config']['site_url'] ?>/layout/assets/images/users/avatar-10.jpg" alt="" class="img-fluid rounded-circle candidate-img">
@@ -421,10 +430,10 @@ $most_borrowing_students = $db
 
 
                                             <div>
-                                                <button type="button" class="btn btn-success custom-toggle w-100" data-bs-toggle="button" aria-pressed="false">
-                                                    <span class="icon-on"><i class="ri-add-line align-bottom me-1"></i>View Borrowing History</span>
+                                                <a type="button" href="index.php?page=user_profile&id=<?= $student_details->id ?>" class="btn btn-success custom-toggle w-100" aria-pressed="false">
+                                                    <span class="icon-on">View Profile</span>
 
-                                                </button>
+                                                </a>
                                             </div>
                                         <?php endforeach; ?>
                                     </div>
@@ -514,25 +523,25 @@ $most_borrowing_students = $db
         var studentsPerClassChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: <?= json_encode($last7days) ?>, // Array of class labels
+                labels: <?= json_encode($last7days) ?>,
                 datasets: [{
-                    label: 'Total Students',
-                    data: <?= json_encode($total_borrowed_per_day) ?>, // Array of total students per class
-                    backgroundColor: 'rgba(54, 162, 235, 0.5)', // Blue color for bars
-                    borderColor: 'rgba(54, 162, 235, 1)', // Border color for bars
+                    label: 'Total Books',
+                    data: <?= json_encode($total_borrowed_per_day) ?>,
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
                     borderWidth: 1
                 }]
             },
             options: {
-                responsive: true, // Enable responsiveness
-                maintainAspectRatio: false, // Maintain aspect ratio
+                responsive: true,
+                maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        display: false // Hide legend
+                        display: false
                     },
                     title: {
                         display: true,
-                        text: 'Total Borrowed Books per day' // Chart title
+                        text: 'Total Borrowed Books per day'
                     }
                 },
                 scales: {

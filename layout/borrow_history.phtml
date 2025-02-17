@@ -41,7 +41,10 @@
                                    <p><strong>Borrowed Book:</strong> <?= $book_details->title . ' by ' . $book_details->author; ?> <br>
                                        <strong>ISBN:</strong> <?= $book_details->isbn; ?>
                                    </p>
-                                   <p><strong>No. Of Copies:</strong> <?= $req_details->no_of_copies; ?></p>
+                                   <p>
+                                       <strong>Borrowing Reason : </strong><?= $req_details->reason; ?>
+                                   </p>
+                                   <p><strong>No. Of Copies Borrowed : </strong> <?= $req_details->no_of_copies; ?></p>
                                    <p>
                                        <strong>Return Date:</strong> <?= date('d/m/Y', strtotime($req_details->return_date)); ?>
                                    </p>
@@ -49,7 +52,7 @@
                                    <?php if ($req_details->aprove_status == 1) { ?>
                                        <p><strong>Approval Status:</strong>
                                            <span class="badge bg-success">Approved</span><br><br>
-                                           <strong>Approved On : </strong><?= date('y-m-d', strtotime($req_details->date_approved)) ?>
+                                           <strong>Approved On : </strong><?= date('d/m/Y', strtotime($req_details->date_approved)) ?>
                                        </p>
 
 
@@ -62,7 +65,7 @@
                                        <?php if ($req_details->return_status == 1) { ?>
                                        <p><strong>Return Status:</strong>
                                            <span class="badge bg-success">Returned</span><br><br>
-                                           <strong>Return On : </strong><?= date('y-m-d', strtotime($req_details->returned_on)) ?>
+                                           <strong>Return On : </strong><?= date('d/m/Y', strtotime($req_details->returned_on)) ?>
                                        </p>
                                        <p><strong>Comment :</strong><?= $req_details->comment; ?></p>
 
