@@ -237,13 +237,25 @@ $user_image = (empty($user_details->photo)) ? "/layout/assets/images/users/avata
                                                                 <td><?= $value->no_of_copies ?></td>
                                                                 <td><?= date('d/m/Y', strtotime($value->date_approved)) ?></td>
                                                                 <td class="date"><?= date('d/m/Y', strtotime($value->return_date)) ?></td>
-                                                                <td><?= date('d/m/Y', strtotime($value->returned_on)) ?></td>
-
-                                                                <?php if ($value->returned_on > $value->return_date) {
-                                                                    echo ' <td><span class="badge bg-info">Yes</span></td>';
+                                                                <?php if ($value->return_status == 1) {
+                                                                    echo '<td class="date">' . date("d/m/Y", strtotime($value->returned_on)) . '</td>';
+                                                                } else if ($value->return_status == 3) {
+                                                                    echo '<td><span class="badge bg-danger">lost</span></td>';
                                                                 } else {
-                                                                    echo ' <td><span class="badge bg-info">No</span></td>';
-                                                                } ?>
+                                                                    echo '<td><span class="badge bg-info">Pending</span></td><td>___</td>';
+                                                                } ?></td>
+                                                                <?php if ($value->return_status == 3) {
+                                                                    echo ' <td><span class="badge bg-danger">Yes</span></td>';
+                                                                } else {
+                                                                    if ($value->returned_on > $value->return_date) {
+
+                                                                        echo ' <td><span class="badge bg-danger">Yes</span></td>';
+                                                                    } else {
+                                                                        echo ' <td><span class="badge bg-info">Not</span></td>';
+                                                                    }
+                                                                }
+
+                                                                ?>
 
 
                                                                 <td>

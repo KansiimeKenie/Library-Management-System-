@@ -57,7 +57,7 @@
 
 
                                        <p>
-                                       <?php } else { ?>
+                                       <?php } else {  ?>
                                            <strong>Approval Status:</strong><span class="badge bg-info">Pending</span>
                                        <?php } ?>
                                        <hr>
@@ -71,7 +71,9 @@
 
 
                                        <p>
-                                       <?php } else { ?>
+                                       <?php } else if ($req_details->return_status == 3) {
+                                            echo '<strong>Return Date: </strong><span">' . date('d/m/Y', strtotime($req_details->return_date)) . '</span><br><br><strong>Return Status: </strong><span class="badge bg-danger"> Lost</span>';
+                                        } else { ?>
                                            <strong>Approval Status:</strong><span class="badge bg-info">Pending</span>
                                        <?php } ?>
                                        <hr>

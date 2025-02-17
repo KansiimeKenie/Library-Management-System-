@@ -3,6 +3,7 @@
     $book_details = $db->where("id", $req_details->book_id)->getOne("books");
     $student_details = $db->where('id', $req_details->student_id)->getOne('users');
     $available_books = $db->where('id', $req_details->book_id)->getOne('current_books');
+    $over_due_days_limit = 2;
     ?>
    <div class="main-content">
 
@@ -97,7 +98,11 @@
                                                <button data-bs-toggle="modal" data-bs-target="#reject_req" class="btn btn-danger m-1"><i class="fas fa-times"></i> Reject</button>
                                            <?php } else { ?>
                                                <button data-bs-toggle="modal" data-bs-target="#confirm_return" class="btn btn-success m-1"><i class="fas fa-check"></i> Confirm Return</button>
+                                               <?php if (abs($days) > $over_due_days_limit) { ?>
+                                                   <button data-bs-toggle="modal" data-bs-target="#mark_as_lost" class="btn btn-danger m-1"><i class="fas fa-cancel"></i> Mark As Lost</button>
+
                                                <?php }
+                                            }
                                         } else {
                                             if ($req_details->aprove_status != 1) {
                                                 if ($req_details->aprove_status != 2) { ?>
@@ -153,6 +158,44 @@
                                    <label for="damagedCheckbox" class="form-check-label">Mark As Damaged</label>
                                </div>
                            </div>
+
+                           <div class="col-xxl-3 col-md-12">
+                               <div>
+                                   <label for="placeholderInput" class="form-label">Comment</label>
+                                   <textarea placeholder="Enter Comment here.." class="form-control" name="comment"></textarea>
+
+                               </div>
+                           </div>
+                           <!--end col-->
+
+
+                       </div>
+                       <hr>
+                       <div class="modal-footer mt-4">
+                           <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                           <button type="submit" class="btn btn-primary">Confirm</button>
+                       </div>
+               </div>
+               </form>
+
+           </div><!-- /.modal-content -->
+       </div><!-- /.modal-dialog -->
+   </div><!-- /.modal -->
+   <div id="mark_as_lost" class="modal fade fadeInUp" tabindex="-1" aria-labelledby="fadeInUpModalLabel" aria-hidden="true" style="display: none;">
+       <div class="modal-dialog modal-dialog-centered">
+           <div class="modal-content">
+               <div class="modal-header">
+                   <h5 class="modal-title" id="fadeInUpModalLabel">Mark borrowed book as lost</h5>
+                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+               </div>
+               <div class="modal-body">
+                   <form id="confirm_lost_borrowed_book">
+                       <input type="text" name="book_id" value="<?= $req_details->book_id ?>" hidden />
+                       <input type="text" name="return_copies" value="<?= $req_details->no_of_copies ?>" hidden />
+                       <input type="text" name="id" value="<?= $req_details->id ?>" hidden />
+                       <input type="text" name="student_id" value="<?= $req_details->student_id ?>" hidden />
+                       <div class="row gy-4">
+
 
                            <div class="col-xxl-3 col-md-12">
                                <div>
@@ -302,6 +345,42 @@
                }
            });
        });
+       $('#confirm_lost_borrowed_book').on('submit', function(e) {
+
+           e.preventDefault();
+           $.ajax({
+               url: request() + '?file=borrow&action=mark_as_lost',
+               method: 'POST',
+               data: new FormData(this),
+               contentType: false,
+               processData: false,
+               cache: false,
+               success: function(response) {
+                   console.log(response);
+                   if (response.status == 200) {
+                       Swal.fire({
+                           title: "Good job!",
+                           text: response.message,
+                           icon: "success",
+                           showConfirmButton: true,
+                       });
+                       setTimeout(function() {
+                           window.location.href = response.url;
+                       }, 2e3);
+
+                   } else {
+                       Swal.fire({
+                           title: "Oops!",
+                           text: response.message,
+                           icon: "error",
+                           cancelButtonClass: "btn btn-danger ml-2 mt-2",
+                           confirmButtonColor: "#6c757d"
+                       });
+                   }
+               }
+           });
+       });
+
 
        $(document).ready(function() {
            // Approve Button Click

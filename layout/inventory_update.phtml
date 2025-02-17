@@ -1,5 +1,14 @@
 <?php
-$purchases = $db->orderBy('id', 'DESC')->get('purchases');
+$page_title = 'Today\'s Book Inventory Updates';
+$purchases = $db->orderBy('id', 'DESC')->where('date_created', getCurrentDateOnly())->get('purchases');
+if (isset($_GET['start_date']) && isset($_GET['end_date'])) {
+    $purchases = $db->where('date_created', __secure($_GET['start_date']), '>=')
+        ->where('date_created', __secure($_GET['end_date']), '<=')
+        ->orderBy('id', 'DESC')
+        ->get('purchases');
+
+    $page_title = 'Book Inventory Update FROM ' . date('d/m/Y', strtotime($_GET['start_date'])) . ' TO ' . date('d/m/Y', strtotime($_GET['end_date']));
+}
 ?>
 <div class="main-content">
 
@@ -11,7 +20,7 @@ $purchases = $db->orderBy('id', 'DESC')->get('purchases');
             <div class="row">
                 <div class="col-12">
                     <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                        <h4 class="mb-sm-0">Book Inventory update</h4>
+                        <h4 class="mb-sm-0"><?= $page_title ?></h4>
 
                         <div class="page-title-right">
                             <ol class="breadcrumb m-0">
@@ -42,10 +51,11 @@ $purchases = $db->orderBy('id', 'DESC')->get('purchases');
 
                                         </div>
                                     </div>
+
                                     <div class="col-sm">
                                         <div class="d-flex justify-content-sm-end">
                                             <div class="search-box ms-2">
-                                                <a href="" type="button" class="btn btn-primary add-btn"><i class="ri-add-line align-bottom me-1"></i> Filter Books</a>
+                                                <a data-bs-toggle="modal" data-bs-target="#filter_by_date" type="button" class="btn btn-primary add-btn"><i class="ri-filter-line align-bottom me-1"></i> Filter Requests By Date</a>
                                             </div>
                                         </div>
                                     </div>

@@ -81,7 +81,7 @@ $most_borrowing_students = $db
                                         <div class="card-body" style="z-index:1 ;">
                                             <div class="d-flex align-items-center">
                                                 <div class="flex-grow-1 overflow-hidden">
-                                                    <p class="text-uppercase fw-medium text-muted text-truncate mb-3">Total Book Categories</p>
+                                                    <p class="text-uppercase fw-medium text-muted text-truncate mb-3"><a href="index.php?page=categories">Total Book Categories</a></p>
                                                     <h4 class="fs-22 fw-semibold ff-secondary mb-0"><span class="counter-value" data-target="<?= count($db->get("categories")) ?>">0</span></h4>
                                                 </div>
                                                 <div class="flex-shrink-0">
@@ -163,7 +163,7 @@ $most_borrowing_students = $db
                                             <div class="d-flex align-items-center">
                                                 <div class="flex-grow-1 overflow-hidden">
                                                     <p class="text-uppercase fw-medium text-muted text-truncate mb-3"> Total Overdue Books</p>
-                                                    <h4 class="fs-22 fw-semibold ff-secondary mb-0"><span class="counter-value" data-target="<?= $db->where('return_date', $today, '<')->where('aprove_status', 1)->getValue('borrow_requests', 'SUM(no_of_copies)')  ?>">0</span></h4>
+                                                    <h4 class="fs-22 fw-semibold ff-secondary mb-0"><span class="counter-value" data-target="<?= $db->where('return_date', $today, '<')->where('aprove_status', 1)->where('return_status IS NULL')->getValue('borrow_requests', 'SUM(no_of_copies)')  ?>">0</span></h4>
                                                 </div>
                                                 <div class="flex-shrink-0">
                                                     <i class="fas fa-calendar-times fa-3x text-danger"></i>
@@ -281,7 +281,7 @@ $most_borrowing_students = $db
                                                     <h4 class="fs-22 fw-semibold ff-secondary mb-0"><span class="counter-value" data-target="<?= $db->where('return_status', 1)->where('student_id', $global_var['user']['id'])->getValue('borrow_requests', 'SUM(no_of_copies)') ?>">0</span></h4>
                                                 </div>
                                                 <div class="flex-shrink-0">
-                                                    <i class="fas fa-layer-group fa-3x text-primary"></i>
+                                                    <i class="fas fa-book fa-3x text-primary"></i>
                                                 </div>
                                             </div>
                                         </div><!-- end card body -->
@@ -333,7 +333,7 @@ $most_borrowing_students = $db
                                                     <h4 class="fs-22 fw-semibold ff-secondary mb-0"><span class="counter-value" data-target="<?= count($db->where('student_id', $global_var['user']['id'])->get('damaged_books')) ?>">0</span></h4>
                                                 </div>
                                                 <div class="flex-shrink-0">
-                                                    <i class="fas fa-layer-group fa-3x text-primary"></i>
+                                                    <i class="fas fa-layer-group fa-3x text-danger"></i>
                                                 </div>
                                             </div>
                                         </div><!-- end card body -->
@@ -388,7 +388,9 @@ $most_borrowing_students = $db
                                         </div>
                                         <div data-simplebar style="max-height: 190px" class="px-3 mx-n3">
                                             <ul class="list-unstyled mb-0 pt-2" id="candidate-list">
-                                                <?php foreach ($most_borrowing_students as $student):
+                                                <?php
+
+                                                foreach ($most_borrowing_students as $student):
                                                     $student_details = $db->where('id', $student->student_id)->getOne('users'); ?>
                                                     <li>
                                                         <a href="index.php?page=user_profile&id=<?= $student->student_id ?>" class="d-flex align-items-center py-2">
@@ -421,7 +423,9 @@ $most_borrowing_students = $db
                                         <div class="avatar-md mb-3 mx-auto">
                                             <img src="<?= $global_var['config']['site_url'] ?>/layout/assets/images/users/avatar-10.jpg" alt="" id="candidate-img" class="img-thumbnail rounded-circle shadow-none">
                                         </div>
-                                        <?php foreach ($the_most_borrowing_student as $student):
+                                        <?php
+                                        // $counts = $db->getValue("borrow_requests", "count(no_of_copies)");
+                                        foreach ($the_most_borrowing_student as $student):
                                             $student_details = $db->where('id', $student->student_id)->getOne('users'); ?>
 
                                             <h5 id="candidate-name" class="mb-0"><?= $student_details->firstname . ' ' . $student_details->lastname ?></h5>
@@ -452,9 +456,9 @@ $most_borrowing_students = $db
                         <div class="card-header align-items-center d-flex">
                             <h4 class="card-title mb-0 flex-grow-1">Top 10 Most Borrowed Books</h4>
                             <div class="flex-shrink-0">
-                                <button type="button" class="btn btn-soft-info btn-sm">
+                                <a href="index.php?page=most_borrowed_books" type="button" class="btn btn-soft-info btn-sm">
                                     <i class="ri-file-list-3-line align-bottom"></i>View All
-                                </button>
+                                </a>
                             </div>
                         </div><!-- end card header -->
 

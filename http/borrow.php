@@ -225,6 +225,46 @@ if ($file == "borrow") {
 			);
 		}
 	}
+	if ($action == "mark_as_lost") {
+		$req_id = __secure($_POST['id']);
+		$book_id = __secure($_POST['book_id']);
+		$student_id = __secure($_POST['student_id']);
+		$no_of_copies = __secure($_POST['return_copies']);
+
+		$comment = __secure($_POST['comment']);
+
+		$lost_book_data = [
+			"requistion_id" => $req_id,
+			"book_id" => $book_id,
+			"student_id" => $student_id,
+			"no_of_copies" => $no_of_copies,
+			"comment" => $comment,
+			"date_created" => getCurrentDate(),
+			"created_by" => $global_var['user']['id']
+		];
+		$new_data = [
+			"return_status" => 3,
+		];
+
+		if (empty($comment)) {
+			$data = array(
+				'status'	=>	201,
+				'message'	=>	'Please add a comment!'
+			);
+		} else
+	    if ((save_data("lost_books", $lost_book_data)) && update_data("borrow_requests", $new_data, "WHERE id = '" . $req_id . "'")) {
+			$data = array(
+				'status'	=>	200,
+				'message'	=>	'Lost Book recorded successfully!',
+				'url' => 'index.php?page=borrowed_books'
+			);
+		} else {
+			$data = array(
+				'status'	=>	201,
+				'message'	=>	'Borrow Request Approve failed!'
+			);
+		}
+	}
 	if ($action == 'delete_borrow_request') {
 		$id = __secure($_POST['id']);
 		if ($db->where('id', $id)->delete('borrow_requests')) {

@@ -1,8 +1,27 @@
 <?php
-$all_requests = $db->orderBy('id', 'DESC')->where('return_status', 1)->get('borrow_requests');
+$first_day_of_month = date('Y-m-01');
+$page_title = "Borrow History from " . date('d/m/Y', strtotime($first_day_of_month)) . " to today";
+
+$all_requests = $db->orderBy('id', 'DESC')->where('date_approved', $first_day_of_month, '>')->where('return_status IS NOT NULL')->get('borrow_requests');
 if ($global_var['user']['user_type'] == 'stud') {
-    $all_requests = $db->orderBy('id', 'DESC')->where('student_id', $global_var['user']['id'])->where('return_status IS NOT NULL')->get('borrow_requests');
+    $all_requests = $db->orderBy('id', 'DESC')->where('date_approved', $first_day_of_month, '>')->where('student_id', $global_var['user']['id'])->where('return_status IS NOT NULL')->get('borrow_requests');
 }
+if (isset($_GET['start_date']) && isset($_GET['end_date'])) {
+    $all_requests = $db->where('date_approved', __secure($_GET['start_date']), '>=')
+        ->where('date_approved', __secure($_GET['end_date']), '<=')
+        ->orderBy('id', 'DESC')
+        ->where('return_status IS NOT NULL')
+        ->get('borrow_requests');
+    if ($global_var['user']['user_type'] == 'stud') {
+        $all_requests = $db->where('student_id', $global_var['user']['id'])->where('date_approved', __secure($_GET['start_date']), '>=')
+            ->where('date_approved', __secure($_GET['end_date']), '<=')
+            ->orderBy('id', 'DESC')
+            ->where('return_status IS NOT NULL')
+            ->get('borrow_requests');
+    }
+    $page_title = 'Borrow History FROM ' . date('d/m/Y', strtotime($_GET['start_date'])) . ' TO ' . date('d/m/Y', strtotime($_GET['end_date']));
+}
+
 ?>
 <div class="main-content">
 
@@ -14,7 +33,7 @@ if ($global_var['user']['user_type'] == 'stud') {
             <div class="row">
                 <div class="col-12">
                     <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                        <h4 class="mb-sm-0">All Borrow Books</h4>
+                        <h4 class="mb-sm-0"><?= $page_title; ?></h4>
 
                         <div class="page-title-right">
                             <ol class="breadcrumb m-0">
@@ -34,14 +53,15 @@ if ($global_var['user']['user_type'] == 'stud') {
                             <div class="listjs-table" id="customerList">
                                 <div class="row g-4 mb-3">
 
-                                    <div class="col-sm d-none">
+                                    <div class="col-sm">
                                         <div class="d-flex justify-content-sm-end">
                                             <div class="search-box ms-2">
-                                                <a href="" type="button" class="btn btn-success add-btn"><i class="ri-add-line align-bottom me-1"></i> Filter </a>
+                                                <a data-bs-toggle="modal" data-bs-target="#filter_by_date" type="button" class="btn btn-primary add-btn"><i class="ri-filter-line align-bottom me-1"></i> Filter Requests By Date</a>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+
 
                                 <div class="table-responsive mt-3 mb-1">
                                     <?php if ($global_var['user']['user_type'] != 'stud') { ?>
@@ -79,12 +99,15 @@ if ($global_var['user']['user_type'] == 'stud') {
                                                         <td><?= $db->where('id', $student_details->class_id)->getOne('classes')->abbrev ?></td>
                                                         <td><?= $book_details->title . ' ' . $book_details->author ?></td>
                                                         <td><?= $value->no_of_copies ?></td>
-                                                        <td><?php if ($value->return_status == 1) {
-                                                                echo '<span class="badge bg-success">Returned</span></td>';
-                                                            } else {
-                                                                echo '<span class="badge bg-info">Pending</span></td>';
-                                                            } ?></td>
-                                                        <td class="date"><?= date('d/m/Y', strtotime($value->returned_on)) ?></td>
+                                                        <?php if ($value->return_status == 1) {
+                                                            echo '<td><span class="badge bg-success">Returned</span></td>
+                                                             <td class="date">' . date("d/m/Y", strtotime($value->returned_on)) . '</td>';
+                                                        } else if ($value->return_status == 3) {
+                                                            echo '<td><span class="badge bg-danger">lost</span></td><td>___</td>';
+                                                        } else {
+                                                            echo '<td><span class="badge bg-info">Pending</span></td><td>___</td>';
+                                                        } ?></td>
+
 
                                                         <td>
                                                             <a title='View Details' href="index.php?page=borrow_history&id=<?= $value->id ?>" class="btn btn-sm btn-success " href=""><i class="fas fa-eye"></i> </a>
@@ -132,13 +155,28 @@ if ($global_var['user']['user_type'] == 'stud') {
                                                         <td><?= $value->no_of_copies ?></td>
                                                         <td><?= date('d/m/Y', strtotime($value->date_approved)) ?></td>
                                                         <td class="date"><?= date('d/m/Y', strtotime($value->return_date)) ?></td>
-                                                        <td><?= date('d/m/Y', strtotime($value->returned_on)) ?></td>
 
-                                                        <?php if ($value->returned_on > $value->return_date) {
-                                                            echo ' <td><span class="badge bg-info">Yes</span></td>';
+                                                        <?php if ($value->return_status == 1) {
+                                                            echo '<td class="date">' . date("d/m/Y", strtotime($value->returned_on)) . '</td>';
+                                                        } else if ($value->return_status == 3) {
+                                                            echo '<td><span class="badge bg-danger">lost</span></td>';
                                                         } else {
-                                                            echo ' <td><span class="badge bg-info">Not</span></td>';
-                                                        } ?>
+                                                            echo '<td><span class="badge bg-info">Pending</span></td><td>___</td>';
+                                                        } ?></td>
+                                                        <?php if ($value->return_status == 3) {
+                                                            echo ' <td><span class="badge bg-danger">Yes</span></td>';
+                                                        } else {
+                                                            if ($value->returned_on > $value->return_date) {
+
+                                                                echo ' <td><span class="badge bg-danger">Yes</span></td>';
+                                                            } else {
+                                                                echo ' <td><span class="badge bg-info">Not</span></td>';
+                                                            }
+                                                        }
+
+                                                        ?>
+
+
 
 
                                                         <td>
