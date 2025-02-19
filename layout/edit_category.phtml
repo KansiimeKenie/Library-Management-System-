@@ -1,5 +1,5 @@
    <?php
-    $category_details = $db->where("id", __secure($_GET['id']))->getOne("categories");
+    $category_details = $db->where("id", secure_data($_GET['id']))->getOne("categories");
 
 
     ?>

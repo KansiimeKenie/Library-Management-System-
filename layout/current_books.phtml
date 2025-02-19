@@ -2,8 +2,8 @@
 $current_books = $db->get('books');
 $page_title = 'All Current Library Books';
 if (isset($_GET['id']) && !empty($_GET['id'])) {
-    $current_books = $db->orderBy('id', 'DESC')->where('category_id', __secure(($_GET['id'])))->get('books');
-    $page_title = 'All ' . $db->where('id', __secure(($_GET['id'])))->getOne('categories')->name . ' Books';
+    $current_books = $db->orderBy('id', 'DESC')->where('category_id', secure_data(($_GET['id'])))->get('books');
+    $page_title = 'All ' . $db->where('id', secure_data(($_GET['id'])))->getOne('categories')->name . ' Books';
 }
 ?>
 <div class="main-content">
@@ -52,10 +52,11 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                                                     S/No.
                                                 </th>
                                                 <th class="sort" data-sort="title">Book Title</th>
-                                                <th class="sort" data-sort="description">Category</th>
                                                 <th class="sort" data-sort="date">Aurthor</th>
                                                 <th class="sort" data-sort="date">ISBN</th>
                                                 <th class="sort" data-sort="date">No. Of Copies Available</th>
+                                                <th class="sort" data-sort="date">No. Of Copies Borrowed</th>
+                                                <th class="sort" data-sort="date">View Copies</th>
 
                                             </tr>
                                         </thead>
@@ -74,10 +75,23 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                                                         <?= $sn ?>
                                                     </th>
                                                     <td><?= $value->title ?></td>
-                                                    <td class="title"><?= $db->where("id", $value->category_id)->getOne("categories")->name ?></td>
-                                                    <td class="description"><?= $value->author ?></td>
+                                                    <td class="description"><?= $db->where('id', $value->author_id)->getOne('book_authors')->names ?></td>
                                                     <td><?= $value->isbn ?></td>
-                                                    <td><?= $current_bk_details->no_of_copies ?></td>
+                                                    <td><?= count($db->where("book_id", $value->id)->where("status", "available")->get("book_copies")) ?></td>
+                                                    <td><?= count($db->where("book_id", $value->id)->where("status", "borrowed")->get("book_copies")) ?></td>
+                                                    <td>
+                                                        <div class="d-flex gap-2">
+                                                            <div class="d-flex gap-2">
+                                                                <a title="View Profile" class="btn btn-sm btn-primary" href="index.php?page=book_copies&book_id=<?= $value->id ?>">
+                                                                    <i class="fas fa-eye"></i>
+                                                                </a>
+
+
+                                                            </div>
+
+
+                                                        </div>
+                                                    </td>
 
                                                 </tr>
                                             <?php endforeach; ?>

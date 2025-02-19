@@ -5,13 +5,13 @@ if ($global_var['user']['user_type'] == 'stud') {
     $all_requests = $db->orderBy('id', 'DESC')->where('request_date', getCurrentDateOnly())->where('student_id', $global_var['user']['id'])->get('borrow_requests');
 }
 if (isset($_GET['start_date']) && isset($_GET['end_date'])) {
-    $all_requests = $db->where('request_date', __secure($_GET['start_date']), '>=')
-        ->where('request_date', __secure($_GET['end_date']), '<=')
+    $all_requests = $db->where('request_date', secure_data($_GET['start_date']), '>=')
+        ->where('request_date', secure_data($_GET['end_date']), '<=')
         ->orderBy('id', 'DESC')
         ->get('borrow_requests');
     if ($global_var['user']['user_type'] == 'stud') {
-        $all_requests = $db->where('student_id', $global_var['user']['id'])->where('request_date', __secure($_GET['start_date']), '>=')
-            ->where('request_date', __secure($_GET['end_date']), '<=')
+        $all_requests = $db->where('student_id', $global_var['user']['id'])->where('request_date', secure_data($_GET['start_date']), '>=')
+            ->where('request_date', secure_data($_GET['end_date']), '<=')
             ->orderBy('id', 'DESC')
             ->get('borrow_requests');
     }
@@ -103,7 +103,7 @@ if (isset($_GET['start_date']) && isset($_GET['end_date'])) {
                                                         </th>
                                                         <td><?= $student_details->firstname . ' ' . $student_details->lastname ?></td>
                                                         <td><?= $db->where('id', $student_details->class_id)->getOne('classes')->abbrev ?></td>
-                                                        <td><?= $book_details->title . '  - ' . $book_details->author ?></td>
+                                                        <td><?= $book_details->title . '  - ' . $db->where('id', $book_details->author_id)->getOne('book_authors')->names  ?></td>
                                                         <td><?= $value->no_of_copies ?></td>
                                                         <td>
                                                             <?php if ($value->aprove_status == 1) {
@@ -154,7 +154,7 @@ if (isset($_GET['start_date']) && isset($_GET['end_date'])) {
                                                             <?= $sn ?>
                                                         </th>
 
-                                                        <td><?= $book_details->title . '  - ' . $book_details->author ?></td>
+                                                        <td><?= $book_details->title . '  - ' . $db->where('id', $book_details->author_id)->getOne('book_authors')->names ?></td>
                                                         <td><?= $value->no_of_copies ?></td>
                                                         <td>
 

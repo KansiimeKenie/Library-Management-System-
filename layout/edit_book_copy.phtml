@@ -1,7 +1,6 @@
    <?php
-    $class_details = $db->where("id", secure_data($_GET['id']))->getOne("classes");
-
-
+    $book_copy_details = $db->where("id", secure_data($_GET['id']))->getOne("book_copies");
+    $book_details = $db->where("id", $book_copy_details->book_id)->getOne("books");
     ?>
    <div class="main-content">
 
@@ -13,7 +12,7 @@
                <div class="row">
                    <div class="col-12">
                        <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                           <h4 class="mb-sm-0">Edit Class</h4>
+                           <h4 class="mb-sm-0">Edit Book Copy</h4>
 
                            <div class="page-title-right">
                                <ol class="breadcrumb m-0">
@@ -32,13 +31,14 @@
                            <div class="card border-info shadow-lg">
                                <div class="card-header bg-info text-white">
                                    <h6 class="card-title mb-0 d-flex justify-content-between align-items-center">
-                                       Edit Class - <?= $class_details->name ?>
+                                       Edit Book Copy - <?= $book_details->title . ' : ' . $book_copy_details->book_copy_no ?>
 
                                    </h6>
                                </div>
                                <div class="card-body">
-                                   <form id="edit_class">
-                                       <input type="text" name="id" value="<?= $class_details->id ?>" Hidden>
+                                   <form id="edit_copy">
+                                       <input type="text" name="id" value="<?= $book_copy_details->id ?>" Hidden>
+                                       <input type="text" name="book_id" value="<?= $book_copy_details->book_id ?>" Hidden>
 
                                        <div class="row">
 
@@ -50,15 +50,15 @@
 
                                            <div class="col-xxl-3 col-md-12">
                                                <div>
-                                                   <label for="placeholderInput" class="form-label">Class Name</label>
-                                                   <input type="text" value="<?= $class_details->name ?>" class="form-control" name="name" placeholder="">
+                                                   <label for="placeholderInput" class="form-label">Book Copy No Name</label>
+                                                   <input type="text" value="<?= $book_copy_details->book_copy_no ?>" class="form-control" name="copy_number" placeholder="">
                                                </div>
                                            </div>
                                            <div class="col-xxl-3 col-md-12 mt-3">
                                                <div>
-                                                   <label for="placeholderInput" class="form-label">Class Abbreviation </label>
+                                                   <label for="placeholderInput" class="form-label">Initial State Comment</label>
 
-                                                   <input type="text" value="<?= $class_details->abbrev ?>" class="form-control" name="abbrev" placeholder="">
+                                                   <textarea name="comment" class="form-control"><?= $book_copy_details->comment ?></textarea>
                                                </div>
                                            </div>
 
@@ -67,7 +67,7 @@
                                        <hr>
 
                                        <div class="d-flex mt-3 align-items-center justify-content-center ">
-                                           <button type="submit" class="btn btn-primary m-1"><i class="fas fa-edit"></i> Edit Class Details</button>
+                                           <button type="submit" class="btn btn-warning m-1"><i class="fas fa-edit"></i> Edit Book Copy Details</button>
                                        </div>
                                    </form>
                                </div>
@@ -79,11 +79,11 @@
        </div><!-- end col -->
    </div><!-- end row -->
    <script>
-       $('#edit_class').on('submit', function(e) {
+       $('#edit_copy').on('submit', function(e) {
 
            e.preventDefault();
            $.ajax({
-               url: request() + '?file=classes&action=edit_class',
+               url: request() + '?file=books&action=edit_book_copy',
                method: 'POST',
                data: new FormData(this),
                contentType: false,

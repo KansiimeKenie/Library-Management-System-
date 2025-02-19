@@ -53,7 +53,7 @@ if ($global_var['user']['user_type'] == 'stud') {
                                                     </th>
 
                                                     <th class="sort" data-sort="date">Borrowed Book</th>
-                                                    <th class="sort" data-sort="date">Copies</th>
+                                                    <th class="sort" data-sort="date">Book Copy No.</th>
                                                     <th class="sort" data-sort="date">Return Status</th>
                                                     <th class="sort" data-sort="date">Return Date</th>
                                                     <th class="sort" data-sort="date">Remaining Days</th>
@@ -67,6 +67,7 @@ if ($global_var['user']['user_type'] == 'stud') {
                                                 foreach ($all_requests as $value):
                                                     $book_details = $db->where("id", $value->book_id)->getOne("books");
                                                     $student_details = $db->where('id', $value->student_id)->getOne('users');
+                                                    $borrowed_copy = $db->where('requesition_id', $value->id)->getOne('borrowed_copies');
 
                                                     $sn++;
                                                 ?>
@@ -75,8 +76,8 @@ if ($global_var['user']['user_type'] == 'stud') {
                                                             <?= $sn ?>
                                                         </th>
 
-                                                        <td><?= $book_details->title . ' ' . $book_details->author ?></td>
-                                                        <td><?= $value->no_of_copies ?></td>
+                                                        <td><?= $book_details->title . ' ' . $db->where('id', $book_details->author_id)->getOne('book_authors')->names ?></td>
+                                                        <td><?= $db->where('id', $borrowed_copy->book_copy_id)->getOne('book_copies')->book_copy_no ?></td>
                                                         <td><span class="badge bg-info">Pending</span></td>
                                                         <td class="date"><?= date('d/m/Y', strtotime($value->return_date)) ?></td>
                                                         <td><?php
@@ -106,7 +107,7 @@ if ($global_var['user']['user_type'] == 'stud') {
                                                     <th class="sort" data-sort="title">Student Name</th>
                                                     <th class="sort" data-sort="description">Class</th>
                                                     <th class="sort" data-sort="date">Borrowed Book</th>
-                                                    <th class="sort" data-sort="date">Copies</th>
+                                                    <th class="sort" data-sort="date">Borrowed Copy No.</th>
                                                     <th class="sort" data-sort="date">Return Status</th>
                                                     <th class="sort" data-sort="date">Return Date</th>
                                                     <th class="sort" data-sort="date">Remaining Days</th>
@@ -120,6 +121,7 @@ if ($global_var['user']['user_type'] == 'stud') {
                                                 foreach ($all_requests as $value):
                                                     $book_details = $db->where("id", $value->book_id)->getOne("books");
                                                     $student_details = $db->where('id', $value->student_id)->getOne('users');
+                                                    $borrowed_copy = $db->where('requesition_id', $value->id)->getOne('borrowed_copies');
 
                                                     $sn++;
                                                 ?>
@@ -129,8 +131,8 @@ if ($global_var['user']['user_type'] == 'stud') {
                                                         </th>
                                                         <td><?= $student_details->firstname . ' ' . $student_details->lastname ?></td>
                                                         <td><?= $db->where('id', $student_details->class_id)->getOne('classes')->abbrev ?></td>
-                                                        <td><?= $book_details->title . ' ' . $book_details->author ?></td>
-                                                        <td><?= $value->no_of_copies ?></td>
+                                                        <td><?= $book_details->title . ' ' . $db->where('id', $book_details->author_id)->getOne('book_authors')->names ?></td>
+                                                        <td><?= $db->where('id', $borrowed_copy->book_copy_id)->getOne('book_copies')->book_copy_no ?></td>
                                                         <td><span class="badge bg-info">Pending</span></td>
                                                         <td class="date"><?= date('d/m/Y', strtotime($value->return_date)) ?></td>
                                                         <td><?php

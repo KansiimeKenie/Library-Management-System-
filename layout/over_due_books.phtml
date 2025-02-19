@@ -1,9 +1,9 @@
 <?php
 $today = getCurrentDateOnly();
-$all_requests = $db->orderBy('id', 'DESC')->where('aprove_status', 1)->where('return_status IS NULL')->where('return_date', $today, '<')->get('borrow_requests');
-// if ($global_var['user']['user_type'] == 'stud') {
-//     $all_requests = $db->orderBy('id', 'DESC')->where('student_id', $global_var['user']['id'])->where('return_status IS NOT NULL')->get('borrow_requests');
-// }
+$all_overdue_books = $db->orderBy('id', 'DESC')->where('aprove_status', 1)->where('return_status IS NULL')->where('return_date', $today, '<')->get('borrow_requests');
+if ($global_var['user']['user_type'] == 'stud') {
+    $all_overdue_books = $db->orderBy('id', 'DESC')->where('student_id', $global_var['user']['id'])->where('aprove_status', 1)->where('return_status IS NULL')->where('return_date', $today, '<')->get('borrow_requests');
+}
 ?>
 <div class="main-content">
 
@@ -15,12 +15,12 @@ $all_requests = $db->orderBy('id', 'DESC')->where('aprove_status', 1)->where('re
             <div class="row">
                 <div class="col-12">
                     <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                        <h4 class="mb-sm-0">All Borrow Books</h4>
+                        <h4 class="mb-sm-0">Over Due Books</h4>
 
                         <div class="page-title-right">
                             <ol class="breadcrumb m-0">
                                 <li class="breadcrumb-item"><a href="javascript: void(0);">Home</a></li>
-                                <li class="breadcrumb-item active">Borrowed Books</li>
+                                <li class="breadcrumb-item active">Over Due Books</li>
                             </ol>
                         </div>
 
@@ -66,7 +66,7 @@ $all_requests = $db->orderBy('id', 'DESC')->where('aprove_status', 1)->where('re
 
                                                 <?php
                                                 $sn = 0;
-                                                foreach ($all_requests as $value):
+                                                foreach ($all_overdue_books as $value):
                                                     $book_details = $db->where("id", $value->book_id)->getOne("books");
                                                     $student_details = $db->where('id', $value->student_id)->getOne('users');
 
@@ -115,7 +115,7 @@ $all_requests = $db->orderBy('id', 'DESC')->where('aprove_status', 1)->where('re
 
                                                 <?php
                                                 $sn = 0;
-                                                foreach ($all_requests as $value):
+                                                foreach ($all_overdue_books as $value):
                                                     $book_details = $db->where("id", $value->book_id)->getOne("books");
                                                     $student_details = $db->where('id', $value->student_id)->getOne('users');
 

@@ -1,5 +1,5 @@
    <?php
-    $req_details = $db->where("id", __secure($_GET['id']))->getOne("borrow_requests");
+    $req_details = $db->where("id", secure_data($_GET['id']))->getOne("borrow_requests");
     $book_details = $db->where("id", $req_details->book_id)->getOne("books");
     $student_details = $db->where('id', $req_details->student_id)->getOne('users');
     ?>
@@ -161,7 +161,7 @@
            // Approve Button Click
            $(document).on("click", ".approve", function() {
                var el = this;
-               var req_id = '<?= __secure($_GET['id']) ?>';
+               var req_id = '<?= secure_data($_GET['id']) ?>';
                var no_of_copies = '<?= $req_details->no_of_copies ?>';
                var book_id = '<?= $req_details->book_id ?>';
                Swal.fire({

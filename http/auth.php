@@ -1,8 +1,8 @@
 <?php
 if ($file == 'auth') {
 	if ($action == 'login') {
-		$email = __secure($_POST['email']);
-		$password = __secure($_POST['password']);
+		$email = secure_data($_POST['email']);
+		$password = secure_data($_POST['password']);
 
 		if (login($email, $password)) {
 			$user = $db->where('email', $email)->getOne('users');
@@ -21,14 +21,14 @@ if ($file == 'auth') {
 		}
 	}
 	if ($action == "register") {
-		$firstname = __secure($_POST['firstname']);
-		$lastname = __secure($_POST['lastname']);
-		$othername = __secure($_POST['othername']);
-		$tel = __secure($_POST['tel']);
-		$email = __secure($_POST['email']);
-		$class_id = __secure($_POST['class_id']);
-		$password = __secure($_POST['password']);
-		$confirm_password = __secure($_POST['confirm_password']);
+		$firstname = secure_data($_POST['firstname']);
+		$lastname = secure_data($_POST['lastname']);
+		$othername = secure_data($_POST['othername']);
+		$tel = secure_data($_POST['tel']);
+		$email = secure_data($_POST['email']);
+		$class_id = secure_data($_POST['class_id']);
+		$password = secure_data($_POST['password']);
+		$confirm_password = secure_data($_POST['confirm_password']);
 
 		if (empty($firstname) || empty($lastname) || empty($tel) || empty($email) || empty($class_id) || empty($password) || empty($confirm_password)) {
 			$data = [
@@ -83,9 +83,9 @@ if ($file == 'auth') {
 		}
 	}
 	if ($action == "change_pwd") {
-		$old_pwd = __secure($_POST['old_pwd']);
-		$new_pwd = __secure($_POST['new_pwd']);
-		$confirm_pwd = __secure($_POST['confirm_pwd']);
+		$old_pwd = secure_data($_POST['old_pwd']);
+		$new_pwd = secure_data($_POST['new_pwd']);
+		$confirm_pwd = secure_data($_POST['confirm_pwd']);
 		if (password_verify($old_pwd, $global_var['user']['password'])) {
 			$user_data = [
 				"password" => password_hash($new_pwd, PASSWORD_DEFAULT),

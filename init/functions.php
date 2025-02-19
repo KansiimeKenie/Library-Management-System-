@@ -3,17 +3,18 @@ require('init/app_start.php');
 function load_page($url = '')
 {
     global $sqlConnect, $global_var, $db, $page;
-    $pg = './layout/' . $url . '.phtml';
-    if (!file_exists($pg)) {
-        $pg = './layout/404.phtml';
+    $page_file = './layout/' . $url . '.phtml';
+    if (!file_exists($page_file)) {
+        $page_file  = './layout/404.phtml';
     }
     $content = '';
     ob_start();
-    require($pg);
+    require($page_file);
     $content = ob_get_contents();
     ob_end_clean();
     return $content;
 }
+
 function exists($table, $condition)
 {
     global $sqlConnect;
@@ -33,7 +34,7 @@ function logged_in()
         return false;
     }
 }
-
+//getting system configration data
 function config()
 {
     global $sqlConnect;
@@ -47,7 +48,7 @@ function config()
     return $data;
 }
 
-function __secure($string)
+function secure_data($string)
 {
     global $sqlConnect;
     $string = trim($string);
@@ -103,7 +104,7 @@ function login($email, $password)
 function update_data($table, $data, $condition)
 {
     global $sqlConnect;
-    $table = __secure($table, 0);
+    $table = secure_data($table, 0);
 
     $update = array();
     foreach ($data as $field => $_data) {

@@ -2,9 +2,9 @@
 $all_students = $db->orderBy('id', 'DESC')->where('user_type', 'stud')->get('users');
 $page_title = 'All Students';
 if (isset($_GET['id']) && !empty($_GET['id'])) {
-    $all_students = $db->orderBy('id', 'DESC')->where('class_id', __secure(($_GET['id'])))->where('user_type', 'stud')->get('users');
+    $all_students = $db->orderBy('id', 'DESC')->where('class_id', secure_data(($_GET['id'])))->where('user_type', 'stud')->get('users');
 
-    $page_title = 'All ' . $db->where('id', __secure(($_GET['id'])))->getOne('classes')->name . ' Students';
+    $page_title = 'All ' . $db->where('id', secure_data(($_GET['id'])))->getOne('classes')->name . ' Students';
 }
 
 ?>

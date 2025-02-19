@@ -2,8 +2,8 @@
 if ($file == "classes") {
 
 	if ($action == "add_new_class") {
-		$name = __secure($_POST['name']);
-		$abbrev = __secure($_POST['abbrev']);
+		$name = secure_data($_POST['name']);
+		$abbrev = secure_data($_POST['abbrev']);
 
 		if (empty($name)) {
 			$data = array(
@@ -39,9 +39,9 @@ if ($file == "classes") {
 		}
 	}
 	if ($action == "edit_class") {
-		$id = __secure($_POST['id']);
-		$name = __secure($_POST['name']);
-		$abbrev = __secure($_POST['abbrev']);
+		$id = secure_data($_POST['id']);
+		$name = secure_data($_POST['name']);
+		$abbrev = secure_data($_POST['abbrev']);
 
 		if (empty($name)) {
 			$data = array(
@@ -78,7 +78,7 @@ if ($file == "classes") {
 	}
 
 	if ($action == 'delete_class') {
-		$id = __secure($_POST['id']);
+		$id = secure_data($_POST['id']);
 		if ($db->where('id', $id)->delete('classes')) {
 			$data = array(
 				'status'	=>	200,

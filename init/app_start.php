@@ -4,11 +4,10 @@ require_once('config.php');
 
 require_once('init/libraries/DB/vendor/autoload.php');
 
-$global_var =  $config  = array();
-$sqlConnect   = $global_var['sqlConnect'] = null;
+$global_var = [];
 
 // Connect to SQL Server
-$sqlConnect   = $global_var['sqlConnect'] = mysqli_connect($sql_db_host, $sql_db_user, $sql_db_pass, $sql_db_name, 3306);
+$sqlConnect   = mysqli_connect($sql_db_host, $sql_db_user, $sql_db_pass, $sql_db_name, 3306);
 
 // Handling Server Errors 
 $ServerErrors = array();
@@ -27,14 +26,12 @@ if (isset($ServerErrors) && !empty($ServerErrors)) {
     die();
 }
 
-$config              = config();
 $db                  = new MysqliDb($sqlConnect);
 
 
-// Get LoggedIn User Data
+// Getting LoggedIn User Data
 $global_var['loggedin']           = false;
 $global_var['user'] = array();
-
 if (logged_in() == true) {
     $session_id  = (!empty($_SESSION['user_id'])) ? $_SESSION['user_id'] : $_COOKIE['user_id'];
     $global_var['user'] = mysqli_fetch_array(mysqli_query($sqlConnect, "SELECT * FROM users WHERE id = '$session_id'"));
@@ -43,6 +40,6 @@ if (logged_in() == true) {
 }
 
 
-$config['site_url']  = $site_url;
 $global_var['site_url']  = $site_url;
-$global_var['config']    = $config;
+// adding system configration data to global variable 
+$global_var['config']    = config();

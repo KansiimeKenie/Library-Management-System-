@@ -7,6 +7,15 @@ $most_borrowed_books = $db
 
 
 $page_title = 'Most Borrowed Books';
+if ($global_var['user']['user_type'] == 'stud') {
+    $most_borrowed_books = $db
+        ->where('aprove_status', 1)
+        ->groupBy('book_id')
+        ->orderBy('total_borrowed', 'DESC')
+        ->where('student_id', $global_var['user']['id'])
+        ->get('borrow_requests', null, ['book_id', 'SUM(no_of_copies) as total_borrowed']);
+    $page_title = 'My Most Borrowed Books';
+}
 
 ?>
 

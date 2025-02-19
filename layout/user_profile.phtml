@@ -1,5 +1,5 @@
 <?php
-$user_id = (empty($_GET['id']) ? $global_var['user']['id'] : __secure($_GET['id']));
+$user_id = (empty($_GET['id']) ? $global_var['user']['id'] : secure_data($_GET['id']));
 $user_details = $db->where("id", $user_id)->getOne("users");
 $user_type = "Student";
 if ($user_details->user_type == 'lib') {
@@ -25,7 +25,7 @@ $user_image = (empty($user_details->photo)) ? "/layout/assets/images/users/avata
                     <div class="col-auto">
                         <div class="avatar-lg">
 
-                            <img src="<?= $global_var['config']['site_url'] . $user_image ?>" alt="user-img" class="img-thumbnail rounded-circle" />
+                            <img src="<?= $global_var['site_url'] . $user_image ?>" alt="user-img" class="img-thumbnail rounded-circle" />
                         </div>
                     </div>
                     <!--end col-->

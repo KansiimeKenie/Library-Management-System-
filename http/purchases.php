@@ -2,8 +2,8 @@
 if ($file == "purchases") {
 	// INVENTORY PURCHASES / INVENTORY UPDATING 
 	if ($action == "update_inventory") {
-		$book_id = __secure($_POST['book_id']);
-		$no_of_copies = __secure($_POST['no_of_copies']);
+		$book_id = secure_data($_POST['book_id']);
+		$no_of_copies = secure_data($_POST['no_of_copies']);
 		if (empty($book_id)) {
 			$data = array(
 				'status'	=>	201,
@@ -42,10 +42,10 @@ if ($file == "purchases") {
 		}
 	}
 	if ($action == "edit_book_purchase") {
-		$purchase_id = __secure($_POST['id']);
-		$initial_copies = __secure($_POST['initial_copies']);
-		$book_id = __secure($_POST['book_id']);
-		$no_of_copies = __secure($_POST['no_of_copies']);
+		$purchase_id = secure_data($_POST['id']);
+		$initial_copies = secure_data($_POST['initial_copies']);
+		$book_id = secure_data($_POST['book_id']);
+		$no_of_copies = secure_data($_POST['no_of_copies']);
 		if (empty($book_id)) {
 			$data = array(
 				'status'	=>	201,
@@ -85,9 +85,9 @@ if ($file == "purchases") {
 		}
 	}
 	if ($action == 'delete_purchase') {
-		$purchase_id = __secure($_POST['id']);
-		$book_id = __secure($_POST['book_id']);
-		$purchased_copies = __secure($_POST['no_of_copies']);
+		$purchase_id = secure_data($_POST['id']);
+		$book_id = secure_data($_POST['book_id']);
+		$purchased_copies = secure_data($_POST['no_of_copies']);
 		$current_books_details = $db->where("book_id", $book_id)->getOne("current_books");
 		$updated_no_copies = (empty($current_books_details) ? 0 : $current_books_details->no_of_copies) - $purchased_copies;
 		$current_book_data = [

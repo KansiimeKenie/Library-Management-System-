@@ -2,9 +2,9 @@
 if ($f == "damages") {
 
 	if ($action == "add_new_damage") {
-		$book_id = __secure($_POST['book_id']);
-		$description = __secure($_POST['description']);
-		$no_of_copies = __secure($_POST['no_of_copies']);
+		$book_id = secure_data($_POST['book_id']);
+		$description = secure_data($_POST['description']);
+		$no_of_copies = secure_data($_POST['no_of_copies']);
 		if (empty($book_id)) {
 			$data = array(
 				'status'	=>	201,
@@ -44,11 +44,11 @@ if ($f == "damages") {
 		}
 	}
 	if ($action == "edit_damaged_book") {
-		$id = __secure($_POST['id']);
-		$initial_copies = __secure($_POST['initial_copies']);
-		$book_id = __secure($_POST['book_id']);
-		$description = __secure($_POST['description']);
-		$no_of_copies = __secure($_POST['no_of_copies']);
+		$id = secure_data($_POST['id']);
+		$initial_copies = secure_data($_POST['initial_copies']);
+		$book_id = secure_data($_POST['book_id']);
+		$description = secure_data($_POST['description']);
+		$no_of_copies = secure_data($_POST['no_of_copies']);
 		if (empty($no_of_copies)) {
 			$data = array(
 				'status'	=>	201,
@@ -89,9 +89,9 @@ if ($f == "damages") {
 		}
 	}
 	if ($action == 'delete_damage') {
-		$id = __secure($_POST['id']);
-		$book_id = __secure($_POST['book_id']);
-		$damaged_copies = __secure($_POST['no_of_copies']);
+		$id = secure_data($_POST['id']);
+		$book_id = secure_data($_POST['book_id']);
+		$damaged_copies = secure_data($_POST['no_of_copies']);
 		$current_books_details = $db->where("book_id", $book_id)->getOne("current_books");
 		$updated_no_copies = (empty($current_books_details) ? 0 : $current_books_details->no_of_copies) + $damaged_copies;
 		$current_book_data = [

@@ -2,8 +2,8 @@
 $page_title = 'Today\'s Book Inventory Updates';
 $purchases = $db->orderBy('id', 'DESC')->where('date_created', getCurrentDateOnly())->get('purchases');
 if (isset($_GET['start_date']) && isset($_GET['end_date'])) {
-    $purchases = $db->where('date_created', __secure($_GET['start_date']), '>=')
-        ->where('date_created', __secure($_GET['end_date']), '<=')
+    $purchases = $db->where('date_created', secure_data($_GET['start_date']), '>=')
+        ->where('date_created', secure_data($_GET['end_date']), '<=')
         ->orderBy('id', 'DESC')
         ->get('purchases');
 

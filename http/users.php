@@ -2,12 +2,12 @@
 if ($file == "users") {
 
 	if ($action == "add_new_librarian") {
-		$firstname = __secure($_POST['fname']);
-		$lastname = __secure($_POST['lname']);
-		$othername = __secure($_POST['oname']);
-		$email = __secure($_POST['email']);
-		$tel = __secure($_POST['tel']);
-		$password = password_hash(__secure($_POST['password']), PASSWORD_DEFAULT);
+		$firstname = secure_data($_POST['fname']);
+		$lastname = secure_data($_POST['lname']);
+		$othername = secure_data($_POST['oname']);
+		$email = secure_data($_POST['email']);
+		$tel = secure_data($_POST['tel']);
+		$password = password_hash(secure_data($_POST['password']), PASSWORD_DEFAULT);
 
 
 		if (empty($firstname)) {
@@ -64,11 +64,11 @@ if ($file == "users") {
 		}
 	}
 	if ($action == "update_profile") {
-		$firstname = __secure($_POST['firstname']);
-		$lastname = __secure($_POST['lastname']);
-		$othername = __secure($_POST['othername']);
-		$email = __secure($_POST['email']);
-		$tel = __secure($_POST['tel']);
+		$firstname = secure_data($_POST['firstname']);
+		$lastname = secure_data($_POST['lastname']);
+		$othername = secure_data($_POST['othername']);
+		$email = secure_data($_POST['email']);
+		$tel = secure_data($_POST['tel']);
 
 
 		if (empty($firstname)) {
@@ -119,7 +119,7 @@ if ($file == "users") {
 	}
 
 	if ($action == 'delete_class') {
-		$id = __secure($_POST['id']);
+		$id = secure_data($_POST['id']);
 		if ($db->where('id', $id)->delete('classes')) {
 			$data = array(
 				'status'	=>	200,

@@ -7,14 +7,14 @@ if ($global_var['user']['user_type'] == 'stud') {
     $all_requests = $db->orderBy('id', 'DESC')->where('date_approved', $first_day_of_month, '>')->where('student_id', $global_var['user']['id'])->where('return_status IS NOT NULL')->get('borrow_requests');
 }
 if (isset($_GET['start_date']) && isset($_GET['end_date'])) {
-    $all_requests = $db->where('date_approved', __secure($_GET['start_date']), '>=')
-        ->where('date_approved', __secure($_GET['end_date']), '<=')
+    $all_requests = $db->where('date_approved', secure_data($_GET['start_date']), '>=')
+        ->where('date_approved', secure_data($_GET['end_date']), '<=')
         ->orderBy('id', 'DESC')
         ->where('return_status IS NOT NULL')
         ->get('borrow_requests');
     if ($global_var['user']['user_type'] == 'stud') {
-        $all_requests = $db->where('student_id', $global_var['user']['id'])->where('date_approved', __secure($_GET['start_date']), '>=')
-            ->where('date_approved', __secure($_GET['end_date']), '<=')
+        $all_requests = $db->where('student_id', $global_var['user']['id'])->where('date_approved', secure_data($_GET['start_date']), '>=')
+            ->where('date_approved', secure_data($_GET['end_date']), '<=')
             ->orderBy('id', 'DESC')
             ->where('return_status IS NOT NULL')
             ->get('borrow_requests');

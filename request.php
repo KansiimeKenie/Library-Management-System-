@@ -4,8 +4,8 @@ date_default_timezone_set('Africa/Kampala');
 $file = @$_GET['file'];
 $action = @$_GET['action'];
 
-$file = __secure($file);
-$action = __secure($action);
+$file = secure_data($file);
+$action = secure_data($action);
 
 
 $data = array();

@@ -1,5 +1,5 @@
    <?php
-    $book_details = $db->where("id", __secure($_GET['id']))->getOne("books");
+    $book_details = $db->where("id", secure_data($_GET['id']))->getOne("books");
     $category_details = $db->where("id", $book_details->category_id)->getOne("categories");
     ?>
    <div class="main-content">
@@ -40,36 +40,79 @@
                                        <input type="text" name="book_id" value="<?= $book_details->id ?>" Hidden>
                                        <div class="row">
 
-                                           <div class="col-xxl-3 col-md-12">
-                                               <div>
-                                                   <label for="basiInput" class="form-label">Book Category</label>
-                                                   <select name="category_id" class="form-control">
-                                                       <option value="<?= $category_details->id ?>"><?= $category_details->name ?></option>
-                                                       <?php foreach ($db->get("categories") as $value) { ?>
-                                                           <option value="<?= $value->id ?>"><?= $value->name ?></option>
-                                                       <?php } ?>
-                                                   </select>
+                                           <div class="row">
+
+                                               <div class="col-xxl-3 col-md-12">
+                                                   <div>
+                                                       <label for="basiInput" class="form-label">Book Category</label>
+                                                       <select name="category_id" class="form-control selectpicker" data-live-search="true">
+                                                           <option value="<?= $book_details->category_id ?>"><?= $db->where("id", $book_details->category_id)->getOne("categories")->name ?></option>
+                                                           <?php foreach ($db->get("categories") as $value) { ?>
+                                                               <option value="<?= $value->id ?>"><?= $value->name ?></option>
+                                                           <?php } ?>
+                                                       </select>
+
+                                                   </div>
                                                </div>
-                                           </div>
-                                           <!--end col-->
-                                           <div class="col-xxl-3 col-md-12">
-                                               <div>
-                                                   <label for="labelInput" class="form-label">Book Title </label>
-                                                   <input type="text" value="<?= $book_details->title ?>" name="title" class="form-control">
+
+
+                                               <!--end col-->
+                                               <div class="col-xxl-3 col-md-12">
+                                                   <div>
+                                                       <label for="labelInput" class="form-label">Book Title </label>
+                                                       <input type="text" value="<?= $book_details->title ?>" name="title" class="form-control">
+                                                   </div>
                                                </div>
-                                           </div>
-                                           <!--end col-->
-                                           <div class="col-xxl-3 col-md-12">
-                                               <div>
-                                                   <label for="placeholderInput" class="form-label">Book Aurthor</label>
-                                                   <input type="text" value="<?= $book_details->author ?>" class="form-control" name="aurthor" placeholder="Book Aurthor">
+                                               <div class="col-xxl-3 col-md-12" id="selectAuthorDiv">
+                                                   <div>
+                                                       <label for="basiInput" class="form-label">Book Author</label>
+                                                       <select id="authorSelect" name="author_id" class="form-control selectpicker" data-live-search="true">
+
+                                                           <option value="<?= $book_details->author_id ?>"><?= $db->where("id", $book_details->author_id)->getOne("book_authors")->names ?></option>
+                                                           <?php foreach ($db->get("book_authors") as $value) { ?>
+                                                               <option value="<?= $value->id ?>"><?= $value->names ?></option>
+                                                           <?php } ?>
+                                                       </select>
+                                                   </div>
                                                </div>
-                                           </div>
-                                           <div class="col-xxl-3 col-md-12">
-                                               <div>
-                                                   <label for="placeholderInput" class="form-label">ISBN</label>
-                                                   <input type="text" value="<?= $book_details->isbn ?>" class="form-control" name="isbn" placeholder="ISBN">
+
+                                               <div class="col-xxl-3 col-md-12">
+                                                   <div>
+                                                       <label for="registerAuthor" class="form-label">Register New Book Author</label>
+                                                       <input type="checkbox" name="new_author" value="1" id="registerAuthor" />
+                                                   </div>
                                                </div>
+
+                                               <!-- Book Author Name Input (Initially Hidden) -->
+                                               <div class="col-xxl-3 col-md-12 d-none" id="newAuthorDiv">
+                                                   <div>
+                                                       <label for="placeholderInput" class="form-label">Book Author Name</label>
+                                                       <input type="text" class="form-control" name="author_names" placeholder="Book Author">
+                                                   </div>
+                                               </div>
+
+
+                                               <div class="col-xxl-3 col-md-12">
+                                                   <div>
+                                                       <label for="placeholderInput" class="form-label">ISBN</label>
+                                                       <input type="text" class="form-control" value="<?= $book_details->isbn ?>" name="isbn" placeholder="ISBN">
+                                                   </div>
+                                               </div>
+                                               <div class="col-xxl-3 col-md-6">
+                                                   <div>
+                                                       <label for="placeholderInput" class="form-label">Year of Publication</label>
+                                                       <input type="text" class="form-control" value="<?= $book_details->publication_year ?>" name="publication_year" placeholder="Year of Publication">
+                                                   </div>
+                                               </div>
+                                               <div class="col-xxl-3 col-md-6">
+                                                   <div>
+                                                       <label for="placeholderInput" class="form-label">No. Of Initial Copies</label>
+                                                       <input type="text" class="form-control" value="<?= $db->where("book_id", $book_details->id)->getOne("current_books")->no_of_copies ?>" name="no_of_copies" placeholder="No. Of Book Copies Available">
+                                                   </div>
+                                               </div>
+                                               <!--end col-->
+
+
                                            </div>
 
 
@@ -123,5 +166,16 @@
                    }
                }
            });
+       });
+       document.getElementById('registerAuthor').addEventListener('change', function() {
+           let newAuthorDiv = document.getElementById('newAuthorDiv');
+           let selectAuthorDiv = document.getElementById('selectAuthorDiv');
+           if (this.checked) {
+               newAuthorDiv.classList.remove('d-none'); // Show new author input field
+               selectAuthorDiv.classList.add('d-none'); // Hide Select Author field
+           } else {
+               newAuthorDiv.classList.add('d-none'); // Hide input field
+               selectAuthorDiv.classList.remove('d-none'); // Show Select Author field
+           }
        });
    </script>

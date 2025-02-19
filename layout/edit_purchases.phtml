@@ -1,5 +1,5 @@
    <?php
-    $purchase_details = $db->where("id", __secure($_GET['id']))->getOne("purchases");
+    $purchase_details = $db->where("id", secure_data($_GET['id']))->getOne("purchases");
     $book_details = $db->where("id", $purchase_details->book_id)->getOne("books");
 
     ?>
