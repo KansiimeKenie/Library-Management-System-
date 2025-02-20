@@ -135,7 +135,7 @@ $user_image = (empty($user_details->photo)) ? "/layout/assets/images/users/avata
                                                             </th>
 
                                                             <th class="sort" data-sort="date">Borrowed Book</th>
-                                                            <th class="sort" data-sort="date">Copies</th>
+                                                            <th class="sort" data-sort="date">Copy No</th>
                                                             <th class="sort" data-sort="date">Return Status</th>
                                                             <th class="sort" data-sort="date">Return Date</th>
                                                             <th class="sort" data-sort="date">Remaining Days</th>
@@ -146,12 +146,13 @@ $user_image = (empty($user_details->photo)) ? "/layout/assets/images/users/avata
 
                                                         <?php
 
-                                                        $all_requests = $db->where('aprove_status', 1)->where('return_status IS NULL')->where('student_id', $user_id)->get('borrow_requests');
+                                                        $all_borrowed_copies = $db->where('return_status IS NULL')->where('student_id', $user_id)->get('borrowed_copies');
 
                                                         $sn = 0;
-                                                        foreach ($all_requests as $value):
+                                                        foreach ($all_borrowed_copies as $value):
+                                                            $request_details = $db->where("id", $value->requesition_id)->getOne("borrow_requests");
 
-                                                            $book_details = $db->where("id", $value->book_id)->getOne("books");
+                                                            $book_details = $db->where("id", $request_details->book_id)->getOne("books");
 
                                                             $sn++;
                                                         ?>
@@ -162,11 +163,11 @@ $user_image = (empty($user_details->photo)) ? "/layout/assets/images/users/avata
 
 
                                                                 <td><?= $book_details->title  ?></td>
-                                                                <td><?= $value->no_of_copies ?></td>
+                                                                <td><?= $db->where('id', $value->book_copy_id)->getOne('book_copies')->book_copy_no ?></td>
                                                                 <td><span class="badge bg-info">Pending</span></td>
-                                                                <td class="date"><?= date('d/m/Y', strtotime($value->return_date)) ?></td>
+                                                                <td class="date"><?= date('d/m/Y', strtotime($request_details->return_date)) ?></td>
                                                                 <td><?php
-                                                                    $days = getBorrowedBookRemainingDays(date('y-m-d', strtotime($value->return_date)));
+                                                                    $days = getBorrowedBookRemainingDays(date('y-m-d', strtotime($request_details->return_date)));
                                                                     if ($days <  1) {
                                                                         echo '<span class="badge bg-danger">Overdue by ' . abs($days) . ' days</span>';
                                                                     } else {
@@ -176,7 +177,7 @@ $user_image = (empty($user_details->photo)) ? "/layout/assets/images/users/avata
                                                                     ?></td>
 
                                                                 <td>
-                                                                    <a title='View Details' href="index.php?page=req_details&id=<?= $value->id ?>" class="btn btn-sm btn-success " href=""><i class="fas fa-eye"></i> </a>
+                                                                    <a title='View Details' href="index.php?page=req_details&id=<?= $value->requesition_id ?>" class="btn btn-sm btn-success " href=""><i class="fas fa-eye"></i> </a>
                                                                 </td>
                                                             </tr>
                                                         <?php endforeach; ?>
@@ -205,9 +206,10 @@ $user_image = (empty($user_details->photo)) ? "/layout/assets/images/users/avata
                                                             </th>
 
                                                             <th class="sort" data-sort="date">Borrowed Book</th>
-                                                            <th class="sort" data-sort="date">Copies</th>
+                                                            <th class="sort" data-sort="date">Copy No.</th>
                                                             <th class="sort" data-sort="date">Borrow Date</th>
                                                             <th class="sort" data-sort="date">Due Date</th>
+                                                            <th class="sort" data-sort="date">Return Status</th>
                                                             <th class="sort" data-sort="date">Return Date</th>
                                                             <th class="sort" data-sort="date">Overdue Status</th>
                                                             <th class="sort" data-sort="action">Action</th>
@@ -217,12 +219,14 @@ $user_image = (empty($user_details->photo)) ? "/layout/assets/images/users/avata
 
                                                         <?php
 
-                                                        $all_requests = $db->where('aprove_status', 1)->where('return_status IS NOT NULL')->where('student_id', $user_id)->get('borrow_requests');
+                                                        $all_borrowed_copies = $db->where('return_status IS NOT NULL')->where('student_id', $user_id)->get('borrowed_copies');
 
                                                         $sn = 0;
-                                                        foreach ($all_requests as $value):
+                                                        foreach ($all_borrowed_copies as $value):
 
-                                                            $book_details = $db->where("id", $value->book_id)->getOne("books");
+                                                            $request_details = $db->where("id", $value->requesition_id)->getOne("borrow_requests");
+
+                                                            $book_details = $db->where("id", $request_details->book_id)->getOne("books");
 
                                                             $sn++;
                                                         ?>
@@ -234,24 +238,29 @@ $user_image = (empty($user_details->photo)) ? "/layout/assets/images/users/avata
 
                                                                 <td><?= $book_details->title  ?></td>
 
-                                                                <td><?= $value->no_of_copies ?></td>
-                                                                <td><?= date('d/m/Y', strtotime($value->date_approved)) ?></td>
-                                                                <td class="date"><?= date('d/m/Y', strtotime($value->return_date)) ?></td>
-                                                                <?php if ($value->return_status == 1) {
-                                                                    echo '<td class="date">' . date("d/m/Y", strtotime($value->returned_on)) . '</td>';
-                                                                } else if ($value->return_status == 3) {
-                                                                    echo '<td><span class="badge bg-danger">lost</span></td>';
+                                                                <td><?= $db->where('id', $value->book_copy_id)->getOne('book_copies')->book_copy_no ?></td>
+                                                                <td><?= date('d/m/Y', strtotime($value->date_created)) ?></td>
+                                                                <td class="date"><?= date('d/m/Y', strtotime($request_details->return_date)) ?></td>
+                                                                <?php if ($value->return_status == 'returned') {
+                                                                    echo '<td><span class="badge bg-success">Returned</span></td>
+                                                                    <td class="date">' . date("d/m/Y", strtotime($value->returned_on)) . '</td>';
+                                                                } else if ($value->return_status == 'damaged') {
+                                                                    echo '<td><span class="badge bg-danger">Damaged</span></td>
+                                                                    <td class="date">' . date("d/m/Y", strtotime($value->returned_on)) . '</td>';
+                                                                } else if ($value->return_status == 'lost') {
+                                                                    echo '<td><span class="badge bg-danger">Lost</span></td>
+                                                                    <td><span class="badge bg-danger">lost</span></td>';
                                                                 } else {
                                                                     echo '<td><span class="badge bg-info">Pending</span></td><td>___</td>';
                                                                 } ?></td>
-                                                                <?php if ($value->return_status == 3) {
+                                                                <?php if ($value->return_status == 'lost') {
                                                                     echo ' <td><span class="badge bg-danger">Yes</span></td>';
                                                                 } else {
-                                                                    if ($value->returned_on > $value->return_date) {
+                                                                    if ($value->returned_on > $request_details->return_date) {
 
                                                                         echo ' <td><span class="badge bg-danger">Yes</span></td>';
                                                                     } else {
-                                                                        echo ' <td><span class="badge bg-info">Not</span></td>';
+                                                                        echo ' <td><span class="badge bg-success">Not</span></td>';
                                                                     }
                                                                 }
 

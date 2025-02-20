@@ -90,7 +90,7 @@ if ($global_var['user']['user_type'] == 'stud') {
                                                     </th>
                                                     <td><?= $book_details->title ?></td>
                                                     <td class="title"><?= $db->where("id", $book_details->category_id)->getOne("categories")->name ?></td>
-                                                    <td class="description"><?= $book_details->author ?></td>
+                                                    <td class="description"><?= $db->where('id', $book_details->author_id)->getOne('book_authors')->names ?></td>
                                                     <td><?= $book_details->isbn ?></td>
 
                                                     <td><?= $value->total_borrowed ?></td>

@@ -2,9 +2,10 @@
     $req_details = $db->where("id", secure_data($_GET['id']))->getOne("borrow_requests");
     $book_details = $db->where("id", $req_details->book_id)->getOne("books");
     $student_details = $db->where('id', $req_details->student_id)->getOne('users');
-    $available_books = $db->where('id', $req_details->book_id)->getOne('current_books');
     $borrowed_copy = $db->where('requesition_id', $req_details->id)->getOne('borrowed_copies');
     $over_due_days_limit = 2;
+    $days = getBorrowedBookRemainingDays(date('y-m-d', strtotime($req_details->return_date)));
+
     ?>
    <div class="main-content">
 
@@ -69,12 +70,12 @@
                                        <strong>Return Date:</strong> <?= date('d/m/Y', strtotime($req_details->return_date)); ?>
                                    </p>
                                    <hr>
-                                   <?php if ($req_details->aprove_status == 1) { ?>
+                                   <?php if ($req_details->aprove_status == 1 && empty($borrowed_copy->return_status)) { ?>
                                        <p><strong>Approval Status:</strong>
                                            <span class="badge bg-success">Approved</span><br><br>
                                            <strong>Days remaining : </strong>
                                            <?php
-                                            $days = getBorrowedBookRemainingDays(date('y-m-d', strtotime($req_details->return_date)));
+
                                             if ($days <  1) {
                                                 echo '<span class="badge bg-danger">Overdue by ' . abs($days) . ' days</span>';
                                             } else {
@@ -100,8 +101,10 @@
                                        <?php if ($global_var['user']['user_type'] != 'stud') {
                                             if ($req_details->aprove_status != 1) { ?>
                                                <button data-bs-toggle="modal" data-bs-target="#approve_req" class="btn btn-success m-1"><i class="fas fa-check"></i> Approve</button>
-                                               <button data-bs-toggle="modal" data-bs-target="#reject_req" class="btn btn-danger m-1"><i class="fas fa-times"></i> Reject</button>
-                                           <?php } else { ?>
+                                               <?php if ($req_details->aprove_status != 2) { ?>
+                                                   <button data-bs-toggle="modal" data-bs-target="#reject_req" class="btn btn-danger m-1"><i class="fas fa-times"></i> Reject</button>
+                                               <?php }
+                                            } else { ?>
                                                <button data-bs-toggle="modal" data-bs-target="#confirm_return" class="btn btn-success m-1"><i class="fas fa-check"></i> Confirm Return</button>
                                                <?php if (abs($days) > $over_due_days_limit) { ?>
                                                    <button data-bs-toggle="modal" data-bs-target="#mark_as_lost" class="btn btn-danger m-1"><i class="fas fa-cancel"></i> Mark As Lost</button>
@@ -136,7 +139,7 @@
                <div class="modal-body">
                    <form id="confirm_borrow_return">
                        <input type="text" name="book_id" value="<?= $req_details->book_id ?>" hidden />
-                       <input type="text" name="return_copies" value="<?= $req_details->no_of_copies ?>" hidden />
+                       <input type="text" name="book_copy_id" value="<?= $borrowed_copy->book_copy_id ?>" hidden />
                        <input type="text" name="id" value="<?= $req_details->id ?>" hidden />
                        <input type="text" name="student_id" value="<?= $req_details->student_id ?>" hidden />
                        <div class="row gy-4">
@@ -195,8 +198,8 @@
                </div>
                <div class="modal-body">
                    <form id="confirm_lost_borrowed_book">
-                       <input type="text" name="book_id" value="<?= $req_details->book_id ?>" hidden />
-                       <input type="text" name="return_copies" value="<?= $req_details->no_of_copies ?>" hidden />
+                       <input type="text" name="book_copy_id" value="<?= $borrowed_copy->book_copy_id ?>" hidden />
+
                        <input type="text" name="id" value="<?= $req_details->id ?>" hidden />
                        <input type="text" name="student_id" value="<?= $req_details->student_id ?>" hidden />
                        <div class="row gy-4">

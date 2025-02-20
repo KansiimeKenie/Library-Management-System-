@@ -4,6 +4,7 @@ $bookings = ['requistions', 'borrowed_books', 'req_details'];
 $genal_settings = ['categories', 'system_setup', 'all_classes', 'edit_category', 'edit_class'];
 $users = ['all_libs', 'all_students', 'all_admins', 'student_profile'];
 $borrow_history = ['trans_history', 'borrow_history'];
+$attendance = ['students_attendance'];
 $report_pages = ['most_borrowing_students', 'most_borrowed_books', 'lost_books', 'over_due_books'];
 $user_image = (empty($global_var['user']['photo'])) ? "/layout/assets/images/users/avatar-10.jpg" : $global_var['user']['photo'];
 $pending_requests = count(
@@ -485,9 +486,9 @@ $pending_requests = count(
                             <span class="topbar-badge fs-30 badge rounded-pill bg-secondary"><?= ($global_var['user']['user_type'] == 'stud') ?  count(
                                                                                                     $db->orderBy('id', 'DESC')
                                                                                                         ->where('student_id', $global_var['user']['id'])
-                                                                                                        ->where('aprove_status', 1)
+
                                                                                                         ->where('return_status IS NULL')
-                                                                                                        ->get('borrow_requests')
+                                                                                                        ->get('borrowed_copies')
                                                                                                 ) :
 
                                                                                                     $pending_requests ?></span>
@@ -513,9 +514,9 @@ $pending_requests = count(
                                         <?= count(
                                             $db->orderBy('id', 'DESC')
                                                 ->where('student_id', $global_var['user']['id'])
-                                                ->where('aprove_status', 1)
+
                                                 ->where('return_status IS NULL')
-                                                ->get('borrow_requests')
+                                                ->get('borrowed_copies')
                                         );
 
                                         ?><i> Borrowed </i></span>
@@ -524,6 +525,26 @@ $pending_requests = count(
                         </ul>
                     </div>
                 </li> <!-- end Dashboard Menu -->
+                <?php if ($global_var['user']['user_type'] != 'stud') { ?>
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="#sidebarLayouts11" data-bs-toggle="collapse" role="button" aria-expanded="<?= (in_array($page, $attendance) ? 'true' : '') ?>" aria-controls="sidebarLayouts">
+                            <i class="ri-layout-3-line"></i> <span data-key="t-layouts">Students Attendance
+
+                            </span>
+                        </a>
+                        <div class="collapse menu-dropdown <?= (in_array($page, $attendance) ? 'show' : '') ?>" id="sidebarLayouts11">
+                            <ul class="nav nav-sm flex-column">
+                                <li class="nav-item">
+                                    <a href="index.php?page=students_attendance" class="nav-link <?= (($page == 'students_attendance') ? 'active' : '') ?>" data-key="t-horizontal">Students Attendance
+
+                                    </a>
+                                </li>
+
+
+                            </ul>
+                        </div>
+                    </li> <!-- end Dashboard Menu -->
+                <?php } ?>
                 <li class="nav-item">
                     <a class="nav-link menu-link <?= ($page == 'trans_history') ? 'active' : '' ?>" href="index.php?page=trans_history" role="button">
                         <i class="ri-folder-history-line"></i></i> <span data-key="t-layouts">Borrow History</span>
@@ -549,15 +570,19 @@ $pending_requests = count(
                                 <?php } ?>
                                 <a href="index.php?page=over_due_books" class="nav-link <?= ($page == 'over_due_books') ? 'active' : '' ?>" data-key="t-sweet-alerts">Over Due Books
                                     <span class="topbar-badge fs-30 badge rounded-pill bg-danger"><?= ($global_var['user']['user_type'] == 'stud') ?
-                                                                                                        $db->where('return_date', getCurrentDateOnly(), '<')
-                                                                                                        ->where('aprove_status', 1)
-                                                                                                        ->where('student_id', $global_var['user']['id'])
-                                                                                                        ->where('return_status IS NULL')
-                                                                                                        ->getValue('borrow_requests', 'SUM(no_of_copies)') ?? 0 : $db->where('return_date', getCurrentDateOnly(), '<')
-                                                                                                        ->where('aprove_status', 1)
-                                                                                                        ->where('student_id', $global_var['user']['id'])
-                                                                                                        ->where('return_status IS NULL')
-                                                                                                        ->getValue('borrow_requests', 'SUM(no_of_copies)') ?? 0;
+
+                                                                                                        count($db->orderBy('borrow_requests.id', 'DESC')
+                                                                                                            ->join('borrowed_copies', 'borrow_requests.id = borrowed_copies.requesition_id', 'LEFT')
+                                                                                                            ->where('borrow_requests.aprove_status', 1)
+                                                                                                            ->where('borrow_requests.student_id', $global_var['user']['id'])
+                                                                                                            ->where('borrow_requests.return_date', getCurrentDateOnly(), '<')
+                                                                                                            ->where('borrowed_copies.return_status IS NULL')
+                                                                                                            ->get('borrow_requests')) ?? 0 : count($db->orderBy('borrow_requests.id', 'DESC')
+                                                                                                            ->join('borrowed_copies', 'borrow_requests.id = borrowed_copies.requesition_id', 'LEFT')
+                                                                                                            ->where('borrow_requests.aprove_status', 1)
+                                                                                                            ->where('borrow_requests.return_date', getCurrentDateOnly(), '<')
+                                                                                                            ->where('borrowed_copies.return_status IS NULL')
+                                                                                                            ->get('borrow_requests')) ?? 0;
                                                                                                     ?>
                                     </span>
                                 </a>

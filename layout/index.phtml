@@ -135,8 +135,8 @@ $most_borrowing_students = $db
                                         <div class="card-body" style="z-index:1 ;">
                                             <div class="d-flex align-items-center">
                                                 <div class="flex-grow-1 overflow-hidden">
-                                                    <p class="text-uppercase fw-medium text-muted text-truncate mb-3">Total Books Borrowed/In Circulation</p>
-                                                    <h4 class="fs-22 fw-semibold ff-secondary mb-0"><span class="counter-value" data-target="<?= $db->where('aprove_status', 1)->where('return_status IS NULL')->getValue('borrow_requests', 'SUM(no_of_copies)') ?>">0</span></h4>
+                                                    <p class="text-uppercase fw-medium text-muted text-truncate mb-3">Total Books Borrowed/In Circulation </p>
+                                                    <h4 class="fs-22 fw-semibold ff-secondary mb-0"><span class="counter-value" data-target="<?= count($db->orderBy('id', 'DESC')->where('return_status IS NULL')->get('borrowed_copies')) ?>">0</span></h4>
                                                 </div>
                                                 <div class="flex-shrink-0">
                                                     <i class="fas fa-book-reader fa-3x text-warning"></i>
@@ -163,7 +163,13 @@ $most_borrowing_students = $db
                                             <div class="d-flex align-items-center">
                                                 <div class="flex-grow-1 overflow-hidden">
                                                     <p class="text-uppercase fw-medium text-muted text-truncate mb-3"> Total Overdue Books</p>
-                                                    <h4 class="fs-22 fw-semibold ff-secondary mb-0"><span class="counter-value" data-target="<?= $db->where('return_date', $today, '<')->where('aprove_status', 1)->where('return_status IS NULL')->getValue('borrow_requests', 'SUM(no_of_copies)')  ?>">0</span></h4>
+                                                    <h4 class="fs-22 fw-semibold ff-secondary mb-0"><span class="counter-value" data-target="<?= count($db->orderBy('borrow_requests.id', 'DESC')
+                                                                                                                                                    ->join('borrowed_copies', 'borrow_requests.id = borrowed_copies.requesition_id', 'LEFT')
+                                                                                                                                                    ->where('borrow_requests.aprove_status', 1)
+
+                                                                                                                                                    ->where('borrow_requests.return_date', getCurrentDateOnly(), '<')
+                                                                                                                                                    ->where('borrowed_copies.return_status IS NULL')
+                                                                                                                                                    ->get('borrow_requests')) ?? 0  ?>">0</span></h4>
                                                 </div>
                                                 <div class="flex-shrink-0">
                                                     <i class="fas fa-calendar-times fa-3x text-danger"></i>
@@ -189,7 +195,7 @@ $most_borrowing_students = $db
                                             <div class="d-flex align-items-center">
                                                 <div class="flex-grow-1 overflow-hidden">
                                                     <p class="text-uppercase fw-medium text-muted text-truncate mb-3"> Total Available Book Copies</p>
-                                                    <h4 class="fs-22 fw-semibold ff-secondary mb-0"><span class="counter-value" data-target="<?= $db->getValue('current_books', 'SUM(no_of_copies)') ?>">0</span></h4>
+                                                    <h4 class="fs-22 fw-semibold ff-secondary mb-0"><span class="counter-value" data-target="<?= count($db->where('status', 'available')->get('book_copies')) ?>">0</span></h4>
                                                 </div>
                                                 <div class="flex-shrink-0">
                                                     <i class="fas fa-book-open fa-3x text-success"></i>
@@ -215,16 +221,10 @@ $most_borrowing_students = $db
                                         <div class="card-body" style="z-index:1 ;">
                                             <div class="d-flex align-items-center">
                                                 <div class="flex-grow-1 overflow-hidden">
-                                                    <p class="text-uppercase fw-medium text-muted text-truncate mb-3">Total Damaged Books</p>
+                                                    <p class="text-uppercase fw-medium text-muted text-truncate mb-3">Total Damaged Book Copies</p>
                                                     <h4 class="fs-22 fw-semibold ff-secondary mb-0">
-                                                        <?php $total_damaged_books = 0;
-                                                        foreach ($db->get('damaged_books') as $damage) {
 
-                                                            $total_damaged_books +=  $damage->no_of_copies;
-                                                        }
-
-                                                        ?>
-                                                        <span class="counter-value" data-target="<?= $total_damaged_books ?>">0</span>
+                                                        <span class="counter-value" data-target="<?= count($db->where('status', 'damaged')->get('book_copies')) ?>">0</span>
                                                     </h4>
                                                 </div>
                                                 <div class="flex-shrink-0">
@@ -304,11 +304,13 @@ $most_borrowing_students = $db
                                             <div class="d-flex align-items-center">
                                                 <div class="flex-grow-1 overflow-hidden">
                                                     <p class="text-uppercase fw-medium text-muted text-truncate mb-3">Total Overdue Books</p>
-                                                    <h4 class="fs-22 fw-semibold ff-secondary mb-0"><span class="counter-value" data-target="<?= $db->where('return_date', $today, '<')
-                                                                                                                                                    ->where('aprove_status', 1)
-                                                                                                                                                    ->where('student_id', $global_var['user']['id'])
-                                                                                                                                                    ->where('return_status IS NULL')
-                                                                                                                                                    ->getValue('borrow_requests', 'SUM(no_of_copies)')
+                                                    <h4 class="fs-22 fw-semibold ff-secondary mb-0"><span class="counter-value" data-target="<?= count($db->orderBy('borrow_requests.id', 'DESC')
+                                                                                                                                                    ->join('borrowed_copies', 'borrow_requests.id = borrowed_copies.requesition_id', 'LEFT')
+                                                                                                                                                    ->where('borrow_requests.aprove_status', 1)
+                                                                                                                                                    ->where('borrow_requests.student_id', $global_var['user']['id'])
+                                                                                                                                                    ->where('borrow_requests.return_date', getCurrentDateOnly(), '<')
+                                                                                                                                                    ->where('borrowed_copies.return_status IS NULL')
+                                                                                                                                                    ->get('borrow_requests')) ?? 0
                                                                                                                                                 ?>">0</span></h4>
                                                 </div>
                                                 <div class="flex-shrink-0">
@@ -495,7 +497,7 @@ $most_borrowing_students = $db
                                                         <?= $sn ?>
                                                     </th>
                                                     <td><?= $book_details->title ?></td>
-                                                    <td><?= $book_details->author ?></td>
+                                                    <td><?= $db->where('id', $book_details->author_id)->getOne('book_authors')->names ?></td>
                                                     <td><?= $book_details->isbn ?></td>
                                                     <td><?= $value->total_borrowed ?></td>
 

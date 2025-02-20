@@ -1,8 +1,20 @@
 <?php
 $today = getCurrentDateOnly();
-$all_overdue_books = $db->orderBy('id', 'DESC')->where('aprove_status', 1)->where('return_status IS NULL')->where('return_date', $today, '<')->get('borrow_requests');
+$all_overdue_books = $db->orderBy('borrow_requests.id', 'DESC')
+    ->join('borrowed_copies', 'borrow_requests.id = borrowed_copies.requesition_id', 'LEFT')
+    ->where('borrow_requests.aprove_status', 1)
+    ->where('borrow_requests.return_date', $today, '<')
+    ->where('borrowed_copies.return_status IS NULL')
+    ->get('borrow_requests');
+
 if ($global_var['user']['user_type'] == 'stud') {
-    $all_overdue_books = $db->orderBy('id', 'DESC')->where('student_id', $global_var['user']['id'])->where('aprove_status', 1)->where('return_status IS NULL')->where('return_date', $today, '<')->get('borrow_requests');
+    $all_overdue_books = $db->orderBy('borrow_requests.id', 'DESC')
+        ->join('borrowed_copies', 'borrow_requests.id = borrowed_copies.requesition_id', 'LEFT')
+        ->where('borrow_requests.aprove_status', 1)
+        ->where('borrow_requests.student_id', $global_var['user']['id'])
+        ->where('borrow_requests.return_date', $today, '<')
+        ->where('borrowed_copies.return_status IS NULL')
+        ->get('borrow_requests');
 }
 ?>
 <div class="main-content">
@@ -55,7 +67,7 @@ if ($global_var['user']['user_type'] == 'stud') {
                                                     <th class="sort" data-sort="title">Student Name</th>
                                                     <th class="sort" data-sort="description">Class</th>
                                                     <th class="sort" data-sort="date">Borrowed Book</th>
-                                                    <th class="sort" data-sort="date">Copies</th>
+                                                    <th class="sort" data-sort="date">Copy No.</th>
                                                     <th class="sort" data-sort="date">Return Date</th>
                                                     <th class="sort" data-sort="date">Over Due Days</th>
 
@@ -78,8 +90,8 @@ if ($global_var['user']['user_type'] == 'stud') {
                                                         </th>
                                                         <td><?= $student_details->firstname . ' ' . $student_details->lastname ?></td>
                                                         <td><?= $db->where('id', $student_details->class_id)->getOne('classes')->abbrev ?></td>
-                                                        <td><?= $book_details->title . ' ' . $book_details->author ?></td>
-                                                        <td><?= $value->no_of_copies ?></td>
+                                                        <td><?= $book_details->title . '<b> By </b> ' . $db->where('id', $book_details->author_id)->getOne('book_authors')->names ?></td>
+                                                        <td><?= $db->where('id', $value->book_copy_id)->getOne('book_copies')->book_copy_no ?></td>
                                                         <td class="date"><?= date('d/m/Y', strtotime($value->return_date)) ?></td>
                                                         <td><?php $days = getBorrowedBookRemainingDays(date('y-m-d', strtotime($value->return_date)));
                                                             echo '<span class="badge bg-danger">Overdue by ' . abs($days) . ' days</span>';
@@ -87,7 +99,7 @@ if ($global_var['user']['user_type'] == 'stud') {
 
 
                                                         <td>
-                                                            <a title='View Details' href="index.php?page=req_details&id=<?= $value->id ?>" class="btn btn-sm btn-success " href=""><i class="fas fa-eye"></i> </a>
+                                                            <a title='View Details' href="index.php?page=req_details&id=<?= $value->requesition_id ?>" class="btn btn-sm btn-success " href=""><i class="fas fa-eye"></i> </a>
                                                         </td>
                                                     </tr>
                                                 <?php endforeach; ?>
@@ -103,10 +115,10 @@ if ($global_var['user']['user_type'] == 'stud') {
 
 
                                                     <th class="sort" data-sort="date">Borrowed Book</th>
-                                                    <th class="sort" data-sort="date">Copies</th>
+                                                    <th class="sort" data-sort="date">Copy No.</th>
                                                     <th class="sort" data-sort="date">Borrow Date</th>
                                                     <th class="sort" data-sort="date">Due Date</th>
-                                                    <th class="sort" data-sort="date">Return Date</th>
+
                                                     <th class="sort" data-sort="date">Overdue Status</th>
                                                     <th class="sort" data-sort="action">Action</th>
                                                 </tr>
@@ -119,6 +131,7 @@ if ($global_var['user']['user_type'] == 'stud') {
                                                     $book_details = $db->where("id", $value->book_id)->getOne("books");
                                                     $student_details = $db->where('id', $value->student_id)->getOne('users');
 
+
                                                     $sn++;
                                                 ?>
                                                     <tr>
@@ -129,20 +142,18 @@ if ($global_var['user']['user_type'] == 'stud') {
 
                                                         <td><?= $book_details->title  ?></td>
 
-                                                        <td><?= $value->no_of_copies ?></td>
+                                                        <td><?= $db->where('id', $value->book_copy_id)->getOne('book_copies')->book_copy_no ?></td>
                                                         <td><?= date('d/m/Y', strtotime($value->date_approved)) ?></td>
                                                         <td class="date"><?= date('d/m/Y', strtotime($value->return_date)) ?></td>
-                                                        <td><?= date('d/m/Y', strtotime($value->returned_on)) ?></td>
 
-                                                        <?php if ($value->returned_on > $value->return_date) {
-                                                            echo ' <td><span class="badge bg-info">Yes</span></td>';
-                                                        } else {
-                                                            echo ' <td><span class="badge bg-info">Not</span></td>';
-                                                        } ?>
+
+                                                        <td><?php $days = getBorrowedBookRemainingDays(date('y-m-d', strtotime($value->return_date)));
+                                                            echo '<span class="badge bg-danger">Overdue by ' . abs($days) . ' days</span>';
+                                                            ?></td>
 
 
                                                         <td>
-                                                            <a title='View Details' href="index.php?page=borrow_history&id=<?= $value->id ?>" class="btn btn-sm btn-success " href=""><i class="fas fa-eye"></i> </a>
+                                                            <a title='View Details' href="index.php?page=req_details&id=<?= $value->requesition_id ?>" class="btn btn-sm btn-success " href=""><i class="fas fa-eye"></i> </a>
                                                         </td>
                                                     </tr>
                                                 <?php endforeach; ?>

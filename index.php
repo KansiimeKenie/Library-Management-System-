@@ -207,8 +207,8 @@ $page_loaded = load_page("$page");
                                 <div class="col-xxl-3 col-md-12">
                                     <div>
                                         <label for="basiInput" class="form-label">Book</label>
-                                        <select name="book_id" class="form-control selectpicker " data-live-search="true">
-                                            <option value="">--Select Book--</option>
+                                        <select id="book_id" name="book_id" class="form-control selectpicker " data-live-search="true">
+                                            <option value="">--Select Book --</option>
                                             <?php foreach ($db->get("books") as $value) { ?>
                                                 <option value="<?= $value->id ?>"><?= $value->title . ' : By ' . $db->where('id', $value->author_id)->getOne('book_authors')->names ?></option>
                                             <?php } ?>
@@ -243,7 +243,7 @@ $page_loaded = load_page("$page");
                             <hr>
                             <div class="modal-footer mt-4">
                                 <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-primary ">Submit request</button>
+                                <button id="request_button" type="submit" class="btn btn-primary ">Submit request</button>
                             </div>
                     </div>
                     </form>
@@ -612,6 +612,33 @@ $page_loaded = load_page("$page");
                 newAuthorDiv.classList.add('d-none'); // Hide input field
                 selectAuthorDiv.classList.remove('d-none'); // Show Select Author field
             }
+        });
+        document.getElementById("book_id").addEventListener("change", function() {
+            var selected_book_id = this.value;
+            let request_button = document.getElementById('request_button');
+
+            $.ajax({
+                url: request() + '?file=books&action=get_book_copies',
+                method: 'POST',
+                data: {
+                    id: selected_book_id
+                },
+                success: function(response) {
+                    console.log(response);
+
+                    if (response.status == 200) {
+                        request_button.classList.remove('disabled'); // Enable button
+                    } else {
+                        request_button.classList.add('disabled'); // Disable button
+                        Swal.fire({
+                            title: "Oops!",
+                            text: response.message,
+                            icon: "error",
+                            confirmButtonColor: "#6c757d"
+                        });
+                    }
+                }
+            });
         });
     </script>
 

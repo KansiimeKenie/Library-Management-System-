@@ -171,19 +171,21 @@ if ($file == "borrow") {
 		}
 	}
 	if ($action == "confirm_return") {
-		$req_id = secure_data($_POST['id']);
+		$request_id = secure_data($_POST['id']);
+		$book_copy_id = secure_data($_POST['book_copy_id']);
 		$book_id = secure_data($_POST['book_id']);
 		$student_id = secure_data($_POST['student_id']);
 		$return_date = secure_data($_POST['return_date']);
 		$comment = secure_data($_POST['comment']);
 		$damage_status = isset($_POST['damaged']) ? secure_data($_POST['damaged']) : null;
 
-		$new_data = [
-			"return_status" => 1,
+		$borrowed_book_copies_data = [
+			"return_status" => "returned",
 			"returned_on" => $return_date,
-			"comment" => $comment
+			"return_comment" => $comment,
+			"return_confirmed_by" => $global_var['user']['id']
 		];
-		$current_books_data = [
+		$books_copy_data = [
 			"status" => "available",
 		];
 		if (empty($return_date)) {
@@ -193,15 +195,26 @@ if ($file == "borrow") {
 			);
 		} else
 		if (!empty($damage_status)) {
+			$books_copy_data = [
+				"status" => "damaged",
+			];
 			$damage_data = [
-				"book_id" => $book_id,
+				"book_copy_id" => $book_id,
 				"student_id" => $student_id,
-				"no_of_copies" => $no_of_copies,
 				"description" => $comment,
 				"date_created" => getCurrentDate(),
 				"created_by" => $global_var['user']['id'],
 			];
-			if ((update_data("borrow_requests", $new_data, "WHERE id = '" . $req_id . "'")) && (save_data("damaged_books", $damage_data))) {
+			$borrowed_book_copies_data = [
+				"return_status" => "damaged",
+				"returned_on" => $return_date,
+				"return_comment" => $comment,
+				"return_confirmed_by" => $global_var['user']['id']
+			];
+			if ((update_data("borrowed_copies", $borrowed_book_copies_data, "WHERE book_copy_id = '" . $book_copy_id . "' AND requesition_id = '" . $request_id . "'"))
+				&& (save_data("damaged_books", $damage_data))
+				&& (update_data("book_copies", $books_copy_data, "WHERE id = '" . $book_copy_id . "'"))
+			) {
 				$data = array(
 					'status'	=>	200,
 					'message'	=>	'Return Confirmed successfully!',
@@ -213,8 +226,8 @@ if ($file == "borrow") {
 					'message'	=>	'Borrow Request Approve failed!'
 				);
 			}
-		} else if ((update_data("borrow_requests", $new_data, "WHERE id = '" . $req_id . "'"))
-			&& (update_data("book_copies", $current_books_data, "WHERE book_id = '" . $book_id . "'"))
+		} else if ((update_data("borrowed_copies", $borrowed_book_copies_data, "WHERE id = '" . $book_copy_id . "'"))
+			&& (update_data("book_copies", $books_copy_data, "WHERE id = '" . $book_copy_id . "'"))
 		) {
 			$data = array(
 				'status'	=>	200,
@@ -230,23 +243,26 @@ if ($file == "borrow") {
 	}
 	if ($action == "mark_as_lost") {
 		$req_id = secure_data($_POST['id']);
-		$book_id = secure_data($_POST['book_id']);
+		$book_copy_id = secure_data($_POST['book_copy_id']);
 		$student_id = secure_data($_POST['student_id']);
-		$no_of_copies = secure_data($_POST['return_copies']);
+
 
 		$comment = secure_data($_POST['comment']);
 
 		$lost_book_data = [
-			"requistion_id" => $req_id,
-			"book_id" => $book_id,
+			"requisition_id" => $req_id,
+			"book_copy_id" => $book_copy_id,
 			"student_id" => $student_id,
-			"no_of_copies" => $no_of_copies,
 			"comment" => $comment,
 			"date_created" => getCurrentDate(),
 			"created_by" => $global_var['user']['id']
 		];
-		$new_data = [
-			"return_status" => 3,
+		$borrowed_copy_data = [
+			"return_status" => "lost",
+			"return_comment" => $comment
+		];
+		$book_copy_data = [
+			"status" => "lost",
 		];
 
 		if (empty($comment)) {
@@ -255,7 +271,15 @@ if ($file == "borrow") {
 				'message'	=>	'Please add a comment!'
 			);
 		} else
-	    if ((save_data("lost_books", $lost_book_data)) && update_data("borrow_requests", $new_data, "WHERE id = '" . $req_id . "'")) {
+	    if ((save_data("lost_books", $lost_book_data)) && update_data(
+			"borrowed_copies",
+			$borrowed_copy_data,
+			"WHERE book_copy_id = '" . $book_copy_id . "' AND requesition_id = '" . $req_id . "'"
+		) && update_data(
+			"book_copies",
+			$book_copy_data,
+			"WHERE id = '" . $book_copy_id . "'"
+		)) {
 			$data = array(
 				'status'	=>	200,
 				'message'	=>	'Lost Book recorded successfully!',

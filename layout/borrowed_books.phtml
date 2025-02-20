@@ -1,8 +1,9 @@
 <?php
-$all_requests = $db->orderBy('id', 'DESC')->where('aprove_status', 1)->where('return_status IS NULL')->get('borrow_requests');
+$all_borrowed_copies = $db->orderBy('id', 'DESC')->where('return_status IS NULL')->get('borrowed_copies');
 if ($global_var['user']['user_type'] == 'stud') {
-    $all_requests = $db->orderBy('id', 'DESC')->where('student_id', $global_var['user']['id'])->where('aprove_status', 1)->where('return_status IS NULL')->get('borrow_requests');
+    $all_borrowed_copies = $db->orderBy('id', 'DESC')->where('student_id', $global_var['user']['id'])->where('return_status IS NULL')->get('borrowed_copies');
 }
+
 ?>
 <div class="main-content">
 
@@ -64,10 +65,10 @@ if ($global_var['user']['user_type'] == 'stud') {
 
                                                 <?php
                                                 $sn = 0;
-                                                foreach ($all_requests as $value):
-                                                    $book_details = $db->where("id", $value->book_id)->getOne("books");
+                                                foreach ($all_borrowed_copies as $value):
+                                                    $request_details = $db->where('id', $value->requesition_id)->getOne('borrow_requests');
+                                                    $book_details = $db->where("id", $request_details->book_id)->getOne("books");
                                                     $student_details = $db->where('id', $value->student_id)->getOne('users');
-                                                    $borrowed_copy = $db->where('requesition_id', $value->id)->getOne('borrowed_copies');
 
                                                     $sn++;
                                                 ?>
@@ -77,11 +78,11 @@ if ($global_var['user']['user_type'] == 'stud') {
                                                         </th>
 
                                                         <td><?= $book_details->title . ' ' . $db->where('id', $book_details->author_id)->getOne('book_authors')->names ?></td>
-                                                        <td><?= $db->where('id', $borrowed_copy->book_copy_id)->getOne('book_copies')->book_copy_no ?></td>
+                                                        <td><?= $db->where('id', $value->book_copy_id)->getOne('book_copies')->book_copy_no ?></td>
                                                         <td><span class="badge bg-info">Pending</span></td>
-                                                        <td class="date"><?= date('d/m/Y', strtotime($value->return_date)) ?></td>
+                                                        <td class="date"><?= date('d/m/Y', strtotime($request_details->return_date)) ?></td>
                                                         <td><?php
-                                                            $days = getBorrowedBookRemainingDays(date('y-m-d', strtotime($value->return_date)));
+                                                            $days = getBorrowedBookRemainingDays(date('y-m-d', strtotime($request_details->return_date)));
                                                             if ($days <  1) {
                                                                 echo '<span class="badge bg-danger">Overdue by ' . abs($days) . ' days</span>';
                                                             } else {
@@ -91,7 +92,7 @@ if ($global_var['user']['user_type'] == 'stud') {
                                                             ?></td>
 
                                                         <td>
-                                                            <a title='View Details' href="index.php?page=req_details&id=<?= $value->id ?>" class="btn btn-sm btn-success " href=""><i class="fas fa-eye"></i> </a>
+                                                            <a title='View Details' href="index.php?page=req_details&id=<?= $request_details->id ?>" class="btn btn-sm btn-success " href=""><i class="fas fa-eye"></i> </a>
                                                         </td>
                                                     </tr>
                                                 <?php endforeach; ?>
@@ -118,10 +119,11 @@ if ($global_var['user']['user_type'] == 'stud') {
 
                                                 <?php
                                                 $sn = 0;
-                                                foreach ($all_requests as $value):
-                                                    $book_details = $db->where("id", $value->book_id)->getOne("books");
+                                                foreach ($all_borrowed_copies as $value):
+                                                    $request_details = $db->where('id', $value->requesition_id)->getOne('borrow_requests');
+                                                    $book_details = $db->where("id", $request_details->book_id)->getOne("books");
                                                     $student_details = $db->where('id', $value->student_id)->getOne('users');
-                                                    $borrowed_copy = $db->where('requesition_id', $value->id)->getOne('borrowed_copies');
+
 
                                                     $sn++;
                                                 ?>
@@ -132,11 +134,11 @@ if ($global_var['user']['user_type'] == 'stud') {
                                                         <td><?= $student_details->firstname . ' ' . $student_details->lastname ?></td>
                                                         <td><?= $db->where('id', $student_details->class_id)->getOne('classes')->abbrev ?></td>
                                                         <td><?= $book_details->title . ' ' . $db->where('id', $book_details->author_id)->getOne('book_authors')->names ?></td>
-                                                        <td><?= $db->where('id', $borrowed_copy->book_copy_id)->getOne('book_copies')->book_copy_no ?></td>
+                                                        <td><?= $db->where('id', $value->book_copy_id)->getOne('book_copies')->book_copy_no ?></td>
                                                         <td><span class="badge bg-info">Pending</span></td>
-                                                        <td class="date"><?= date('d/m/Y', strtotime($value->return_date)) ?></td>
+                                                        <td class="date"><?= date('d/m/Y', strtotime($request_details->return_date)) ?></td>
                                                         <td><?php
-                                                            $days = getBorrowedBookRemainingDays(date('y-m-d', strtotime($value->return_date)));
+                                                            $days = getBorrowedBookRemainingDays(date('y-m-d', strtotime($request_details->return_date)));
                                                             if ($days <  1) {
                                                                 echo '<span class="badge bg-danger">Overdue by ' . abs($days) . ' days</span>';
                                                             } else {
@@ -146,7 +148,7 @@ if ($global_var['user']['user_type'] == 'stud') {
                                                             ?></td>
 
                                                         <td>
-                                                            <a title='View Details' href="index.php?page=req_details&id=<?= $value->id ?>" class="btn btn-sm btn-success " href=""><i class="fas fa-eye"></i> </a>
+                                                            <a title='View Details' href="index.php?page=req_details&id=<?= $request_details->id ?>" class="btn btn-sm btn-success " href=""><i class="fas fa-eye"></i> </a>
                                                         </td>
                                                     </tr>
                                                 <?php endforeach; ?>

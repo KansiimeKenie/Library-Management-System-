@@ -2,22 +2,22 @@
 $first_day_of_month = date('Y-m-01');
 $page_title = "Borrow History from " . date('d/m/Y', strtotime($first_day_of_month)) . " to today";
 
-$all_requests = $db->orderBy('id', 'DESC')->where('date_approved', $first_day_of_month, '>')->where('return_status IS NOT NULL')->get('borrow_requests');
+$all_borrowed_copies = $db->orderBy('id', 'DESC')->where('date_created', $first_day_of_month, '>')->where('return_status IS NOT NULL')->get('borrowed_copies');
 if ($global_var['user']['user_type'] == 'stud') {
-    $all_requests = $db->orderBy('id', 'DESC')->where('date_approved', $first_day_of_month, '>')->where('student_id', $global_var['user']['id'])->where('return_status IS NOT NULL')->get('borrow_requests');
+    $all_borrowed_copies = $db->orderBy('id', 'DESC')->where('date_created', $first_day_of_month, '>')->where('student_id', $global_var['user']['id'])->where('return_status IS NOT NULL')->get('borrowed_copies');
 }
 if (isset($_GET['start_date']) && isset($_GET['end_date'])) {
-    $all_requests = $db->where('date_approved', secure_data($_GET['start_date']), '>=')
-        ->where('date_approved', secure_data($_GET['end_date']), '<=')
+    $all_borrowed_copies = $db->where('date_created', secure_data($_GET['start_date']), '>=')
+        ->where('date_created', secure_data($_GET['end_date']), '<=')
         ->orderBy('id', 'DESC')
         ->where('return_status IS NOT NULL')
-        ->get('borrow_requests');
+        ->get('borrowed_copies');
     if ($global_var['user']['user_type'] == 'stud') {
-        $all_requests = $db->where('student_id', $global_var['user']['id'])->where('date_approved', secure_data($_GET['start_date']), '>=')
-            ->where('date_approved', secure_data($_GET['end_date']), '<=')
+        $all_borrowed_copies = $db->where('student_id', $global_var['user']['id'])->where('date_created', secure_data($_GET['start_date']), '>=')
+            ->where('date_created', secure_data($_GET['end_date']), '<=')
             ->orderBy('id', 'DESC')
             ->where('return_status IS NOT NULL')
-            ->get('borrow_requests');
+            ->get('borrowed_copies');
     }
     $page_title = 'Borrow History FROM ' . date('d/m/Y', strtotime($_GET['start_date'])) . ' TO ' . date('d/m/Y', strtotime($_GET['end_date']));
 }
@@ -74,7 +74,7 @@ if (isset($_GET['start_date']) && isset($_GET['end_date'])) {
                                                     <th class="sort" data-sort="title">Student Name</th>
                                                     <th class="sort" data-sort="description">Class</th>
                                                     <th class="sort" data-sort="date">Borrowed Book</th>
-                                                    <th class="sort" data-sort="date">Copies</th>
+                                                    <th class="sort" data-sort="date">Copy No.</th>
                                                     <th class="sort" data-sort="date">Return Status</th>
                                                     <th class="sort" data-sort="date">Returned On</th>
 
@@ -85,8 +85,9 @@ if (isset($_GET['start_date']) && isset($_GET['end_date'])) {
 
                                                 <?php
                                                 $sn = 0;
-                                                foreach ($all_requests as $value):
-                                                    $book_details = $db->where("id", $value->book_id)->getOne("books");
+                                                foreach ($all_borrowed_copies as $value):
+                                                    $request_details = $db->where('id', $value->requesition_id)->getOne('borrow_requests');
+                                                    $book_details = $db->where("id", $request_details->book_id)->getOne("books");
                                                     $student_details = $db->where('id', $value->student_id)->getOne('users');
 
                                                     $sn++;
@@ -97,12 +98,15 @@ if (isset($_GET['start_date']) && isset($_GET['end_date'])) {
                                                         </th>
                                                         <td><?= $student_details->firstname . ' ' . $student_details->lastname ?></td>
                                                         <td><?= $db->where('id', $student_details->class_id)->getOne('classes')->abbrev ?></td>
-                                                        <td><?= $book_details->title . ' ' . $book_details->author ?></td>
-                                                        <td><?= $value->no_of_copies ?></td>
-                                                        <?php if ($value->return_status == 1) {
+                                                        <td><?= $book_details->title . ' ' . $db->where('id', $book_details->author_id)->getOne('book_authors')->names ?></td>
+                                                        <td><?= $db->where('id', $value->book_copy_id)->getOne('book_copies')->book_copy_no  ?></td>
+                                                        <?php if ($value->return_status == 'returned') {
                                                             echo '<td><span class="badge bg-success">Returned</span></td>
                                                              <td class="date">' . date("d/m/Y", strtotime($value->returned_on)) . '</td>';
-                                                        } else if ($value->return_status == 3) {
+                                                        } elseif ($value->return_status == 'damaged') {
+                                                            echo '<td><span class="badge bg-danger">Damaged</span></td>
+                                                             <td class="date">' . date("d/m/Y", strtotime($value->returned_on)) . '</td>';
+                                                        } else if ($value->return_status == 'lost') {
                                                             echo '<td><span class="badge bg-danger">lost</span></td><td>___</td>';
                                                         } else {
                                                             echo '<td><span class="badge bg-info">Pending</span></td><td>___</td>';
@@ -126,7 +130,7 @@ if (isset($_GET['start_date']) && isset($_GET['end_date'])) {
 
 
                                                     <th class="sort" data-sort="date">Borrowed Book</th>
-                                                    <th class="sort" data-sort="date">Copies</th>
+                                                    <th class="sort" data-sort="date">Copy No.</th>
                                                     <th class="sort" data-sort="date">Borrow Date</th>
                                                     <th class="sort" data-sort="date">Due Date</th>
                                                     <th class="sort" data-sort="date">Return Date</th>
@@ -138,9 +142,10 @@ if (isset($_GET['start_date']) && isset($_GET['end_date'])) {
 
                                                 <?php
                                                 $sn = 0;
-                                                foreach ($all_requests as $value):
-                                                    $book_details = $db->where("id", $value->book_id)->getOne("books");
-                                                    $student_details = $db->where('id', $value->student_id)->getOne('users');
+                                                foreach ($all_borrowed_copies as $value):
+                                                    $request_details = $db->where('id', $value->requesition_id)->getOne('borrow_requests');
+                                                    $book_details = $db->where("id", $request_details->book_id)->getOne("books");
+                                                    $student_details = $db->where('id', $value->student_id)->getOne('users');;
 
                                                     $sn++;
                                                 ?>
@@ -150,23 +155,25 @@ if (isset($_GET['start_date']) && isset($_GET['end_date'])) {
                                                         </th>
 
 
-                                                        <td><?= $book_details->title  ?></td>
+                                                        <td><?= $book_details->title . '<b> by </b> ' . $db->where('id', $book_details->author_id)->getOne('book_authors')->names  ?></td>
 
-                                                        <td><?= $value->no_of_copies ?></td>
-                                                        <td><?= date('d/m/Y', strtotime($value->date_approved)) ?></td>
-                                                        <td class="date"><?= date('d/m/Y', strtotime($value->return_date)) ?></td>
+                                                        <td><?= $db->where('id', $value->book_copy_id)->getOne('book_copies')->book_copy_no ?></td>
+                                                        <td><?= date('d/m/Y', strtotime($value->date_created)) ?></td>
+                                                        <td class="date"><?= date('d/m/Y', strtotime($request_details->return_date)) ?></td>
 
-                                                        <?php if ($value->return_status == 1) {
+                                                        <?php if ($value->return_status == 'returned') {
                                                             echo '<td class="date">' . date("d/m/Y", strtotime($value->returned_on)) . '</td>';
-                                                        } else if ($value->return_status == 3) {
+                                                        } else if ($value->return_status == 'lost') {
                                                             echo '<td><span class="badge bg-danger">lost</span></td>';
+                                                        } else if ($value->return_status == 'damaged') {
+                                                            echo '<td class="date">' . date("d/m/Y", strtotime($value->returned_on)) . '</td>';
                                                         } else {
                                                             echo '<td><span class="badge bg-info">Pending</span></td><td>___</td>';
                                                         } ?></td>
-                                                        <?php if ($value->return_status == 3) {
+                                                        <?php if ($value->return_status == 'lost') {
                                                             echo ' <td><span class="badge bg-danger">Yes</span></td>';
                                                         } else {
-                                                            if ($value->returned_on > $value->return_date) {
+                                                            if ($value->returned_on > $request_details->return_date) {
 
                                                                 echo ' <td><span class="badge bg-danger">Yes</span></td>';
                                                             } else {

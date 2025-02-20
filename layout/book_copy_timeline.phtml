@@ -51,11 +51,12 @@ $page_title = 'All Book Copy Timelines';
                                                 <th scope="col">
                                                     S/No.
                                                 </th>
-                                                <th class="sort" data-sort="date">Borrowed On.</th>
-                                                <th class="sort" data-sort="date">State On Borrow</th>
                                                 <th class="sort" data-sort="date">Borrowed By.</th>
+                                                <th class="sort" data-sort="date">Borrowed On.</th>
+                                                <th class="sort" data-sort="date">Comment On Borrow</th>
+
                                                 <th class="sort" data-sort="date">Returned On</th>
-                                                <th class="sort" data-sort="date">State On return</th>
+                                                <th class="sort" data-sort="date">Comment On return</th>
 
                                             </tr>
                                         </thead>
@@ -66,6 +67,7 @@ $page_title = 'All Book Copy Timelines';
                                             foreach ($all_book_copy_timelines as $value):
                                                 $student_details = $db->where('id', $value->student_id)->getOne('users');
                                                 $request_details = $db->where("id", $value->requesition_id)->getOne("borrow_requests");
+                                                $class_details = $db->where("id", $student_details->class_id)->getOne("classes");
 
                                                 $sn++;
                                             ?>
@@ -73,15 +75,26 @@ $page_title = 'All Book Copy Timelines';
                                                     <th scope="row">
                                                         <?= $sn ?>
                                                     </th>
-
+                                                    <td><?= $student_details->firstname . ' ' . $student_details->lastname . ' ( ' . $class_details->abbrev . ' )'  ?></td>
                                                     <td><?= date('d/m/Y', strtotime($value->date_created)) ?></td>
                                                     <td><?= $value->assign_comment ?></td>
-                                                    <td><?= $student_details->firstname . ' ' . $student_details->lastname ?></td>
+                                                    <?php
+                                                    if (empty($value->return_status)) { ?>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <?php } else {
+                                                        if ($value->return_status == 'returned') { ?>
+                                                            <td><?= date('d/m/Y', strtotime($value->returned_on)) ?></td>
+                                                            <td><?= $value->return_comment ?></td>
+                                                        <?php } else if ($value->return_status == 'lost') { ?>
+                                                            <td> <span class="badge bg-danger">Book lost</span></td>
+                                                            <td><?= $value->return_comment ?></td>
 
-                                                    <td><?= $value->id ?></td>
-                                                    <td>
+                                                        <?php  }
+                                                        ?>
+                                                    <?php }
+                                                    ?>
 
-                                                    </td>
 
                                                 </tr>
                                             <?php endforeach; ?>

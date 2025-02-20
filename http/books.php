@@ -454,4 +454,19 @@ if ($file == "books") {
 			}
 		}
 	}
+	if ($action == 'get_book_copies') {
+		$book_id = $_POST['id'];
+		$book_copies = $db->where("book_id", $book_id)->where("status", "available")->get("book_copies");
+		$data = array(
+			'status' => 200,
+			'data'	=>	$book_copies,
+		);
+		if (empty($book_copies)) {
+			$data = array(
+				'status' => 201,
+				'message'	=>	"There is no available Book Copies for Borrowing",
+				'data'	=>	$book_copies,
+			);
+		}
+	}
 }
