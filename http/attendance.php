@@ -18,7 +18,7 @@ if ($file == "attendance") {
                 'status'    =>    201,
                 'message'    =>    'Please Select Student '
             );
-        } elseif (exists("library_attendance", "WHERE student_id = '" . $student_id . "'")) {
+        } elseif (exists("library_attendance", "WHERE student_id = '" . $student_id . "' AND date = '" . date('Y-m-d') . "' AND check_out IS NULL")) {
             $data = array(
                 'status'    =>    201,
                 'message'    =>    'Student Already Checked in!'
@@ -84,5 +84,20 @@ if ($file == "attendance") {
         }
     }
 
-    // code...
+    if ($action == 'filter_by_date') {
+        $date = secure_data($_POST['date']);
+        $url_page = secure_data($_POST['page']);
+        if (empty($date)) {
+            $data = array(
+                'status'    =>    201,
+                'message'    =>    'Please select Date'
+            );
+        } else {
+            $data = array(
+                'status'    =>    200,
+                'message'    =>    'Filterd, Redirecting .....',
+                'url' => 'index.php?page=' . $url_page . '&date=' . $date
+            );
+        }
+    }
 }

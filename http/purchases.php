@@ -16,18 +16,14 @@ if ($file == "purchases") {
 			);
 		} else {
 			//update inventory
-			$updated_no_copies = $no_of_copies + $db->where("id", $book_id)->getOne("current_books")->no_of_copies;
 			$book_data = [
 				"book_id" => $book_id,
 				"no_of_copies" => $no_of_copies,
 				"date_created" => getCurrentDate(),
-				"created_by" => 1,
+				"created_by" => $global_var['user']['id'],
 			];
-			$current_book_data = [
-				"book_id" => $book_id,
-				"no_of_copies" => $updated_no_copies,
-			];
-			if ((save_data("purchases", $book_data)) && (update_data("current_books", $current_book_data, "WHERE book_id = '" . $book_id . "'"))) {
+
+			if ((save_data("purchases", $book_data))) {
 				$data = array(
 					'status'	=>	200,
 					'message'	=>	'Book Inventory Updated successfully!',

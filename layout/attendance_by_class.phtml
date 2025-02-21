@@ -1,0 +1,80 @@
+<?php
+$attendance_by_class = $db->rawQuery("
+    SELECT c.name AS class_name, COUNT(*) AS total_visits 
+    FROM library_attendance la
+    JOIN users u ON la.student_id = u.id
+    JOIN classes c ON u.class_id = c.id
+    GROUP BY c.name
+    ORDER BY total_visits DESC
+");
+?>
+
+
+
+<style>
+    .professional-table thead {
+        background: linear-gradient(45deg, #4a5568, #2d3748);
+        color: white;
+    }
+
+    .hours-cell {
+        font-weight: 600;
+        color: #2d3748;
+    }
+</style>
+
+<div class="main-content">
+    <div class="page-content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                        <h4 class="mb-sm-0">Attendance by Class</h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="text-center my-3">
+                                <h4 class="fw-bold text-primary text-uppercase" style="text-decoration: underline;">
+                                    Library Students Attendance by Class
+                                </h4>
+                            </div>
+                            <div class="table-responsive mt-4 mb-1">
+                                <table id="myTable" class="table table-bordered table-striped professional-table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center">#</th>
+                                            <th>Class Name</th>
+                                            <th class="text-center">Number of Visits</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php
+                                        $sn = 0;
+                                        foreach ($attendance_by_class as $value):
+                                            $sn++;
+                                        ?>
+                                            <tr>
+                                                <td class="text-center"><?= $sn ?></td>
+                                                <td><?= $value->class_name ?></td>
+                                                <td class="text-center"><?= $value->total_visits ?></td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+
+
+
+
+                        </div>
+                    </div><!-- end card -->
+                </div>
+            </div><!-- end row -->
+        </div>
+    </div>
+</div>

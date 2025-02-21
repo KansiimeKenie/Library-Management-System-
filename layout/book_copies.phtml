@@ -1,11 +1,10 @@
 <?php
 $book_details = $db->where('id', secure_data($_GET['book_id']))->getOne('books');
 $page_title = 'All ' . (empty($book_details) ? '' : $book_details->title) . ' Book Copies';
-// if (isset($_GET['id']) && !empty($_GET['id'])) {
-//     $current_books = $db->orderBy('id', 'DESC')->where('category_id', secure_data(($_GET['id'])))->get('books');
-//     $page_title = 'All ' . $db->where('id', secure_data(($_GET['id'])))->getOne('categories')->name . ' Books';
-// }
-$all_book_copies = $db->where('book_id', $book_details->id)->get("book_copies");
+
+$all_book_copies = $db->orderBy('book_copy_no', 'DESC')->where('book_id', $book_details->id)->get("book_copies");
+$no_of_initial_copies = $db->where('book_id', $book_details->id)->getOne("current_books");
+
 ?>
 <div class="main-content">
 
@@ -38,12 +37,14 @@ $all_book_copies = $db->where('book_id', $book_details->id)->get("book_copies");
                                 <div class="col-sm-auto">
 
                                     <div>
-                                        <a data-bs-toggle="modal" data-bs-target="#add_new_book_copy_modal" type="button" class="btn btn-success add-btn"><i class="ri-add-line align-bottom me-1"></i> Add New Book Book Copy</a>
+                                        <a data-bs-toggle="modal" data-bs-target="#add_new_book_copy_modal" type="button" class="btn btn-success add-btn 
+                                        <?= ($no_of_initial_copies->no_of_copies == count($all_book_copies) ? 'disabled' : '') ?>">
+                                            <i class="ri-add-line align-bottom me-1"></i> Add New Book Book Copy</a>
 
                                     </div>
 
                                 </div>
-                                <div class="row g-4 mb-3">
+                                <div class="row g-4 mb-3 d-none">
                                     <div class="col-sm">
                                         <div class="d-flex justify-content-sm-end">
                                             <div class="search-box ms-2">
@@ -52,6 +53,19 @@ $all_book_copies = $db->where('book_id', $book_details->id)->get("book_copies");
                                         </div>
                                     </div>
                                 </div>
+                                <div class="text-center mt-2">
+                                    <?php
+                                    // Check if the number of initial copies is different from the registered book copies
+                                    if ($no_of_initial_copies->no_of_copies != count($all_book_copies)) {
+
+                                        echo "<p><i style='color: red;'> The number of initial copies you registered ({$no_of_initial_copies->no_of_copies}) does not match the actual number of book copies registered (" . count($all_book_copies) . ").<br> Please register the missing copies.</i></p>";
+                                    } else {
+                                        // If they match, display a success message or information
+                                        echo "<p><i>You have registered the correct number of book copies: {$no_of_initial_copies->no_of_copies} copies and " . count($all_book_copies) . " copies are registered.</i></p>";
+                                    }
+                                    ?>
+                                </div>
+
 
                                 <div class="table-responsive mt-3 mb-1">
                                     <table id="myTable" class="table table-bordered table-striped">

@@ -455,6 +455,69 @@ $most_borrowing_students = $db
                     </div><!-- end col -->
 
                 </div><!--end row-->
+                <div class="row">
+                    <div class="col-xxl-8">
+                        <div class="card">
+                            <div class="card-header align-items-center d-flex">
+                                <h4 class="card-title mb-0 flex-grow-1">TOP 10 MOST FREQUENT LIBRARY VISITORS</h4>
+                                <div class="flex-shrink-0">
+                                    <a href="index.php?page=most_frequent_visitors" type="button" class="btn btn-soft-info btn-sm">
+                                        <i class="ri-file-list-3-line align-bottom"></i>View All
+                                    </a>
+                                </div>
+                            </div><!-- end card header -->
+
+                            <div class="card-body">
+                                <div class="table-responsive mt-2">
+                                    <table id="myTable" class="table table-bordered table-striped professional-table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center">#</th>
+                                                <th>Student Name</th>
+                                                <th>Class</th>
+                                                <th class="text-center">No. Of Visits</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php
+                                            $frequent_visitors = $db->rawQuery("
+                                                        SELECT student_id, COUNT(*) as visit_count 
+                                                        FROM library_attendance 
+                                                        GROUP BY student_id 
+                                                        ORDER BY visit_count DESC
+                                                        LIMIT 10
+
+                                                    ");
+                                            $sn = 0;
+                                            foreach ($frequent_visitors as $value):
+                                                $student_details = $db->where("id", $value->student_id)->getOne("users");
+                                                $class_details = $db->where("id", $student_details->class_id)->getOne("classes");
+                                                $sn++;
+                                            ?>
+                                                <tr>
+                                                    <td class="text-center"><?= $sn ?></td>
+                                                    <td><?= "{$student_details->firstname} {$student_details->lastname}" ?></td>
+                                                    <td><?= $class_details->abbrev ?></td>
+                                                    <td class="text-center"><?= $value->visit_count ?></td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div> <!-- .card-->
+                    </div> <!-- .col-->
+                    <div class="col-xxl-4">
+                        <!-- card -->
+                        <div class="card card-height-100">
+
+
+
+                        </div>
+                        <!-- end card -->
+                    </div>
+                    <!-- end col -->
+                </div> <!-- end row-->
 
             <?php } ?>
             <div class="row">

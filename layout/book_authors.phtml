@@ -1,0 +1,156 @@
+<?php
+$all_books = $db->orderBy('id', 'DESC')->get('book_authors');
+$page_title = 'All Book Authors';
+
+
+?>
+
+<div class="main-content">
+
+
+    <div class="page-content">
+        <div class="container-fluid">
+
+            <!-- start page title -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                        <h4 class="mb-sm-0"><?= $page_title ?></h4>
+
+                        <div class="page-title-right">
+                            <ol class="breadcrumb m-0">
+                                <li class="breadcrumb-item"><a href="javascript: void(0);">Home</a></li>
+                                <li class="breadcrumb-item active">All Authors</li>
+                            </ol>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+
+                        <div class="card-body">
+                            <div class="listjs-table" id="customerList">
+                                <div class="row g-4 mb-3">
+                                    <div class="col-sm-auto">
+                                        <?php if ($global_var['user']['user_type'] != 'stud') { ?>
+                                            <div>
+                                                <a data-bs-toggle="modal" data-bs-target="#register" type="button" class="btn btn-success add-btn"><i class="ri-add-line align-bottom me-1"></i> Add New Book Author</a>
+
+                                            </div>
+                                        <?php } ?>
+                                    </div>
+                                    <div class="col-sm-auto">
+                                        <div>
+
+
+                                        </div>
+                                    </div>
+
+
+                                </div>
+
+                                <div class="table-responsive mt-3 mb-1">
+                                    <table id="myTable" class="table table-bordered table-striped">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th scope="col">
+                                                    S/No.
+                                                </th>
+                                                <th class="sort">Author Name </th>
+                                                <th class="sort" data-sort="title">Number Of Books</th>
+                                                <?php if ($global_var['user']['user_type'] != 'stud') { ?>
+                                                    <th class="sort" data-sort="date">Registered On</th>
+                                                    <th class="sort" data-sort="date">Registered By</th>
+
+                                                <?php }  ?>
+                                                <th class="sort" data-sort="action">Action</th>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody class="list form-check-all">
+
+                                            <?php
+                                            $sn = 0;
+                                            foreach ($all_books as $value):
+                                                $sn++;
+                                            ?>
+                                                <tr>
+                                                    <th scope="row">
+                                                        <?= $sn ?>
+                                                    </th>
+                                                    <td><?= $value->names ?></td>
+                                                    <td><?= count($db->where("author_id", $value->id)->get("books")) ?></td>
+                                                    <?php if ($global_var['user']['user_type'] != 'stud') { ?>
+                                                        <td class="date"><?= date('d/m/Y', strtotime($value->date_created)) ?></td>
+
+                                                        <td><?= $db->where('id', $value->created_by)->getOne('users')->firstname ?></td>
+                                                    <?php } ?>
+                                                    <td>
+                                                        <div class="d-flex gap-2">
+                                                            <a title="View Details" class="btn btn-sm btn-primary" href="index.php?page=author_details&id=<?= $value->id ?>"><i class="fas fa-eye "></i></a>
+
+
+                                                        </div>
+                                                    </td>
+
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+
+                                </div>
+                            </div>
+                        </div><!-- end card -->
+                    </div>
+                    <!-- end col -->
+                </div>
+                <!-- end col -->
+            </div>
+            <!-- end row -->
+
+
+
+        </div>
+    </div>
+
+
+    <script type="text/javascript">
+        $('#filter_book').on('submit', function(e) {
+
+            e.preventDefault();
+            $.ajax({
+                url: request() + '?file=books&action=filter_by_category',
+                method: 'POST',
+                data: new FormData(this),
+                contentType: false,
+                processData: false,
+                cache: false,
+                success: function(response) {
+                    console.log(response);
+                    if (response.status == 200) {
+                        Swal.fire({
+                            title: "Good job!",
+                            text: response.message,
+                            icon: "success",
+                            showConfirmButton: true,
+                        });
+                        setTimeout(function() {
+                            window.location.href = response.url;
+                        }, 2e3);
+
+                    } else {
+                        Swal.fire({
+                            title: "Oops!",
+                            text: response.message,
+                            icon: "error",
+                            cancelButtonClass: "btn btn-danger ml-2 mt-2",
+                            confirmButtonColor: "#6c757d"
+                        });
+                    }
+                }
+            });
+        });
+    </script>

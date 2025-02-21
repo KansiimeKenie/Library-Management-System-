@@ -1,0 +1,200 @@
+<?php
+$author_details = $db->where("id", secure_data($_GET['id']))->getOne("book_authors");
+
+?>
+<!-- ============================================================== -->
+<!-- Start right Content here -->
+<!-- ============================================================== -->
+<div class="main-content">
+
+    <div class="page-content">
+        <div class="container-fluid">
+            <div class="profile-foreground position-relative mx-n4 mt-n4">
+                <div class="profile-wid-bg">
+
+                </div>
+            </div>
+            <div class="pt-4 mb-4 mb-lg-3 pb-lg-4 profile-wrapper">
+
+
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div>
+                        <div class="d-flex profile-wrapper">
+                            <!-- Nav tabs -->
+                            <ul class="nav nav-pills animation-nav profile-nav gap-2 gap-lg-3 flex-grow-1" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link fs-14 active" data-bs-toggle="tab" href="#overview-tab" role="tab">
+                                        <i class="ri-airplay-fill d-inline-block d-md-none"></i> <span class="d-none d-md-inline-block">Author Details</span>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link fs-14" data-bs-toggle="tab" href="#activities" role="tab">
+                                        <i class="ri-list-unordered d-inline-block d-md-none"></i> <span class="d-none d-md-inline-block">Author Books</span>
+                                    </a>
+                                </li>
+
+
+                            </ul>
+                            <?php if ($global_var['user']['user_type'] != 'stud') { ?>
+                                <div class="flex-shrink-0">
+                                    <a data-bs-toggle="modal" data-bs-target="#edit_author" class="btn btn-success"><i class="ri-edit-box-line align-bottom"></i> Edit Author Details</a>
+                                </div>
+
+                            <?php } ?>
+
+                        </div>
+                        <!-- Tab panes -->
+                        <div class="tab-content pt-4 text-muted">
+                            <div class="tab-pane active" id="overview-tab" role="tabpanel">
+                                <div class="row">
+                                    <div class="col-xxl-3">
+
+
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h5 class="card-title mb-3">Author Details</h5>
+                                                <div class="table-responsive">
+                                                    <table class="table table-borderless mb-0">
+                                                        <tbody>
+                                                            <tr>
+                                                                <th class="ps-0" scope="row">Aurthor Name :</th>
+                                                                <td class="text-muted"><?= $author_details->names ?></td>
+                                                            </tr>
+                                                            <?php if ($global_var['user']['user_type'] != 'stud') { ?>
+
+                                                                <tr>
+                                                                    <th class="ps-0" scope="row">Registered On :</th>
+                                                                    <td class="text-muted"><?= $author_details->date_created ?></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <th class="ps-0" scope="row">Registered By :</th>
+                                                                    <td class="text-muted"><?= $author_details->created_by ?></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <th class="ps-0" scope="row">Updated On :</th>
+                                                                    <td class="text-muted"><?= $author_details->date_updated ?></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <th class="ps-0" scope="row">Updated By :</th>
+                                                                    <td class="text-muted"><?= $author_details->updated_by ?></td>
+                                                                </tr>
+                                                            <?php } ?>
+
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div><!-- end card body -->
+                                        </div><!-- end card -->
+
+
+
+                                    </div>
+                                    <!--end col-->
+
+                                </div>
+                                <!--end row-->
+                            </div>
+                            <div class="tab-pane fade" id="activities" role="tabpanel">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title mb-3">All Author Books</h5>
+                                        <div class="acitivity-timeline">
+                                            <div class="table-responsive mt-3 mb-1">
+                                                <table id="myTable" class="table table-bordered table-striped">
+                                                    <thead class="table-light">
+                                                        <tr>
+                                                            <th scope="col">
+                                                                S/No.
+                                                            </th>
+
+                                                            <th class="sort" data-sort="date">Book Title</th>
+                                                            <th class="sort" data-sort="date">Category</th>
+                                                            <th class="sort" data-sort="date">ISBN</th>
+
+
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody class="list form-check-all">
+
+                                                        <?php
+
+                                                        $all_author_books = $db->where('author_id', $author_details->id)->get('books');
+
+                                                        $sn = 0;
+                                                        foreach ($all_author_books as $book_details):
+
+                                                            $sn++;
+                                                        ?>
+                                                            <tr>
+                                                                <th scope="row">
+                                                                    <?= $sn ?>
+                                                                </th>
+
+
+                                                                <td><?= $book_details->title  ?></td>
+                                                                <td><?= $db->where('id', $book_details->category_id)->getOne('categories')->name ?></td>
+                                                                <td><?= $book_details->isbn  ?></td>
+
+
+                                                            </tr>
+                                                        <?php endforeach; ?>
+                                                    </tbody>
+                                                </table>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--end card-body-->
+                                </div>
+                                <!--end card-->
+                            </div>
+
+                        </div>
+                        <!--end tab-content-->
+                    </div>
+                </div>
+                <!--end col-->
+            </div>
+            <!--end row-->
+
+        </div><!-- container-fluid -->
+    </div><!-- End Page-content -->
+
+</div><!-- end main content-->
+
+</div>
+<!-- END layout-wrapper -->
+<div id="edit_author" class="modal fade fadeInUp" tabindex="-1" aria-labelledby="fadeInUpModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="fadeInUpModalLabel">Edit Author Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="">
+                    <input type="text" value="<?= $page ?>" name="page" hidden />
+                    <div class="row gy-4">
+
+                        <div class="col-xxl-3 col-md-12">
+                            <div>
+                                <label for="basiInput" class="form-label">Author Name</label>
+                                <input type="date" name="text" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="modal-footer mt-4">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary ">Edit Author </button>
+                    </div>
+            </div>
+            </form>
+
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

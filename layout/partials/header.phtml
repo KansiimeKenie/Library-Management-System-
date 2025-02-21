@@ -1,10 +1,22 @@
 <?php
-$manage_books_array = ['all_books', 'edit_book', 'current_books', 'book_copies', 'book_details', 'inventory_update', 'edit_purchases', 'damaged_books', 'edit_damage'];
+$manage_books_array = [
+    'all_books',
+    'edit_book',
+    'current_books',
+    'book_copies',
+    'book_details',
+    'inventory_update',
+    'edit_purchases',
+    'damaged_books',
+    'edit_damage',
+    'book_authors'
+];
 $bookings = ['requistions', 'borrowed_books', 'req_details'];
 $genal_settings = ['categories', 'system_setup', 'all_classes', 'edit_category', 'edit_class'];
 $users = ['all_libs', 'all_students', 'all_admins', 'student_profile'];
 $borrow_history = ['trans_history', 'borrow_history'];
 $attendance = ['students_attendance'];
+$attendance_reports = ['most_frequent_visitors', 'daily_attendance_report', 'highest_hours_spent', 'peak_library_usage_hours', 'attendance_by_class'];
 $report_pages = ['most_borrowing_students', 'most_borrowed_books', 'lost_books', 'over_due_books'];
 $user_image = (empty($global_var['user']['photo'])) ? "/layout/assets/images/users/avatar-10.jpg" : $global_var['user']['photo'];
 $pending_requests = count(
@@ -459,6 +471,9 @@ $pending_requests = count(
                             <li class="nav-item">
                                 <a href="index.php?page=all_books" class="nav-link <?= (($page == 'all_books') ? 'active' : '') ?>" data-key="t-chat">View All Books </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="index.php?page=book_authors" class="nav-link <?= (($page == 'book_authors') ? 'active' : '') ?>" data-key="t-chat">Book Authors </a>
+                            </li>
                             <?php if ($global_var['user']['user_type'] != 'stud') { ?>
                                 <li class="nav-item">
                                     <a data-bs-toggle="modal" data-bs-target="#register" class="nav-link"> <span data-key="t-file-manager">Add New Book</span></a>
@@ -557,7 +572,7 @@ $pending_requests = count(
 
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarAdvanceUI" data-bs-toggle="collapse" role="button" aria-expanded="<?= (in_array($page, $report_pages) ? 'true' : '') ?>" aria-controls="sidebarAdvanceUI">
-                        <i class="ri-stack-line"></i> <span data-key="t-advance-ui">View Reports</span>
+                        <i class="ri-stack-line"></i> <span data-key="t-advance-ui">Borrowing Reports</span>
                     </a>
                     <div class="collapse menu-dropdown <?= (in_array($page, $report_pages) ? 'show' : '') ?>" id="sidebarAdvanceUI">
                         <ul class="nav nav-sm flex-column ">
@@ -593,9 +608,33 @@ $pending_requests = count(
                         </ul>
                     </div>
                 </li>
-
-
                 <?php if ($global_var['user']['user_type'] != 'stud') { ?>
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="#sidebarAdvanceUI1" data-bs-toggle="collapse" role="button" aria-expanded="<?= (in_array($page, $attendance_reports) ? 'true' : '') ?>" aria-controls="sidebarAdvanceUI">
+                            <i class="ri-stack-line"></i> <span data-key="t-advance-ui">Attendance Reports</span>
+                        </a>
+                        <div class="collapse menu-dropdown <?= (in_array($page, $attendance_reports) ? 'show' : '') ?>" id="sidebarAdvanceUI1">
+                            <ul class="nav nav-sm flex-column ">
+                                <li class="nav-item">
+                                    <a href="index.php?page=daily_attendance_report" class="nav-link <?= ($page == 'daily_attendance_report') ? 'active' : '' ?>" data-key="t-sweet-alerts">Daily Attendance Report
+                                    </a>
+                                    <a href="index.php?page=most_frequent_visitors" class="nav-link <?= ($page == 'most_frequent_visitors') ? 'active' : '' ?>" data-key="t-sweet-alerts">Most Frequent Visitors
+                                    </a>
+
+                                    <a href="index.php?page=highest_hours_spent" class="nav-link <?= ($page == 'highest_hours_spent') ? 'active' : '' ?>" data-key="t-sweet-alerts">Highest Hours Spent
+                                    </a>
+                                    <a href="index.php?page=peak_library_usage_hours" class="nav-link <?= ($page == 'peak_library_usage_hours') ? 'active' : '' ?>" data-key="t-sweet-alerts">Peak Library Usage Hours
+                                    </a>
+                                    <a href="index.php?page=attendance_by_class" class="nav-link <?= ($page == 'attendance_by_class') ? 'active' : '' ?>" data-key="t-sweet-alerts">Attendance By Class
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </div>
+                    </li>
+
+
+
                     <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages"><?= (($global_var['user']['user_type'] == 'admin') ? 'Settings' : 'Users') ?></span></li>
 
                     <li class="nav-item">

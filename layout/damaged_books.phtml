@@ -56,9 +56,9 @@
                                                 <th class="sort" data-sort="title">Title</th>
                                                 <th class="sort" data-sort="description">Category</th>
                                                 <th class="sort" data-sort="date">ISBN</th>
-                                                <th class="sort" data-sort="date">Copies Damaged</th>
+                                                <th class="sort" data-sort="date">Copy Damaged</th>
+                                                <th class="sort" data-sort="date">Comment</th>
                                                 <th class="sort" data-sort="date">Registered On</th>
-                                                <th class="sort" data-sort="date">Registered By</th>
                                                 <th class="sort" data-sort="action">Action</th>
                                             </tr>
                                         </thead>
@@ -67,7 +67,8 @@
                                             <?php
                                             $sn = 0;
                                             foreach ($db->orderBy('id', 'DESC')->get('damaged_books') as $value):
-                                                $book_details = $db->where("id", $value->book_id)->getOne("books");
+                                                $book_copy_details = $db->where("id", $value->book_copy_id)->getOne("book_copies");
+                                                $book_details = $db->where("id", $book_copy_details->book_id)->getOne("books");
 
 
                                                 $sn++;
@@ -79,10 +80,9 @@
                                                     <td><?= $book_details->title ?></td>
                                                     <td class="title"><?= $db->where("id", $book_details->category_id)->getOne("categories")->name ?></td>
                                                     <td class="description"><?= $book_details->isbn ?></td>
-                                                    <td><?= $value->no_of_copies ?></td>
+                                                    <td><?= $book_copy_details->book_copy_no ?></td>
+                                                    <td><?= $value->description ?></td>
                                                     <td class="date"><?= date('d/m/Y', strtotime($value->date_created)) ?></td>
-                                                    <td><?= $db->where('id', $value->created_by)->getOne('users')->firstname ?></td>
-
 
                                                     <td>
                                                         <div class="d-flex gap-2">

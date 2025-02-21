@@ -176,3 +176,13 @@ function getBorrowedBookRemainingDays($returnDate)
     // Return the remaining days
     return $daysRemaining;
 }
+function calculateHoursSpent($check_in, $check_out)
+{
+    if (empty($check_out)) return '---';
+
+    $start = new DateTime($check_in);
+    $end = new DateTime($check_out);
+    $diff = $start->diff($end);
+
+    return $diff->h . ' hrs : ' . $diff->i . ' mins';
+}

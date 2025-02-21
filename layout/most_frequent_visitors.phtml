@@ -1,0 +1,81 @@
+<?php
+
+$frequent_visitors = $db->rawQuery("
+    SELECT student_id, COUNT(*) as visit_count 
+    FROM library_attendance 
+    GROUP BY student_id 
+    ORDER BY visit_count DESC
+
+");
+
+?>
+
+<style>
+    .professional-table thead {
+        background: linear-gradient(45deg, #4a5568, #2d3748);
+        color: white;
+    }
+
+    .hours-cell {
+        font-weight: 500;
+        color: #2d3748;
+    }
+</style>
+
+<div class="main-content">
+    <div class="page-content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                        <h4 class="mb-sm-0">MOST FREQUENT VISITORS</h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="text-center my-3">
+                                <h4 class="fw-bold text-primary text-uppercase" style="text-decoration: underline;">
+                                    Top Frequent library Visitors
+                                </h4>
+                            </div>
+
+                            <div class="table-responsive mt-4 mb-1">
+                                <table id="myTable" class="table table-bordered table-striped professional-table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center">#</th>
+                                            <th>Student Name</th>
+                                            <th>Class</th>
+                                            <th class="text-center">No. Of Visits</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php
+                                        $sn = 0;
+                                        foreach ($frequent_visitors as $value):
+                                            $student_details = $db->where("id", $value->student_id)->getOne("users");
+                                            $class_details = $db->where("id", $student_details->class_id)->getOne("classes");
+                                            $sn++;
+                                        ?>
+                                            <tr>
+                                                <td class="text-center"><?= $sn ?></td>
+                                                <td><?= "{$student_details->firstname} {$student_details->lastname}" ?></td>
+                                                <td><?= $class_details->abbrev ?></td>
+                                                <td class="text-center"><?= $value->visit_count ?></td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                    </div><!-- end card -->
+                </div>
+            </div><!-- end row -->
+        </div>
+    </div>
+</div>

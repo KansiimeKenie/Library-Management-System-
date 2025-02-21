@@ -55,7 +55,7 @@ if (isset($_GET['start_date']) && isset($_GET['end_date'])) {
                                     <div class="col-sm">
                                         <div class="d-flex justify-content-sm-end">
                                             <div class="search-box ms-2">
-                                                <a data-bs-toggle="modal" data-bs-target="#filter_by_date" type="button" class="btn btn-primary add-btn"><i class="ri-filter-line align-bottom me-1"></i> Filter Requests By Date</a>
+                                                <a data-bs-toggle="modal" data-bs-target="#filter_by_date" type="button" class="btn btn-primary add-btn"><i class="ri-filter-line align-bottom me-1"></i> Filter Purchases By Date</a>
                                             </div>
                                         </div>
                                     </div>
@@ -133,7 +133,7 @@ if (isset($_GET['start_date']) && isset($_GET['end_date'])) {
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="fadeInUpModalLabel">Add Book Inventory</h5>
+                    <h5 class="modal-title" id="fadeInUpModalLabel">Add Purchased Book to Inventory</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -146,7 +146,7 @@ if (isset($_GET['start_date']) && isset($_GET['end_date'])) {
                                     <select name="book_id" class="form-control selectpicker" data-live-search="true">
                                         <option value="">--Select Book--</option>
                                         <?php foreach ($db->get("books") as $value) { ?>
-                                            <option value="<?= $value->id ?>"><?= $value->title . '. By : ' . $value->author ?></option>
+                                            <option value="<?= $value->id ?>"><?= $value->title . '. By : ' . $db->where('id', $value->author_id)->getOne('book_authors')->names ?></option>
                                         <?php } ?>
                                     </select>
                                 </div>
